@@ -1,0 +1,77 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.66.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 214fd1a3fa7f4f4222da2cfd4b0913902dbffc4c Build.PL
+SHA1 83a83a2b7f2a2f17d93c96707b0a47dffbd00164 Changes
+SHA1 0890c7d901c3958ec8476f1edc1c11ae676990fb LICENSE
+SHA1 52d5892aeb7ea15c6117f68325d23de0c1ede42f MANIFEST
+SHA1 15cd17a21ec07cb4aea97cfa040a475b448212dc META.json
+SHA1 a258d020766d1812ac38f91a605e9c8821078a97 META.yml
+SHA1 bc2da87ee6bd0321416de9e9371c77ee235368fa README
+SHA1 abb952e9782c7877421dea5325dd8c1766e42e23 examples/Build.PL
+SHA1 4864c5b2f9107d09f279ac2c4d65033d97297976 examples/usul_cli
+SHA1 faef9bce44adb0726b42e740b6b9deced280784f inc/Bob.pm
+SHA1 38450238d81a40b2d040d889a6242e7f68f3562a inc/CPANTesting.pm
+SHA1 3b746d9090da790c0f17f7c902e577e9aa8ed195 lib/Class/Usul.pm
+SHA1 59a4f88b257de0e10e7fe8737e1cfa9c092bf7d5 lib/Class/Usul/Build.pm
+SHA1 f3df9fd8e39ade93266487ac27821d20b7d880d9 lib/Class/Usul/Build/InstallActions.pm
+SHA1 c01af1853089b72455efd569e016075e256c6147 lib/Class/Usul/Build/Questions.pm
+SHA1 4f7aed97056f05091cacbf8e48b76a6e4f3ad1fd lib/Class/Usul/Build/VCS.pm
+SHA1 9314fb85d605b5deb8384e47e95882b2fff3f117 lib/Class/Usul/Config.pm
+SHA1 6368b3fc7e86c98ddc9444cdb3be09646dc71c7b lib/Class/Usul/Constants.pm
+SHA1 3bad881310c51bc1ee22ec5cb4d54c61dd6b393c lib/Class/Usul/Constraints.pm
+SHA1 04c29093ff3a2d0b2a06dca5c69fba7a14c6505c lib/Class/Usul/Crypt.pm
+SHA1 a602c6de74fabe557dbc8752cc96959b6f850294 lib/Class/Usul/File.pm
+SHA1 e3d2550a727a104a69d9baeff678a485c76a373d lib/Class/Usul/Functions.pm
+SHA1 a888b821c268645f36b308aa7caf0d8d1f8606ce lib/Class/Usul/IPC.pm
+SHA1 183d4b9c649feb8dc532ef4f458c918ca443e087 lib/Class/Usul/L10N.pm
+SHA1 b40ffd838c946887ef9c565b920db24848717f11 lib/Class/Usul/Log.pm
+SHA1 d33ab8adb8817293d3617de6258645591078dcb3 lib/Class/Usul/Moose.pm
+SHA1 7a677a925ccacdae629b0ba3cf0848e250027f8e lib/Class/Usul/Plugin/Build/Debian.pm
+SHA1 7686fc82012a5cd887c6ca786b2eb52b06490209 lib/Class/Usul/Programs.pm
+SHA1 e52f485b666f976fce1d418705ad53357a7fcc71 lib/Class/Usul/Response/IPC.pm
+SHA1 a716b5700423e92a11bc423aeaa6f46ff2ecf0a0 lib/Class/Usul/Response/Meta.pm
+SHA1 ea0b114da0fb486ae80398d0f06e7fa5ed057799 lib/Class/Usul/Response/Table.pm
+SHA1 a61a1b60fefa4a0f5a405dbf2495f73134441594 lib/Class/Usul/Time.pm
+SHA1 e16fa690e4d046161c9827965a9ab65b5eb40a65 lib/Class/Usul/TraitFor/LoadingClasses.pm
+SHA1 ac2de54ce89831995e0087e92a3728d163f68e6f lib/Class/Usul/TraitFor/UntaintedGetopts.pm
+SHA1 4ee2ca815ad8c8c1feec65df55d1d97c067a743e t/01always_pass.t
+SHA1 b1e364589fecfea0da803b5a3f83e26aeed1c5ce t/02pod.t
+SHA1 a072d0014fb7c4515d1fccf765bacd5086e79682 t/03podcoverage.t
+SHA1 aa159f903b29f362182cfafe8430798ec55e7ffc t/04critic.t
+SHA1 e8b67441ac7ee2a5c0cc9ea4ce978a0f7aa1455c t/05kwalitee.t
+SHA1 3fcc4517f5535f2501caf3d091fbd8d5ae496e89 t/06yaml.t
+SHA1 52797df99bc0491f3852471d191ab8df132ece9a t/07podspelling.t
+SHA1 d9f7192a6585d580d3dfbaa37c4f6c429ff91d51 t/10functions.t
+SHA1 ed5cfe0008b61fd840727ceb700346cc8db6013a t/12l10n.t
+SHA1 f9f0244929235a994813a5e04c37ac0cbff67e0c t/14time.t
+SHA1 6ec529c91b14831c1996e979e45cd4c1e47a3340 t/18programs.t
+SHA1 e4f5d074bea8bb254be786914273611e4a28642f t/20file.t
+SHA1 735f4658eaab15de41fc4b97ecd17bf5fbac19a3 t/21ipc.t
+SHA1 654d5f6b713fe670a2b282fda729941f81774c22 t/critic.rc
+SHA1 e0b4528eb08ddca6f68d39495eabb3818d314d0c t/locale/de/LC_MESSAGES/default.po
+SHA1 9a0c4ec392bd326ab3c350592fb77f8384a7b924 t/test.xml
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+
+iQEcBAEBAgAGBQJQQ3cJAAoJEK492j4Im1BpN+sH/3IGgBtQpeFWWBJ68ELuWvI/
+ye5037AkuGJig5k+jG5ZS5cSkEomRTQ3wcYBOzcjL7n3w5ijsM4MfNSEjHZxYiYW
+UjQzIIJdbIy+B2ZqMOr0yfXV6j8BaIGDszokmcZSObHjyv4YgyBWDUDr3l3aGIXY
+xLDlgRjW8Rl6v1KlG7ZbKFFqa+cxUBihwq8GGTwMvXOB2b1mKGkGMeHUCg7KYOsJ
+owHldMTul1wGB+p3CDG+X4haZMw3QolD5Kp2nHYsowT7uRDnxMGb99Pcw/KWyIVs
+eAD8porurTabHBYRYoYbUi23H0hKGUkNw9GI/cqVvaGTXnK9HiBZwNC/c24IT+8=
+=QK41
+-----END PGP SIGNATURE-----
