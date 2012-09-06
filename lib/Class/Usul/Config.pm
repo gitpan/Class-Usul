@@ -1,9 +1,9 @@
-# @(#)$Id: Config.pm 199 2012-08-21 12:41:21Z pjf $
+# @(#)$Id: Config.pm 206 2012-09-06 17:31:12Z pjf $
 
 package Class::Usul::Config;
 
 use strict;
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 199 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 206 $ =~ /\d+/gmx );
 
 use Class::Usul::File;
 use Class::Usul::Moose;
@@ -320,7 +320,7 @@ Class::Usul::Config - Inflate config values
 
 =head1 Version
 
-Describes Class::Usul::Config version 0.1.$Revision: 199 $
+Describes Class::Usul::Config version 0.8.$Revision: 206 $
 
 =head1 Synopsis
 
