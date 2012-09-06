@@ -71,6 +71,7 @@
             "MooseX::Role::WithOverloading" : "0.08",
             "MooseX::Traits::Pluggable" : "0.1",
             "MooseX::Types" : "0.25",
+            "MooseX::Types::LoadableClass" : "0.007",
             "POSIX" : "1.09",
             "Path::Class" : "0.16",
             "Perl::Version" : "1.009",
@@ -99,7 +100,7 @@
    "provides" : {
       "Class::Usul" : {
          "file" : "lib/Class/Usul.pm",
-         "version" : "v0.1.202"
+         "version" : "v0.1.205"
       },
       "Class::Usul::Build" : {
          "file" : "lib/Class/Usul/Build.pm",
@@ -135,7 +136,7 @@
       },
       "Class::Usul::File" : {
          "file" : "lib/Class/Usul/File.pm",
-         "version" : "v0.1.202"
+         "version" : "v0.1.204"
       },
       "Class::Usul::Functions" : {
          "file" : "lib/Class/Usul/Functions.pm",
@@ -175,7 +176,7 @@
       },
       "Class::Usul::Response::Table" : {
          "file" : "lib/Class/Usul/Response/Table.pm",
-         "version" : "v0.7.193"
+         "version" : "v0.1.203"
       },
       "Class::Usul::Time" : {
          "file" : "lib/Class/Usul/Time.pm",
@@ -200,5 +201,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.1.202"
+   "version" : "0.1.205"
 }

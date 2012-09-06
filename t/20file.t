@@ -1,8 +1,8 @@
-# @(#)$Id: 20file.t 153 2012-05-19 18:28:38Z pjf $
+# @(#)$Id: 20file.t 204 2012-09-02 20:52:12Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 153 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.7.%d', q$Rev: 204 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -50,6 +50,14 @@ my $tf = [ qw(t test.xml) ];
 
 ok( (grep { m{ name }msx } $cuf->io( $tf )->getlines)[ 0 ] =~ m{ library }msx,
     'io' );
+
+my $path = $cuf->absolute( [ qw(test test) ], q(test) );
+
+like $path, qr{ test . test . test \z }mx, 'absolute 1';
+
+$path = $cuf->absolute( q(test), q(test) );
+
+like $path, qr{ test . test \z }mx, 'absolute 2';
 
 my $fdcs = $cuf->dataclass_schema->load( $tf );
 

@@ -1,9 +1,9 @@
-# @(#)$Id: File.pm 202 2012-09-02 15:09:14Z pjf $
+# @(#)$Id: File.pm 204 2012-09-02 20:52:12Z pjf $
 
 package Class::Usul::File;
 
 use strict;
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 202 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 204 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -24,7 +24,7 @@ has '_usul' => is => 'ro', isa => Object,
 sub absolute {
    my ($self, $base, $path) = @_; $base ||= NUL; $path or return NUL;
 
-   is_arrayref $base and $base = catdir( $base );
+   is_arrayref $base and $base = catdir( @{ $base } );
 
    return $self->io( $path )->absolute( $base );
 }
@@ -130,7 +130,7 @@ Class::Usul::File - File and directory IO base class
 
 =head1 Version
 
-0.6.$Revision: 202 $
+0.6.$Revision: 204 $
 
 =head1 Synopsis
 
