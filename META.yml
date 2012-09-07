@@ -25,7 +25,7 @@ no_index:
 provides:
   Class::Usul:
     file: lib/Class/Usul.pm
-    version: v0.8.206
+    version: v0.8.208
   Class::Usul::Build:
     file: lib/Class/Usul/Build.pm
     version: v0.8.206
@@ -55,10 +55,10 @@ provides:
     version: v0.8.206
   Class::Usul::Functions:
     file: lib/Class/Usul/Functions.pm
-    version: v0.8.206
+    version: v0.8.207
   Class::Usul::IPC:
     file: lib/Class/Usul/IPC.pm
-    version: v0.8.206
+    version: v0.8.207
   Class::Usul::L10N:
     file: lib/Class/Usul/L10N.pm
     version: v0.8.206
@@ -94,6 +94,7 @@ provides:
     version: v0.8.206
 recommends:
   App::cpanminus: 1.4004
+  Proc::ProcessTable: 0.42
 requires:
   Class::Inspector: 1.24
   Class::Load: 0.18
@@ -121,6 +122,7 @@ requires:
   Moose: 2.0402
   MooseX::AttributeShortcuts: 0.014
   MooseX::ClassAttribute: 0.1
+  MooseX::Getopt::Dashes: 0.33
   MooseX::MethodAttributes: 0.24
   MooseX::Role::Parameterized: 0.19
   MooseX::Role::WithOverloading: 0.08
@@ -133,7 +135,6 @@ requires:
   Pod::Eventual: 0.09333
   Pod::Man: 2.22
   Pod::Parser: 1.37
-  Proc::ProcessTable: 0.42
   SVN::Class: 0.12
   Scalar::Util: 1.19
   Sub::Exporter: 0.982
@@ -153,4 +154,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Usul
   homepage: http://www.roxsoft.co.uk
   license: http://dev.perl.org/licenses/
-version: 0.8.206
+version: 0.8.208

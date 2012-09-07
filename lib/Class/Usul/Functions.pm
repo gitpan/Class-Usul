@@ -1,11 +1,11 @@
-# @(#)$Id: Functions.pm 206 2012-09-06 17:31:12Z pjf $
+# @(#)$Id: Functions.pm 207 2012-09-07 12:40:55Z pjf $
 
 package Class::Usul::Functions;
 
 use strict;
 use warnings;
 use feature      qw(state);
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 206 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 207 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Data::Printer alias => q(Dumper), colored => 1, indent => 3,
@@ -43,7 +43,7 @@ sub abs_path ($) {
 }
 
 sub app_prefix ($) {
-   (my $y = lc $_[ 0 ] || q()) =~ s{ :: }{_}gmx; return $y;
+   (my $y = lc ($_[ 0 ] || q())) =~ s{ :: }{_}gmx; return $y;
 }
 
 sub arg_list (;@) {
@@ -275,7 +275,7 @@ CatalystX::Usul::Functions - Globally accessible functions
 
 =head1 Version
 
-0.6.$Revision: 206 $
+0.6.$Revision: 207 $
 
 =head1 Synopsis
 
