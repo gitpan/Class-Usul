@@ -1,15 +1,12 @@
-# @(#)$Id: 20file.t 206 2012-09-06 17:31:12Z pjf $
+# @(#)$Id: 20file.t 209 2012-09-08 11:41:48Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 206 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 209 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
 
-use Class::Null;
-use Exception::Class ( q(TestException) => { fields => [ qw(arg1 arg2) ] } );
-use English qw( -no_match_vars );
 use Module::Build;
 use Test::More;
 
@@ -19,6 +16,10 @@ BEGIN {
    $current and $current->notes->{stop_tests}
             and plan skip_all => $current->notes->{stop_tests};
 }
+
+use Class::Null;
+use English qw( -no_match_vars );
+use Exception::Class ( q(TestException) => { fields => [ qw(arg1 arg2) ] } );
 
 {  package Logger;
 
