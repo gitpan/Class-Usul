@@ -1,9 +1,9 @@
-# @(#)$Id: Log.pm 206 2012-09-06 17:31:12Z pjf $
+# @(#)$Id: Log.pm 223 2012-10-31 01:24:47Z pjf $
 
 package Class::Usul::Log;
 
 use strict;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 206 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 223 $ =~ /\d+/gmx );
 
 use Class::Null;
 use Class::Usul::Moose;
@@ -108,7 +108,7 @@ Class::Usul::Log - Create methods for each logging level that encode their outpu
 
 =head1 Version
 
-0.8.$Revision: 206 $
+0.9.$Revision: 223 $
 
 =head1 Synopsis
 

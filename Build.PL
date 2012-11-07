@@ -1,9 +1,9 @@
-# @(#)$Id: Build.PL 207 2012-09-07 12:40:55Z pjf $
+# @(#)$Id: Build.PL 229 2012-11-07 08:25:00Z pjf $
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 207 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 229 $ =~ /\d+/gmx );
 
 Bob->new( {
    module     => q(Class::Usul),
@@ -24,9 +24,10 @@ Bob->new( {
       'Data::Printer'                 => 0.24,
       'Date::Format'                  => 2.22,
       'DateTime::Format::Epoch'       => 0.11,
+      'Digest::MD5'                   => 2.39,
       'Digest::SHA1'                  => 2.11,
       'Email::Date::Format'           => 1.002,
-      'File::DataClass'               => q(0.12.0),
+      'File::DataClass'               => q(0.13.0),
       'Getopt::Mixed'                 => 1.10,
       'Git::Class'                    => 0.12,
       'Import::Into'                  => 1.001000,
@@ -40,6 +41,7 @@ Bob->new( {
       'Module::Load::Conditional'     => 0.26,
       'Module::Pluggable'             => 3.9,
       'Moose'                         => 2.0402,
+      'MooseX::Aliases'               => 0.10,
       'MooseX::AttributeShortcuts'    => 0.014,
       'MooseX::ClassAttribute'        => 0.10,
       'MooseX::Getopt::Dashes'        => 0.33,
@@ -77,6 +79,8 @@ Bob->new( {
 } )->create_build_script; # Goal!
 
 # Local Variables:
+# tab-title: Class::Usul
+# eval: (load-project-state "class-usul")
 # mode: perl
 # tab-width: 3
 # End:

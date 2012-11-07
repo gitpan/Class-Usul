@@ -1,10 +1,10 @@
-# @(#)$Id: UntaintedGetopts.pm 206 2012-09-06 17:31:12Z pjf $
+# @(#)$Id: UntaintedGetopts.pm 223 2012-10-31 01:24:47Z pjf $
 
 package Class::Usul::TraitFor::UntaintedGetopts;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 206 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 223 $ =~ /\d+/gmx );
 
 use Moose::Role;
 use Class::Usul::Functions qw(untaint_cmdline);
@@ -29,7 +29,7 @@ Class::Usul::TraitFor::UntaintedGetopts - Untaints @ARGV before Getopts processe
 
 =head1 Version
 
-0.8.$Revision: 206 $
+0.9.$Revision: 223 $
 
 =head1 Synopsis
 

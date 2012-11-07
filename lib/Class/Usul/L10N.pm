@@ -1,9 +1,9 @@
-# @(#)$Id: L10N.pm 206 2012-09-06 17:31:12Z pjf $
+# @(#)$Id: L10N.pm 223 2012-10-31 01:24:47Z pjf $
 
 package Class::Usul::L10N;
 
 use strict;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 206 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 223 $ =~ /\d+/gmx );
 
 use Class::Null;
 use Class::Usul::Moose;
@@ -38,7 +38,7 @@ has 'tempdir'         => is => 'ro',   isa => Directory, coerce => TRUE,
 has 'use_country'     => is => 'lazy', isa => Bool;
 
 around 'BUILDARGS' => sub {
-   my ($next, $class, @rest) = @_; my $attr = $class->$next( @rest );
+   my ($next, $class, @args) = @_; my $attr = $class->$next( @args );
 
    my $builder = delete $attr->{builder} or return $attr;
    my $config  = $builder->can( q(config) ) ? $builder->config : {};
@@ -65,7 +65,7 @@ sub invalidate_cache {
 sub localize {
    my ($self, $key, $args) = @_;
 
-   $key or return; $key = NUL.$key; chomp $key; $args ||= {};
+   $key or return; $key = q().$key; chomp $key; $args ||= {};
 
    # Lookup the message using the supplied key from the po file
    my $text = $self->_gettext( $key, $args );
@@ -74,7 +74,8 @@ sub localize {
       0 > index $text, LOCALIZE and return $text;
 
       # Expand positional parameters of the form [_<n>]
-      my @args = @{ $args->{params} }; push @args, map { '[?]' } 0 .. 10;
+      my @args = map { defined $_ ? $_ : '[?]' } @{ $args->{params} },
+                 map { '[?]' } 0 .. 9;
 
       $text =~ s{ \[ _ (\d+) \] }{$args[ $1 - 1 ]}gmx; return $text;
    }
@@ -91,11 +92,11 @@ sub localize {
 # Private methods
 
 sub _build_source_name {
-   my $self = shift; return $self->l10n_attributes->{source_name} || q(po);
+   return $_[ 0 ]->l10n_attributes->{source_name} || q(po);
 }
 
 sub _build_use_country {
-   my $self = shift; return $self->l10n_attributes->{use_country} || FALSE;
+   return $_[ 0 ]->l10n_attributes->{use_country} || FALSE;
 }
 
 sub _extract_lang_from {
@@ -184,7 +185,7 @@ Class::Usul::L10N - Localize text strings
 
 =head1 Version
 
-0.6.$Revision: 206 $
+0.6.$Revision: 223 $
 
 =head1 Synopsis
 

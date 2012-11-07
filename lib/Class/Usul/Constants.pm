@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 206 2012-09-06 17:31:12Z pjf $
+# @(#)$Id: Constants.pm 226 2012-11-01 21:30:06Z pjf $
 
 package Class::Usul::Constants;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 206 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 226 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
@@ -27,8 +27,8 @@ BEGIN {
                       DIGEST_ALGORITHMS ENCODINGS EVIL EXCEPTION_CLASS EXTNS
                       FAILED FALSE HASH LANG LBRACE LOCALIZE LOG_LEVELS
                       MODE NO NUL OK PHASE PREFIX QUIT SEP SPC TRUE
-                      UNTAINT_CMDLINE UNTAINT_IDENTIFIER UNTAINT_PATH
-                      UUID_PATH WIDTH YES) );
+                      UNDEFINED_RV UNTAINT_CMDLINE UNTAINT_IDENTIFIER
+                      UNTAINT_PATH UUID_PATH WIDTH YES) );
 }
 
 use Sub::Exporter -setup => {
@@ -68,6 +68,7 @@ sub DIGEST_ALGORITHMS   () { ( qw(SHA-512 SHA-256 SHA-1 MD5) ) }
 sub ENCODINGS           () { ( qw(ascii iso-8859-1 UTF-8 guess) ) }
 sub EXCEPTION_CLASS     () { __PACKAGE__->Exception_Class }
 sub LOG_LEVELS          () { ( qw(alert debug error fatal info warn) ) }
+sub UNDEFINED_RV        () { -1 }
 sub UNTAINT_CMDLINE     () { qr{ \A ([^\$%;|&><\*]+) \z }mx }
 sub UNTAINT_IDENTIFIER  () { qr{ \A ([a-zA-Z0-9_]+)  \z }mx }
 sub UNTAINT_PATH        () { qr{ \A ([^\$%;|&><\*]+) \z }mx }
@@ -90,7 +91,7 @@ Class::Usul::Constants - Definitions of constant values
 
 =head1 Version
 
-0.8.$Rev: 206 $
+0.9.$Rev: 226 $
 
 =head1 Synopsis
 
@@ -232,6 +233,11 @@ Space character
 =head2 TRUE
 
 Digit C<1>
+
+=head2 UNDEFINED_RV
+
+Digit C<-1>. Indicates that a method wrapped in a try/catch block failed
+to return a defined value
 
 =head2 UNTAINT_CMDLINE
 

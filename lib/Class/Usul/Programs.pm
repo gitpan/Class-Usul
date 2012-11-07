@@ -1,10 +1,10 @@
-# @(#)$Id: Programs.pm 206 2012-09-06 17:31:12Z pjf $
+# @(#)$Id: Programs.pm 229 2012-11-07 08:25:00Z pjf $
 
 package Class::Usul::Programs;
 
 use strict;
 use attributes ();
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 206 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 229 $ =~ /\d+/gmx );
 
 use Class::Inspector;
 use Class::Usul::IPC;
@@ -35,8 +35,11 @@ with    q(MooseX::Getopt::Dashes);
 with    q(Class::Usul::TraitFor::LoadingClasses);
 with    q(Class::Usul::TraitFor::UntaintedGetopts);
 
-has '+debug'       => traits => [ 'Getopt' ], cmd_aliases => q(D),
-   cmd_flag        => 'debug';
+has '+config_class' => default => sub { 'Class::Usul::Config::Programs' };
+
+has '+debug'        => traits => [ 'Getopt' ], cmd_aliases => q(D),
+   cmd_flag         => 'debug';
+
 
 has 'help_options' => is => 'ro', isa => Bool, default => FALSE,
    documentation   => 'Uses Pod::Usage to describe the program usage options',
@@ -55,7 +58,7 @@ has 'language'     => is => 'ro', isa => SimpleStr,  default => NUL,
    traits          => [ 'Getopt' ], cmd_aliases => q(L), cmd_flag => 'language';
 
 has 'method'       => is => 'rw', isa => SimpleStr | Undef,  default => NUL,
-   documentation   => 'Name of the method to call. Required',
+   documentation   => 'Name of the method to call',
    traits          => [ 'Getopt' ], cmd_aliases => q(c), cmd_flag => 'command';
 
 has 'nodebug'      => is => 'ro', isa => Bool, default => FALSE,
@@ -67,14 +70,14 @@ has 'options'      => is => 'ro', isa => HashRef, default => sub { {} },
       'Zero, one or more key/value pairs available to the method call',
    traits          => [ 'Getopt' ], cmd_aliases => q(o), cmd_flag => 'option';
 
-has 'quiet'        => is => 'ro', isa => Bool, default => FALSE,
+has '_quiet'       => is => 'rw', isa => Bool, default => FALSE,
    documentation   => 'Quiet the display of information messages',
-   traits          => [ 'Getopt' ], cmd_aliases => q(q), cmd_flag => 'quiet';
+   traits          => [ 'Getopt' ], cmd_aliases => q(q), cmd_flag => 'quiet',
+   init_arg        => 'quiet';
 
 has 'version'      => is => 'ro', isa => Bool, default => FALSE,
    documentation   => 'Displays the version number of the program class',
    traits          => [ 'Getopt' ], cmd_aliases => q(V), cmd_flag => 'version';
-
 
 has '_file'    => is => 'lazy', isa => FileType,
    default     => sub { Class::Usul::File->new( builder => $_[ 0 ] ) },
@@ -189,15 +192,13 @@ sub fatal {
    exit FAILED;
 }
 
-sub get_line {
-   # General text input routine.
+sub get_line { # General text input routine.
    my ($self, $question, $default, $quit, $width, $multiline, $noecho) = @_;
 
-   $question ||= 'Enter your answer';
-   $default    = defined $default ? $default : NUL;
+   $question ||= 'Enter your answer'; $default = $default // NUL;
 
    my $advice       = $quit ? '('.QUIT.' to quit)' : NUL;
-   my $right_prompt = $advice.($multiline ? NUL : SPC.q([).$default.q(]));
+   my $right_prompt = $advice.($multiline ? NUL : " [${default}]");
    my $left_prompt  = $question;
 
    if (defined $width) {
@@ -246,7 +247,7 @@ sub get_option {
 
    my $opt = $self->get_line( 'Select option', $default, $quit, $width );
 
-   $opt !~ m{ \A \d+ \z }mx and $opt = defined $default ? $default : 0;
+   $opt !~ m{ \A \d+ \z }mx and $opt = $default // 0;
 
    return $opt - 1;
 }
@@ -276,12 +277,13 @@ sub list_methods : method {
 sub loc {
    my ($self, $key, @args) = @_; my $car = $args[ 0 ];
 
-   my $opts = (is_hashref $car) ? { %{ $car } }
+   my $args = (is_hashref $car) ? { %{ $car } }
             : { params => (is_arrayref $car) ? $car : [ @args ] };
 
-   $opts->{language} ||= $self->language; $opts->{ns} ||= $self->config->name;
+   $args->{domain_names} ||= [ DEFAULT_L10N_DOMAIN, $self->config->name ];
+   $args->{locale      } ||= $self->language;
 
-   return $self->next::method( $key, $opts );
+   return $self->localize( $key, $args );
 }
 
 sub output {
@@ -292,6 +294,14 @@ sub output {
    say $self->add_leader( $text, $args ); $args->{nl} and say;
 
    return;
+}
+
+sub quiet {
+   my ($self, $v) = @_; defined $v or return $self->_quiet; $v = !!$v;
+
+   $v != TRUE and throw 'Cannot turn quiet mode off';
+
+   return $self->_quiet( $v );
 }
 
 sub run {
@@ -319,25 +329,32 @@ sub run {
          $e->out and $self->output( $e->out );
          $self->error( $e->error, { args => $e->args } );
          $self->debug and __print_fh( \*STDERR, $e->stacktrace."\n" );
-         $rv = $e->rv || -1;
+         $rv = $e->rv || (defined $e->rv ? FAILED : UNDEFINED_RV);
       };
-
-      not defined $rv and $rv = -1
-         and $self->error( "Method ${method} error uncaught/rv undefined" );
    }
    else {
       $self->error( "Method ${method} not defined in class ".(blessed $self) );
-      $rv = -1;
+      $rv = UNDEFINED_RV;
    }
 
-   if (defined $rv and not $rv) {
+   if    (defined $rv and $rv >  OK) { $self->output( "Terminated code ${rv}" )}
+   elsif (defined $rv and $rv == OK) {
       $self->output( 'Finished in '.elapsed.' seconds' );
    }
-   elsif (defined $rv) { $self->output( "Terminated code ${rv}" ) }
-   else { $self->output( 'Terminated with undefined rv' ); $rv = FAILED }
+   else {
+      not defined $rv and $rv = UNDEFINED_RV
+         and $self->error( "Method ${method} error uncaught/rv undefined" );
+      $self->output( 'Terminated with undefined rv' );
+   }
 
    $self->file->delete_tmp_files;
-   return $rv || OK;
+   return $rv;
+}
+
+sub void : method { # Cannot throw from around run. Stuffs up the frame stack
+   $_[ 1 ] or throw error => 'No method specified';
+   throw error => 'Method [_1] unknown', args => [ $_[ 1 ] ];
+   return; # Never reached
 }
 
 sub warning {
@@ -349,8 +366,7 @@ sub warning {
    return;
 }
 
-sub yorn {
-   # General yes or no input routine
+sub yorn { # General yes or no input routine
    my ($self, $question, $default, $quit, $width, $newline) = @_;
 
    my $no = NO; my $yes = YES; my $result;
@@ -358,7 +374,7 @@ sub yorn {
    $default = $default ? $yes : $no; $quit = $quit ? QUIT : NUL;
 
    my $advice       = $quit ? "(${yes}/${no}, ${quit}) " : "(${yes}/${no}) ";
-   my $right_prompt = $advice.q([).$default.q(]);
+   my $right_prompt = "${advice}[${default}]";
    my $left_prompt  = $question;
 
    if (defined $width) {
@@ -366,7 +382,7 @@ sub yorn {
       my $right_x   = length $right_prompt;
       my $left_x    = $max_width - $right_x;
 
-      $left_prompt = sprintf '%-*s', $left_x, $question;
+      $left_prompt  = sprintf '%-*s', $left_x, $question;
    }
 
    my $prompt = $left_prompt.SPC.$right_prompt.BRK;
@@ -403,7 +419,7 @@ sub _build__os {
 
    $path->exists or return {};
 
-   my $cfg  = $self->file->data_load( arrays => [ q(os) ], paths => [ $path ] );
+   my $cfg  = $self->file->data_load( paths => [ $path ] );
 
    return $cfg->{os} || {};
 }
@@ -413,15 +429,13 @@ sub _dont_ask {
        || $_[ 0 ]->help_manual || ! is_interactive();
 }
 
-sub _getopt_full_usage {
-   # Required to stop MX::Getopt from printing usage
+sub _getopt_full_usage { # Required to stop MX::Getopt from printing usage
 }
 
 sub _get_debug_option {
    my $self = shift;
 
-   $self->nodebug   and return FALSE;
-   $self->_dont_ask and return $self->debug;
+   ($self->nodebug or $self->_dont_ask) and return $self->debug;
 
    return $self->yorn( 'Do you want debugging turned on', FALSE, TRUE );
 }
@@ -455,7 +469,9 @@ sub _output_usage {
                    -verbose => $verbose } ); # Never returns
    }
 
-   warn ucfirst $self->usage;
+   my $usage = ucfirst $self->usage;
+
+   warn $usage ? $usage : "Did we forget new_with_options?\n";
    exit OK;
 }
 
@@ -472,7 +488,7 @@ sub _usage_for {
       no strict q(refs);
 
       if (defined &{ "${class}::${method}" }) {
-         my $selector = Pod::Select->new(); $selector->select( q(/).$method );
+         my $selector = Pod::Select->new(); $selector->select( "/${method}" );
          my $tempfile = $self->file->tempfile;
 
          $selector->parse_from_file( find_source $class, $tempfile->pathname );
@@ -521,19 +537,20 @@ sub __get_homedir {
    my $appdir   = class2appdir $appclass;
    my $classdir = classdir     $appclass;
    my $prefix   = app_prefix   $appclass;
+   my $my_home  = File::HomeDir->my_home;
 
    # 2a. Users home directory - contains application directory
-   $path = catdir( File::HomeDir->my_home, $appdir );
+   $path = catdir( $my_home, $appdir );
    $path = catdir( $path, qw(default lib), $classdir );
    $path = assert_directory $path and return $path;
 
    # 2b. Users home directory - dot directory containing application
-   $path = catdir( File::HomeDir->my_home, q(.).$appdir );
+   $path = catdir( $my_home, q(.).$appdir );
    $path = catdir( $path, qw(default lib), $classdir );
    $path = assert_directory $path and return $path;
 
    # 2c. Users home directory - dot file containing shell env variable
-   $file = catfile( File::HomeDir->my_home, q(.).$prefix );
+   $file = catfile( $my_home, q(.).$prefix );
    $path = __read_variable( $file, q(APPLDIR) );
    $path and $path = catdir( $path, q(lib), $classdir );
    $path = assert_directory $path and return $path;
@@ -638,7 +655,7 @@ sub __prompt {
 
                $newlines .= "\n";
             }
-            else { __print_fh( $OUT, defined $echo ? $echo : $next ) }
+            else { __print_fh( $OUT, $echo // $next ) }
          }
          else { $input .= $next }
       }
@@ -685,7 +702,7 @@ Class::Usul::Programs - Provide support for command line programs
 
 =head1 Version
 
-This document describes Class::Usul::Programs version 0.8.$Revision: 206 $
+This document describes Class::Usul::Programs version 0.9.$Revision: 229 $
 
 =head1 Synopsis
 
@@ -881,10 +898,12 @@ be called via the L<run method|/run>
 
 =head2 loc
 
-   $local_text = $self->loc( $key, @options );
+   $localized_text = $self->loc( $key, @options );
 
-Localizes the message. Calls L<Class::Usul/loc>. Adds I<language> and
-I<namespace> (search domain) to the options
+Localizes the message. Calls L<Class::Usul::L10N/localize>. Adds the
+constant C<DEFAULT_L10N_DOMAINS> to the list of domain files that are
+searched. Adds C<< $self->language >> and C< $self->config->name >>
+(search domain) to the arguments passed to C<localize>
 
 =head2 output
 
@@ -927,6 +946,13 @@ Prompt string
 
 =back
 
+=head2 quiet
+
+   $bool = $self->quiet( $bool );
+
+Custom accessor/mutator for the C<_quiet> attribute. Will throw if you try
+to turn quiet mode off
+
 =head2 run
 
    $rv = $self->run;
@@ -939,6 +965,13 @@ line. Returns the exit code
    $self->_output_usage( $verbosity );
 
 Print out usage information from POD. The C<$verbosity> is; 0, 1 or 2
+
+=head2 void
+
+   $self->void( $method ); # Never returns
+
+Throws if C<$method> is undefined. Throws a different error if
+C<$method> is defined
 
 =head2 warning
 

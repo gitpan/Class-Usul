@@ -1,8 +1,8 @@
-# @(#)$Id: 10functions.t 209 2012-09-08 11:41:48Z pjf $
+# @(#)$Id: 10functions.t 223 2012-10-31 01:24:47Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 209 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 223 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -52,6 +52,8 @@ is unescape_TT( escape_TT( q([% test %]) ) ), q([% test %]),
 
 is find_source( q(Class::Usul::Functions) ),
    abs_path( catfile( qw(lib Class Usul Functions.pm) ) ), 'find_source';
+
+is hex2str( '41' ), 'A', 'hex2str - A';
 
 is home2appldir( catdir( qw(opt myapp v0.1 lib MyApp) ) ),
    catdir( qw(opt myapp v0.1) ), 'home2appldir';

@@ -1,14 +1,13 @@
-# @(#)$Id: File.pm 206 2012-09-06 17:31:12Z pjf $
+# @(#)$Id: File.pm 223 2012-10-31 01:24:47Z pjf $
 
 package Class::Usul::File;
 
 use strict;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 206 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 223 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
-use Class::Usul::Functions   qw(abs_path arg_list create_token is_arrayref
-                                merge_attributes throw untaint_path);
+use Class::Usul::Functions   qw(arg_list create_token is_arrayref throw);
 use English                  qw(-no_match_vars);
 use File::DataClass::Constants ();
 use File::DataClass::IO        ();
@@ -41,11 +40,11 @@ sub data_dump {
 sub data_load {
    my ($self, @rest) = @_; my $args = arg_list @rest; my $attr = {};
 
+   defined $args->{storage_class}
+      and $attr->{storage_class} = delete $args->{storage_class};
+
    defined $args->{arrays}
       and $attr->{storage_attributes}->{force_array} = $args->{arrays};
-
-   defined $args->{storage_class}
-      and $attr->{storage_class} = $args->{storage_class};
 
    return $self->dataclass_schema( $attr )->load( @{ $args->{paths} || [] } );
 }
@@ -130,7 +129,7 @@ Class::Usul::File - File and directory IO base class
 
 =head1 Version
 
-0.6.$Revision: 206 $
+0.6.$Revision: 223 $
 
 =head1 Synopsis
 

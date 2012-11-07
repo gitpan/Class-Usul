@@ -1,11 +1,11 @@
-# @(#)$Id: Crypt.pm 206 2012-09-06 17:31:12Z pjf $
+# @(#)$Id: Crypt.pm 229 2012-11-07 08:25:00Z pjf $
 
 package Class::Usul::Crypt;
 
 use strict;
 use warnings;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 206 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 229 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions qw(create_token is_coderef is_hashref);
@@ -48,7 +48,7 @@ sub __cname {
 }
 
 sub __token {
-   substr create_token( __inflate( pop ) ), 0, 32;
+   substr create_token( __inflate( $_[ 0 ] ) ), 0, 32;
 }
 
 sub __inflate {
@@ -64,11 +64,11 @@ sub __deref {
 }
 
 sub __prepare {
-   my $y = pop; my $x = " \t" x 8; $y =~ s{^$x|[^ \t]}{}g; __whiten( $y );
+   my $y = $_[ 0 ]; my $x = " \t" x 8; $y =~ s{^$x|[^ \t]}{}g; __whiten( $y );
 }
 
 sub __whiten {
-   my $y = pop; $y =~ tr{ \t}{01}; $y = pack 'b*', $y; eval $y;
+   my $y = $_[ 0 ]; $y =~ tr{ \t}{01}; $y = pack 'b*', $y; eval $y;
 }
 
 1;
@@ -81,7 +81,7 @@ Class::Usul::Crypt - Encryption/decryption functions
 
 =head1 Version
 
-0.8.$Revision: 206 $
+0.9.$Revision: 229 $
 
 =head1 Synopsis
 
@@ -91,9 +91,11 @@ Class::Usul::Crypt - Encryption/decryption functions
    my $args = 'salt'; # OR
    my $args = { salt => 'salt', seed => 'whiten this' };
 
-   my $base64_encrypted_text = encrypt( $args, $plain_text, [ $cipher ] );
+   $args->{cipher} = 'Twofish'; # Optionally
 
-   my $plain_text = decrypt( $key, $base64_encrypted_text );
+   my $base64_encrypted_text = encrypt( $args, $plain_text );
+
+   my $plain_text = decrypt( $args, $base64_encrypted_text );
 
 =head1 Description
 
@@ -117,11 +119,11 @@ text result. See the L</encrypt> method
 
 =head2 encrypt
 
-   my $encrypted = encrypt( $salt || \%params, $plain, [ $cipher ] );
+   my $encoded = encrypt( $salt || \%params, $plain );
 
 Encrypts the plain text passed in the C<$plain> argument and returns
 it Base64 encoded. By default L<Crypt::Twofish> is used to do the
-encryption. The optional C<$cipher> argument overrides this
+encryption. The optional C<< $params->{cipher} >> attribute overrides this
 
 =head2 cipher_list
 

@@ -1,55 +1,57 @@
-# @(#)$Id: Usul.pm 209 2012-09-08 11:41:48Z pjf $
+# @(#)$Id: Usul.pm 229 2012-11-07 08:25:00Z pjf $
 
 package Class::Usul;
 
 use strict;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 209 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 229 $ =~ /\d+/gmx );
 
 use 5.010;
 use Class::Usul::Moose;
 use Class::Usul::Constants;
-use Class::Usul::Functions qw(arg_list data_dumper merge_attributes);
-use Class::Usul::Config;
+use Class::Usul::Functions qw(data_dumper merge_attributes throw);
 use Class::Usul::L10N;
 use Class::Usul::Log;
 use IPC::SRLock;
 
-coerce ConfigType, from HashRef, via { Class::Usul::Config->new( $_ ) };
+has '_config'        => is => 'ro',   isa => HashRef, default => sub { {} },
+   init_arg          => 'config';
 
-has '_config'    => is => 'ro',   isa => ConfigType, coerce => TRUE,
-   handles       => [ qw(prefix salt) ], init_arg => 'config',
-   reader        => 'config', required => TRUE;
+has 'config_class'   => is => 'ro',   isa => LoadableClass, coerce => TRUE,
+   documentation     => 'Class used to load and parse config',
+   default           => sub { 'Class::Usul::Config' };
 
-has 'debug',     => is => 'rw',   isa => Bool, default => FALSE,
-   documentation => 'Turn debugging on. Prompts if interactive',
-   trigger       => TRUE;
+has '_config_parser' => is => 'lazy', isa => ConfigType,
+   default           => sub { $_[ 0 ]->config_class->new( $_[ 0 ]->_config ) },
+   handles           => [ qw(prefix salt) ], init_arg => undef,
+   reader            => 'config';
 
-has 'encoding'   => is => 'lazy', isa => EncodingType, coerce => TRUE,
-   documentation => 'Decode/encode input/output using this encoding',
-   default       => sub { $_[ 0 ]->config->encoding };
+has 'debug',         => is => 'rw',   isa => Bool, default => FALSE,
+   documentation     => 'Turn debugging on. Prompts if interactive',
+   trigger           => TRUE;
 
-has '_l10n'      => is => 'lazy', isa => L10NType,
-   default       => sub { Class::Usul::L10N->new( builder => $_[ 0 ] ) },
-   init_arg      => 'l10n', reader => 'l10n';
+has 'encoding'       => is => 'lazy', isa => EncodingType, coerce => TRUE,
+   documentation     => 'Decode/encode input/output using this encoding',
+   default           => sub { $_[ 0 ]->config->encoding };
 
-has '_lock'      => is => 'lazy', isa => LockType,
-   init_arg      => 'lock', reader => 'lock';
+has '_l10n'          => is => 'lazy', isa => L10NType,
+   default           => sub { Class::Usul::L10N->new( builder => $_[ 0 ] ) },
+   handles           => [ qw(localize) ], init_arg => 'l10n', reader => 'l10n';
 
-has '_log'       => is => 'lazy', isa => LogType,
-   default       => sub { Class::Usul::Log->new( builder => $_[ 0 ] ) },
-   init_arg      => 'log',  reader => 'log';
+has '_lock'          => is => 'lazy', isa => LockType,
+   init_arg          => 'lock', reader => 'lock';
+
+has '_log'           => is => 'lazy', isa => LogType,
+   default           => sub { Class::Usul::Log->new( builder => $_[ 0 ] ) },
+   init_arg          => 'log',  reader => 'log';
+
+sub new_from_class { # Instantiate from a class name with a config method
+   my ($self, $app_class) = @_; my $class = blessed $self || $self;
+
+   return $class->new( __get_attr_from_class( $app_class ) );
+}
 
 sub dumper {
    my $self = shift; return data_dumper( @_ ); # Damm handy for development
-}
-
-sub loc {
-   my ($self, $key, $opts) = @_;
-
-   $opts->{domain_names} ||= [ DEFAULT_L10N_DOMAIN, $opts->{ns} ];
-   $opts->{locale      } ||= $opts->{language};
-
-   return $self->l10n->localize( $key, $opts );
 }
 
 # Private methods
@@ -65,12 +67,31 @@ sub _build__lock { # There is only one lock object. Instantiate on first use
    return $cache = IPC::SRLock->new( $attr );
 }
 
-sub _trigger_debug {
+sub _trigger_debug { # Propagate the debug state to child objects
    my ($self, $debug) = @_;
 
    $self->l10n->debug( $debug ); $self->lock->debug( $debug );
 
    return;
+}
+
+# Private functions
+
+sub __get_attr_from_class { # Coerce a hash ref from a string
+   my $class = shift;
+
+   defined $class or throw 'Application class not defined';
+   $class->can( q(config) )
+      or throw error => 'Class [_1] is missing the config method',
+               args  => [ $class ];
+
+   my $config = { %{ $class->config || {} } };
+   my $attr   = { %{ delete $config->{ 'Plugin::Usul' } || {} } };
+   my $name   = delete $config->{name}; $config->{appclass} ||= $name;
+
+   $attr->{config} ||= $config;
+   $attr->{debug } ||= $class->can( q(debug) ) ? $class->debug : FALSE;
+   return $attr;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -87,7 +108,7 @@ Class::Usul - A base class other packages
 
 =head1 Version
 
-Describes Class::Usul version 0.8.$Revision: 209 $
+Describes Class::Usul version 0.9.$Revision: 229 $
 
 =head1 Synopsis
 
@@ -112,6 +133,14 @@ The C<$attr> argument is a hash ref containing the object attributes.
 The C<config> attribute should be a hash ref that may define key/value pairs
 that provide filesystem paths for the temporary directory etc.
 
+=item config_class
+
+Defaults to L<Class::Usul::Config> and is of type C<LoadableClass>. An
+instance of this class is loaded and instantiated using the hash ref
+in the C<config> attribute. It provides accessor methods with symbol
+inflation and smart defaults. Add configuration attributes by
+subclassing the default
+
 =item debug
 
 Defaults to false
@@ -126,18 +155,20 @@ Defined the application context log. Defaults to a L<Class::Null> object
 
 =head1 Subroutines/Methods
 
+=head2 new_from_class
+
+   $usul_object = $self->new_from_class( $application_class ):
+
+Returns a new instance of self starting only with an application class name.
+The application class in expected to provide C<config> and C<debug> class
+methods. The hash ref C<< $application_class->config >> will be passed as
+the C<config> attribute to the constructor for this class
+
 =head2 dumper
 
    $self->dumper( $some_var );
 
 Use L<Data::Printer> to dump arguments for development purposes
-
-=head2 loc
-
-   $local_text = $self->loc( $key, \%options );
-
-Localizes the message. Calls L<Class::Usul::L10N/localize>. Adds the constant
-C<DEFAULT_L10N_DOMAINS> to the list of domain files that are searched
 
 =head2 _build__lock
 
@@ -223,3 +254,4 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE
 # mode: perl
 # tab-width: 3
 # End:
+

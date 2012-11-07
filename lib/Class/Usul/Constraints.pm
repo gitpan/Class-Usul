@@ -1,10 +1,10 @@
-# @(#)$Id: Constraints.pm 206 2012-09-06 17:31:12Z pjf $
+# @(#)$Id: Constraints.pm 223 2012-10-31 01:24:47Z pjf $
 
 package Class::Usul::Constraints;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 206 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 223 $ =~ /\d+/gmx );
 
 use Encode                      qw(find_encoding);
 use Class::Load                 qw(load_first_existing_class);
@@ -66,16 +66,9 @@ sub __has_log_level_methods {
 }
 
 sub __has_min_config_attributes {
-   my $obj  = shift;
+   my $obj = shift; my @config_attr = ( qw(appldir home root tempdir vardir) );
 
-   ($obj->can( q(meta) ) and $obj->meta->can( q(get_attribute_list) ))
-      or return FALSE;
-
-   my $attr = { map { $_ => 1 } $obj->meta->get_attribute_list };
-
-   my @config_attr = ( qw(appldir home root tempdir vardir) );
-
-   exists $attr->{ $_ } or return FALSE for (@config_attr);
+   $obj->can( $_ ) or return FALSE for (@config_attr);
 
    return TRUE;
 }
@@ -96,7 +89,7 @@ Class::Usul::Constraints - Defines Moose type constraints
 
 =head1 Version
 
-This document describes Class::Usul::Constraints version 0.8.$Revision: 206 $
+This document describes Class::Usul::Constraints version 0.9.$Revision: 223 $
 
 =head1 Synopsis
 

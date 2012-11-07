@@ -2,7 +2,7 @@ Name
     Class::Usul - A base class other packages
 
 Version
-    Describes Class::Usul version 0.8.$Revision: 209 $
+    Describes Class::Usul version 0.9.$Revision: 229 $
 
 Synopsis
        use Class::Usul::Moose;
@@ -22,6 +22,13 @@ Configuration and Environment
        The "config" attribute should be a hash ref that may define key/value
        pairs that provide filesystem paths for the temporary directory etc.
 
+    config_class
+       Defaults to Class::Usul::Config and is of type "LoadableClass". An
+       instance of this class is loaded and instantiated using the hash ref
+       in the "config" attribute. It provides accessor methods with symbol
+       inflation and smart defaults. Add configuration attributes by
+       subclassing the default
+
     debug
        Defaults to false
 
@@ -31,17 +38,18 @@ Configuration and Environment
     Defined the application context log. Defaults to a Class::Null object
 
 Subroutines/Methods
+  new_from_class
+       $usul_object = $self->new_from_class( $application_class ):
+
+    Returns a new instance of self starting only with an application class
+    name. The application class in expected to provide "config" and "debug"
+    class methods. The hash ref "$application_class->config" will be passed
+    as the "config" attribute to the constructor for this class
+
   dumper
        $self->dumper( $some_var );
 
     Use Data::Printer to dump arguments for development purposes
-
-  loc
-       $local_text = $self->loc( $key, \%options );
-
-    Localizes the message. Calls "localize" in Class::Usul::L10N. Adds the
-    constant "DEFAULT_L10N_DOMAINS" to the list of domain files that are
-    searched
 
   _build__lock
     Defines the lock object. This instantiates on first use

@@ -1,17 +1,19 @@
-# @(#)$Id: Table.pm 206 2012-09-06 17:31:12Z pjf $
+# @(#)$Id: Table.pm 223 2012-10-31 01:24:47Z pjf $
 
 package Class::Usul::Response::Table;
 
 use strict;
-use version; our $VERSION = qv( sprintf '0.8.%d', q$Rev: 206 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 223 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
+use MooseX::Aliases;
 
 has 'caption'  => is => 'ro', isa => Str,           default => q();
 has 'class'    => is => 'ro', isa => HashRef | Str, default => q();
 has 'classes'  => is => 'ro', isa => HashRef,       default => sub { {} };
 has 'count'    => is => 'ro', isa => Int,           default => 0;
-has 'flds'     => is => 'ro', isa => ArrayRef,      default => sub { [] };
+has 'fields'   => is => 'ro', isa => ArrayRef,      default => sub { [] },
+   alias       => q(flds);
 has 'hclass'   => is => 'ro', isa => HashRef,       default => sub { {} };
 has 'labels'   => is => 'ro', isa => HashRef,       default => sub { {} };
 has 'sizes'    => is => 'ro', isa => HashRef,       default => sub { {} };
@@ -34,7 +36,7 @@ Class::Usul::Response::Table - Data structure for the table widget
 
 =head1 Version
 
-0.8.$Revision: 206 $
+0.9.$Revision: 223 $
 
 =head1 Synopsis
 
@@ -48,7 +50,9 @@ Response class for the table widget in L<HTML::FormWidgets>
 
 =head1 Subroutines/Methods
 
-None
+=head2 flds
+
+Deprecated use C<fields> instead
 
 =head1 Diagnostics
 
