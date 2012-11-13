@@ -1,10 +1,10 @@
-# @(#)$Id: Debian.pm 223 2012-10-31 01:24:47Z pjf $
+# @(#)$Id: Debian.pm 235 2012-11-13 20:51:23Z pjf $
 
 package Class::Usul::Plugin::Build::Debian;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 223 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 235 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions qw(throw);
@@ -44,16 +44,17 @@ sub ACTION_distclean {
 sub ACTION_debian  {
    my $self = shift;
 
+   $ENV{BUILDING_DEBIAN} = TRUE;
+   $ENV{DEB_BUILD_OPTIONS} = q(nocheck);
+
+   $self->depends_on( q(debianclean) );
+   $self->depends_on( q(install_local_deps) );
+   $self->depends_on( q(manifest) );
+   $self->depends_on( q(build) );
+
    try {
       my $cfg = $self->_get_config;
 
-      $ENV{BUILDING_DEBIAN} = TRUE;
-      $ENV{DEB_BUILD_OPTIONS} = q(nocheck);
-
-      $self->depends_on( q(debianclean) );
-      $self->depends_on( q(install_local_deps) );
-      $self->depends_on( q(manifest) );
-      $self->depends_on( q(build) );
       $self->_ask_questions( $cfg );
       $self->_create_debian_package( $cfg );
    }
@@ -463,7 +464,7 @@ Class::Usul::Build::Debian - Create a Debian package from a standalone applicati
 
 =head1 Version
 
-0.9.$Revision: 223 $
+0.10.$Revision: 235 $
 
 =head1 Synopsis
 

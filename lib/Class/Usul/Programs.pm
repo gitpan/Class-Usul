@@ -1,10 +1,10 @@
-# @(#)$Id: Programs.pm 229 2012-11-07 08:25:00Z pjf $
+# @(#)$Id: Programs.pm 235 2012-11-13 20:51:23Z pjf $
 
 package Class::Usul::Programs;
 
 use strict;
 use attributes ();
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 229 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 235 $ =~ /\d+/gmx );
 
 use Class::Inspector;
 use Class::Usul::IPC;
@@ -19,6 +19,7 @@ use Class::Usul::Functions qw(abs_path app_prefix arg_list assert_directory
                               untaint_identifier untaint_path);
 use Encode                 qw(decode);
 use English                qw(-no_match_vars);
+use File::Basename         qw(dirname);
 use File::Spec::Functions  qw(catdir catfile);
 use IO::Interactive        qw(is_interactive);
 use List::Util             qw(first);
@@ -129,9 +130,7 @@ sub BUILD {
 }
 
 sub add_leader {
-   my ($self, $text, $args) = @_; $args ||= {};
-
-   $text = $self->loc( $text || '[no message]', $args->{args} || [] );
+   my ($self, $text, $args) = @_; $text or return NUL; $args ||= {};
 
    my $leader = exists $args->{no_lead}
               ? NUL : (ucfirst $self->config->name).BRK;
@@ -153,7 +152,9 @@ sub anykey {
 }
 
 sub can_call {
-   return (is_member $_[ 1 ], __list_methods_of( $_[ 0 ] )) ? TRUE : FALSE;
+   return ($_[ 0 ]->can( $_[ 1 ] ) && (is_member $_[ 1 ],
+                                       __list_methods_of( $_[ 0 ] )))
+        ? TRUE : FALSE;
 }
 
 sub debug_flag {
@@ -170,25 +171,26 @@ sub dump_self : method {
 sub error {
    my ($self, $err, $args) = @_;
 
-   $self->log->error( $_ ) for (split m{ \n }mx, NUL.$err);
+   my $text = $self->loc( $err || '[no message]', $args->{args} || [] );
 
-   __print_fh( \*STDERR, $self->add_leader( $err, $args )."\n" );
+   $self->log->error( $_ ) for (split m{ \n }mx, NUL.$text);
+
+   __print_fh( \*STDERR, $self->add_leader( $text, $args )."\n" );
+   $self->debug and __output_stacktrace( $err );
    return;
 }
 
 sub fatal {
    my ($self, $err, $args) = @_; my (undef, $file, $line) = caller 0;
 
-   $err ||= 'unknown'; my $posn = ' at '.abs_path( $file )." line ${line}";
+   my $posn = ' at '.abs_path( $file )." line ${line}";
 
-   $self->log->alert( $_ ) for (split m{ \n }mx, $err.$posn);
+   my $text = $self->loc( $err || '[no message]', $args->{args} || [] );
 
-   __print_fh( \*STDERR, $self->add_leader( $err, $args ).$posn."\n" );
+   $self->log->alert( $_ ) for (split m{ \n }mx, $text.$posn);
 
-   $err and blessed $err
-        and $err->can( q(stacktrace) )
-        and __print_fh( \*STDERR, $err->stacktrace."\n" );
-
+   __print_fh( \*STDERR, $self->add_leader( $text, $args ).$posn."\n" );
+   __output_stacktrace( $err );
    exit FAILED;
 }
 
@@ -253,11 +255,13 @@ sub get_option {
 }
 
 sub info {
-   my ($self, $msg, $args) = @_;
+   my ($self, $text, $args) = @_;
 
-   $self->log->info( $_ ) for (split m{ [\n] }mx, $msg);
+   $text = $self->loc( $text || '[no message]', $args->{args} || [] );
 
-   $self->quiet or say $self->add_leader( $msg, $args );
+   $self->log->info( $_ ) for (split m{ [\n] }mx, $text);
+
+   $self->quiet or say $self->add_leader( $text, $args );
    return;
 }
 
@@ -291,6 +295,8 @@ sub output {
 
    $self->quiet and return; $args->{cl} and say;
 
+   $text = $self->loc( $text || '[no message]', $args->{args} || [] );
+
    say $self->add_leader( $text, $args ); $args->{nl} and say;
 
    return;
@@ -305,35 +311,27 @@ sub quiet {
 }
 
 sub run {
-   my $self = shift; my ($rv, $text);
+   my $self  = shift; my $method = $self->_get_run_method; my $rv;
 
-   my $method = $self->method or $self->_output_usage( 0 );
+   my $text  = 'Started by '.$self->logname.' Version '.$self->VERSION.SPC;
+      $text .= 'Pid '.(abs $PID);
 
-   $text  = 'Started by '.$self->logname.' Version '.$self->VERSION.SPC;
-   $text .= 'Pid '.(abs $PID);
    $self->output( $text );
 
-   if ($self->can( $method ) and $self->can_call( $method )) {
-      umask $self->mode;
-
+   if ($self->can_call( $method )) {
       my $params = exists $self->params->{ $method }
                  ? $self->params->{ $method } : [];
+
+      umask $self->mode;
 
       try { defined ($rv = $self->$method( @{ $params } ))
                or throw error => 'Method [_1] return value undefined',
                         args  => [ $method ];
       }
-      catch {
-         my $e = exception $_;
-
-         $e->out and $self->output( $e->out );
-         $self->error( $e->error, { args => $e->args } );
-         $self->debug and __print_fh( \*STDERR, $e->stacktrace."\n" );
-         $rv = $e->rv || (defined $e->rv ? FAILED : UNDEFINED_RV);
-      };
+      catch { $rv = $self->_catch_run_exception( $_ ) };
    }
    else {
-      $self->error( "Method ${method} not defined in class ".(blessed $self) );
+      $self->error( 'Class '.(blessed $self)." method ${method} not found" );
       $rv = UNDEFINED_RV;
    }
 
@@ -352,17 +350,19 @@ sub run {
 }
 
 sub void : method { # Cannot throw from around run. Stuffs up the frame stack
-   $_[ 1 ] or throw error => 'No method specified';
+   $_[ 1 ] or $_[ 0 ]->_output_usage( 0 );
    throw error => 'Method [_1] unknown', args => [ $_[ 1 ] ];
    return; # Never reached
 }
 
 sub warning {
-   my ($self, $err, $args) = @_;
+   my ($self, $text, $args) = @_;
 
-   $self->log->warn( $_ ) for (split m{ \n }mx, $err);
+   $text = $self->loc( $text || '[no message]', $args->{args} || [] );
 
-   $self->quiet or say $self->add_leader( $err, $args );
+   $self->log->warn( $_ ) for (split m{ \n }mx, $text);
+
+   $self->quiet or say $self->add_leader( $text, $args );
    return;
 }
 
@@ -424,12 +424,19 @@ sub _build__os {
    return $cfg->{os} || {};
 }
 
+sub _catch_run_exception {
+   my ($self, $error) = @_; my $e = exception $error;
+
+   $e->out and $self->output( $e->out );
+   $self->error( $e->error, { args => $e->args } );
+   $self->debug and __print_fh( \*STDERR, $e->stacktrace."\n" );
+
+   return $e->rv || (defined $e->rv ? FAILED : UNDEFINED_RV);
+}
+
 sub _dont_ask {
    return $_[ 0 ]->debug || $_[ 0 ]->help_flag || $_[ 0 ]->help_options
        || $_[ 0 ]->help_manual || ! is_interactive();
-}
-
-sub _getopt_full_usage { # Required to stop MX::Getopt from printing usage
 }
 
 sub _get_debug_option {
@@ -438,6 +445,24 @@ sub _get_debug_option {
    ($self->nodebug or $self->_dont_ask) and return $self->debug;
 
    return $self->yorn( 'Do you want debugging turned on', FALSE, TRUE );
+}
+
+sub _get_run_method {
+   my $self = shift; my $method = $self->method;
+
+   unless ($method) {
+      if ($method = $self->extra_argv->[ 0 ] and $self->can_call( $method )) {
+         shift @{ $self->extra_argv };
+      }
+      else { $method = NUL }
+   }
+
+   $method ||= 'void'; $method eq 'void' and $self->quiet( TRUE );
+
+   return $method;
+}
+
+sub _getopt_full_usage { # Required to stop MX::Getopt from printing usage
 }
 
 sub _man_page_from {
@@ -596,6 +621,15 @@ sub __map_prompt_args {
    return $args;
 }
 
+sub __output_stacktrace {
+   my $e = shift;
+
+   $e and blessed $e and $e->can( q(stacktrace) )
+      and __print_fh( \*STDERR, $e->stacktrace );
+
+   return;
+}
+
 sub __print_fh {
    my ($handle, $text) = @_;
 
@@ -702,7 +736,7 @@ Class::Usul::Programs - Provide support for command line programs
 
 =head1 Version
 
-This document describes Class::Usul::Programs version 0.9.$Revision: 229 $
+This document describes Class::Usul::Programs version 0.10.$Revision: 235 $
 
 =head1 Synopsis
 

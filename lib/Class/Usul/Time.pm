@@ -1,10 +1,10 @@
-# @(#)$Id: Time.pm 223 2012-10-31 01:24:47Z pjf $
+# @(#)$Id: Time.pm 235 2012-11-13 20:51:23Z pjf $
 
 package Class::Usul::Time;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 223 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 235 $ =~ /\d+/gmx );
 
 use Date::Format  ();
 use Time::HiRes qw(usleep);
@@ -17,7 +17,7 @@ BEGIN {
    @_functions = ( qw(nap str2date_time str2time time2str) );
 }
 
-use Sub::Exporter -setup => {
+use Sub::Exporter::Progressive -setup => {
    exports => [ @_functions ],
    groups  => { default => [ qw(str2time time2str) ], },
 };
@@ -267,7 +267,7 @@ Class::Usul::Time - Class methods for date and time manipulation
 
 =head1 Version
 
-$Revision: 223 $
+$Revision: 235 $
 
 =head1 Synopsis
 

@@ -1,8 +1,8 @@
-# @(#)$Id: 18programs.t 223 2012-10-31 01:24:47Z pjf $
+# @(#)$Id: 18programs.t 235 2012-11-13 20:51:23Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 223 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 235 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -39,7 +39,7 @@ is $prog->config->script, $name.q(.t), 'Config->script';
 
 is $prog->config->name, $name, 'Config->name';
 
-is $prog->add_leader(), "${name}: [no message]", 'Default leader';
+is $prog->add_leader(), '', 'Default leader';
 
 is $prog->add_leader( 'Dummy' ), '18programs: Dummy', 'Text plus leader';
 

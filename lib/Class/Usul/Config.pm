@@ -1,15 +1,16 @@
-# @(#)$Id: Config.pm 223 2012-10-31 01:24:47Z pjf $
+# @(#)$Id: Config.pm 235 2012-11-13 20:51:23Z pjf $
 
 package Class::Usul::Config;
 
 use strict;
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 223 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 235 $ =~ /\d+/gmx );
 
 use Class::Usul::File;
 use Class::Usul::Moose;
 use Class::Usul::Constants;
 use Class::Usul::Functions       qw(app_prefix class2appdir home2appldir
-                                    is_arrayref split_on__ untaint_path);
+                                    is_arrayref split_on__ split_on_dash
+                                    untaint_path);
 use Config;
 use English                      qw(-no_match_vars);
 use File::Basename               qw(basename dirname);
@@ -144,7 +145,7 @@ sub _build_ctlfile {
 sub _build_ctrldir {
    my $dir = $_[ 0 ]->_inflate_path( $_[ 1 ], qw(vardir etc) );
 
-   return -d $dir ? $dir : $_[ 0 ]->_inflate_path( $_[ 1 ], q(vardir) );
+   return -d $dir ? $dir : $_[ 0 ]->_inflate_path( $_[ 1 ], qw(appldir etc) );
 }
 
 sub _build_dbasedir {
@@ -182,7 +183,7 @@ sub _build_logsdir {
 sub _build_name {
    my $name = basename( $_[ 0 ]->_inflate_path( $_[ 1 ], q(pathname) ), EXTNS );
 
-   return (split_on__ $name, 1) || $name;
+   return (split_on__ $name, 1) || (split_on_dash $name, 1) || $name;
 }
 
 sub _build_pathname {
@@ -306,7 +307,7 @@ Class::Usul::Config - Inflate config values
 
 =head1 Version
 
-Describes Class::Usul::Config version 0.9.$Revision: 223 $
+Describes Class::Usul::Config version 0.10.$Revision: 235 $
 
 =head1 Synopsis
 

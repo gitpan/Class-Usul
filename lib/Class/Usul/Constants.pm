@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 226 2012-11-01 21:30:06Z pjf $
+# @(#)$Id: Constants.pm 235 2012-11-13 20:51:23Z pjf $
 
 package Class::Usul::Constants;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 226 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 235 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
@@ -31,7 +31,7 @@ BEGIN {
                       UNTAINT_PATH UUID_PATH WIDTH YES) );
 }
 
-use Sub::Exporter -setup => {
+use Sub::Exporter::Progressive -setup => {
    exports => [ @_constants ], groups => { default => [ @_constants ], },
 };
 
@@ -46,7 +46,7 @@ sub HASH     () { q(HASH)            }
 sub LANG     () { q(en)              }
 sub LBRACE   () { q({)               }
 sub LOCALIZE () { q([_)              }
-sub MODE     () { oct q(007)         }
+sub MODE     () { oct q(027)         }
 sub NO       () { q(n)               }
 sub NUL      () { q()                }
 sub OK       () { 0                  }
@@ -91,7 +91,7 @@ Class::Usul::Constants - Definitions of constant values
 
 =head1 Version
 
-0.9.$Rev: 226 $
+0.10.$Rev: 235 $
 
 =head1 Synopsis
 

@@ -1,11 +1,11 @@
-# @(#)$Id: Build.pm 226 2012-11-01 21:30:06Z pjf $
+# @(#)$Id: Build.pm 235 2012-11-13 20:51:23Z pjf $
 
 package Class::Usul::Build;
 
 use strict;
 use warnings;
 use feature qw(state);
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 226 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 235 $ =~ /\d+/gmx );
 use parent  qw(Module::Build);
 use lib;
 
@@ -1120,7 +1120,7 @@ Class::Usul::Build - M::B utility methods
 
 =head1 Version
 
-This document describes Class::Usul::Build version 0.9.$Revision: 226 $
+This document describes Class::Usul::Build version 0.10.$Revision: 235 $
 
 =head1 Synopsis
 

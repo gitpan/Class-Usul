@@ -1,10 +1,10 @@
-# @(#)$Id: Moose.pm 223 2012-10-31 01:24:47Z pjf $
+# @(#)$Id: Moose.pm 235 2012-11-13 20:51:23Z pjf $
 
 package Class::Usul::Moose;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 223 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 235 $ =~ /\d+/gmx );
 use feature ();
 use namespace::autoclean ();
 no  bareword::filehandles;
@@ -78,7 +78,7 @@ Class::Usul::Moose - Moose, the way I like it.
 
 =head1 Version
 
-0.9.$Revision: 223 $
+0.10.$Revision: 235 $
 
 =head1 Synopsis
 

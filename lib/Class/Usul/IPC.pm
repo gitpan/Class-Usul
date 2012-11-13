@@ -1,9 +1,9 @@
-# @(#)$Id: IPC.pm 223 2012-10-31 01:24:47Z pjf $
+# @(#)$Id: IPC.pm 235 2012-11-13 20:51:23Z pjf $
 
 package Class::Usul::IPC;
 
 use strict;
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 223 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 235 $ =~ /\d+/gmx );
 
 use Class::Null;
 use Class::Usul::Moose;
@@ -552,7 +552,7 @@ Class::Usul::IPC - List/Create/Delete processes
 
 =head1 Version
 
-0.9.$Revision: 223 $
+0.10.$Revision: 235 $
 
 =head1 Synopsis
 

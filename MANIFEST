@@ -6,6 +6,7 @@ inc/Bob.pm
 inc/CPANTesting.pm
 inc/M_B_Base.patch
 inc/M_B_PodParser.patch
+inc/SubClass.pm
 lib/Class/Usul.pm
 lib/Class/Usul/Build.pm
 lib/Class/Usul/Build/InstallActions.pm

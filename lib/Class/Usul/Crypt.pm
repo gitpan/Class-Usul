@@ -1,11 +1,11 @@
-# @(#)$Id: Crypt.pm 229 2012-11-07 08:25:00Z pjf $
+# @(#)$Id: Crypt.pm 235 2012-11-13 20:51:23Z pjf $
 
 package Class::Usul::Crypt;
 
 use strict;
 use warnings;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.9.%d', q$Rev: 229 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 235 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions qw(create_token is_coderef is_hashref);
@@ -14,7 +14,7 @@ use English qw(-no_match_vars);
 use MIME::Base64;
 use Sys::Hostname;
 
-use Sub::Exporter -setup => {
+use Sub::Exporter::Progressive -setup => {
    exports => [ qw(decrypt encrypt cipher_list default_cipher) ],
    groups  => { default => [], },
 };
@@ -22,11 +22,11 @@ use Sub::Exporter -setup => {
 my $SEED = do { local $RS = undef; <DATA> };
 
 sub decrypt (;$$) {
-   $_[ 0 ] ? __cipher( $_[ 0 ] )->decrypt( decode_base64( $_[ 1 ] ) ) : $_[ 0 ];
+   __cipher( $_[ 0 ] )->decrypt( decode_base64( $_[ 1 ] ) );
 }
 
 sub encrypt (;$$) {
-   $_[ 0 ] ? encode_base64( __cipher( $_[ 0 ] )->encrypt( $_[ 1 ] ) ) : $_[ 0 ];
+   encode_base64( __cipher( $_[ 0 ] )->encrypt( $_[ 1 ] ), NUL );
 }
 
 sub cipher_list () {
@@ -81,7 +81,7 @@ Class::Usul::Crypt - Encryption/decryption functions
 
 =head1 Version
 
-0.9.$Revision: 229 $
+0.10.$Revision: 235 $
 
 =head1 Synopsis
 
