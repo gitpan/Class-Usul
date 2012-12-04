@@ -1,9 +1,9 @@
-# @(#)$Id: Log.pm 235 2012-11-13 20:51:23Z pjf $
+# @(#)$Id: Log.pm 236 2012-12-04 20:05:42Z pjf $
 
 package Class::Usul::Log;
 
 use strict;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 235 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 236 $ =~ /\d+/gmx );
 
 use Class::Null;
 use Class::Usul::Moose;
@@ -76,6 +76,10 @@ sub BUILD {
    return;
 }
 
+sub fh {
+   return $_[ 0 ]->_log->output( 'file-out' )->{fh};
+}
+
 # Private methods
 
 sub _build__log {
@@ -86,6 +90,7 @@ sub _build__log {
 
    ($logfile and -d dirname( NUL.$logfile )) or return Class::Null->new;
 
+   $fattr->{alias   }   = 'file-out';
    $fattr->{filename}   = NUL.$logfile;
    $fattr->{maxlevel}   = $self->_debug_flag
                         ? 'debug' : $fattr->{maxlevel} || 'info';
@@ -108,7 +113,7 @@ Class::Usul::Log - Create methods for each logging level that encode their outpu
 
 =head1 Version
 
-0.10.$Revision: 235 $
+0.11.$Revision: 236 $
 
 =head1 Synopsis
 
@@ -173,6 +178,10 @@ Creates a set of methods defined by the C<LOG_LEVELS> constant. The
 method expects C<< $self->log >> and C<< $self->encoding >> to be set.
 It encodes the output string prior calling the log method at the given
 level
+
+=head2 fh
+
+Return the loggers file handle
 
 =head1 Diagnostics
 

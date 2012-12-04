@@ -2,7 +2,7 @@ Name
     Class::Usul - A base class other packages
 
 Version
-    Describes Class::Usul version 0.10.$Revision: 235 $
+    Describes Class::Usul version 0.11.$Revision: 236 $
 
 Synopsis
        use Class::Usul::Moose;

@@ -1,10 +1,10 @@
-# @(#)$Id: Meta.pm 235 2012-11-13 20:51:23Z pjf $
+# @(#)$Id: Meta.pm 236 2012-12-04 20:05:42Z pjf $
 
 package Class::Usul::Response::Meta;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.10.%d', q$Rev: 235 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 236 $ =~ /\d+/gmx );
 
 use Moose;
 use YAML::Syck;
@@ -34,7 +34,7 @@ Class::Usul::Response::Meta - Class for CPAN Meta file
 
 =head1 Version
 
-This document describes Class::Usul::Response::Meta version 0.10.$Revision: 235 $
+This document describes Class::Usul::Response::Meta version 0.11.$Revision: 236 $
 
 =head1 Synopsis
 
