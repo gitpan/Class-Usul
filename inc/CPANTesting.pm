@@ -1,4 +1,4 @@
-# @(#)$Id: CPANTesting.pm 236 2012-12-04 20:05:42Z pjf $
+# @(#)$Id: CPANTesting.pm 238 2012-12-07 15:43:47Z pjf $
 # Bob-Version: 1.7
 
 package CPANTesting;
@@ -21,10 +21,11 @@ sub test_exceptions {
 
    $p->{stop_tests} and return 'CPAN Testing stopped in Build.PL';
 
-   $osname eq q(mirbsd)     and return 'Mirbsd  OS unsupported';
-   $host   eq q(slack64)    and return "Stopped Bingos ${host}";
-   $host   eq q(falco)      and return "Stopped Bingos ${host}";
-   $host   eq q(linux-siva) and return "Stopped Kimmel ${host} - bad clock";
+   $osname eq q(mirbsd)          and return 'Mirbsd  OS unsupported';
+   $host   eq q(slack64)         and return "Stopped Bingos ${host}";
+   $host   eq q(falco)           and return "Stopped Bingos ${host}";
+   $host   eq q(linux-siva)      and return "Stopped Kimmel ${host} bad clock";
+   $host   =~ m{ nigelhorne }msx and return "Stopped Horne bad Perl version";
    return 0;
 }
 
