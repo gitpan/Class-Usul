@@ -1,9 +1,8 @@
-# @(#)$Id: File.pm 236 2012-12-04 20:05:42Z pjf $
+# @(#)$Id: File.pm 240 2012-12-09 20:09:04Z pjf $
 
 package Class::Usul::File;
 
-use strict;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 236 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 240 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -129,7 +128,7 @@ Class::Usul::File - File and directory IO base class
 
 =head1 Version
 
-0.6.$Revision: 236 $
+0.6.$Revision: 240 $
 
 =head1 Synopsis
 

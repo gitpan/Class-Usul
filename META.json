@@ -102,7 +102,7 @@
    "provides" : {
       "Class::Usul" : {
          "file" : "lib/Class/Usul.pm",
-         "version" : "v0.11.238"
+         "version" : "v0.11.240"
       },
       "Class::Usul::Build" : {
          "file" : "lib/Class/Usul/Build.pm",
@@ -122,11 +122,11 @@
       },
       "Class::Usul::Config" : {
          "file" : "lib/Class/Usul/Config.pm",
-         "version" : "v0.11.236"
+         "version" : "v0.11.240"
       },
       "Class::Usul::Config::Programs" : {
          "file" : "lib/Class/Usul/Config/Programs.pm",
-         "version" : "v0.8.229"
+         "version" : "v0.11.240"
       },
       "Class::Usul::Constants" : {
          "file" : "lib/Class/Usul/Constants.pm",
@@ -142,7 +142,7 @@
       },
       "Class::Usul::File" : {
          "file" : "lib/Class/Usul/File.pm",
-         "version" : "v0.11.236"
+         "version" : "v0.11.240"
       },
       "Class::Usul::Functions" : {
          "file" : "lib/Class/Usul/Functions.pm",
@@ -150,15 +150,15 @@
       },
       "Class::Usul::IPC" : {
          "file" : "lib/Class/Usul/IPC.pm",
-         "version" : "v0.11.238"
+         "version" : "v0.11.240"
       },
       "Class::Usul::L10N" : {
          "file" : "lib/Class/Usul/L10N.pm",
-         "version" : "v0.11.236"
+         "version" : "v0.11.240"
       },
       "Class::Usul::Log" : {
          "file" : "lib/Class/Usul/Log.pm",
-         "version" : "v0.11.236"
+         "version" : "v0.11.240"
       },
       "Class::Usul::Moose" : {
          "file" : "lib/Class/Usul/Moose.pm",
@@ -170,19 +170,19 @@
       },
       "Class::Usul::Programs" : {
          "file" : "lib/Class/Usul/Programs.pm",
-         "version" : "v0.11.236"
+         "version" : "v0.11.240"
       },
       "Class::Usul::Response::IPC" : {
          "file" : "lib/Class/Usul/Response/IPC.pm",
-         "version" : "v0.11.236"
+         "version" : "v0.11.240"
       },
       "Class::Usul::Response::Meta" : {
          "file" : "lib/Class/Usul/Response/Meta.pm",
-         "version" : "v0.11.236"
+         "version" : "v0.11.240"
       },
       "Class::Usul::Response::Table" : {
          "file" : "lib/Class/Usul/Response/Table.pm",
-         "version" : "v0.11.236"
+         "version" : "v0.11.240"
       },
       "Class::Usul::Time" : {
          "file" : "lib/Class/Usul/Time.pm",
@@ -207,5 +207,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.11.238"
+   "version" : "0.11.240"
 }

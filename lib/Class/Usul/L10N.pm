@@ -1,9 +1,8 @@
-# @(#)$Id: L10N.pm 236 2012-12-04 20:05:42Z pjf $
+# @(#)$Id: L10N.pm 240 2012-12-09 20:09:04Z pjf $
 
 package Class::Usul::L10N;
 
-use strict;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 236 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 240 $ =~ /\d+/gmx );
 
 use Class::Null;
 use Class::Usul::Moose;
@@ -185,7 +184,7 @@ Class::Usul::L10N - Localize text strings
 
 =head1 Version
 
-0.6.$Revision: 236 $
+0.6.$Revision: 240 $
 
 =head1 Synopsis
 

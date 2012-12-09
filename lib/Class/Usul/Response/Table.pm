@@ -1,9 +1,8 @@
-# @(#)$Id: Table.pm 236 2012-12-04 20:05:42Z pjf $
+# @(#)$Id: Table.pm 240 2012-12-09 20:09:04Z pjf $
 
 package Class::Usul::Response::Table;
 
-use strict;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 236 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 240 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use MooseX::Aliases;
@@ -36,7 +35,7 @@ Class::Usul::Response::Table - Data structure for the table widget
 
 =head1 Version
 
-0.11.$Revision: 236 $
+0.11.$Revision: 240 $
 
 =head1 Synopsis
 

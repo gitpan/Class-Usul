@@ -1,10 +1,9 @@
-# @(#)$Id: Programs.pm 236 2012-12-04 20:05:42Z pjf $
+# @(#)$Id: Programs.pm 240 2012-12-09 20:09:04Z pjf $
 
 package Class::Usul::Programs;
 
-use strict;
 use attributes ();
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 236 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 240 $ =~ /\d+/gmx );
 
 use Class::Inspector;
 use Class::Usul::IPC;
@@ -742,7 +741,7 @@ Class::Usul::Programs - Provide support for command line programs
 
 =head1 Version
 
-This document describes Class::Usul::Programs version 0.11.$Revision: 236 $
+This document describes Class::Usul::Programs version 0.11.$Revision: 240 $
 
 =head1 Synopsis
 

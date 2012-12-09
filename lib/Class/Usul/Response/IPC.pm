@@ -1,12 +1,10 @@
-# @(#)$Id: IPC.pm 236 2012-12-04 20:05:42Z pjf $
+# @(#)$Id: IPC.pm 240 2012-12-09 20:09:04Z pjf $
 
 package Class::Usul::Response::IPC;
 
-use strict;
-use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 236 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 240 $ =~ /\d+/gmx );
 
-use Moose;
+use Class::Usul::Moose;
 
 has 'core'   => is => 'ro', isa => 'Int', default => 0;
 has 'out'    => is => 'ro', isa => 'Str', default => q();
@@ -30,7 +28,7 @@ Class::Usul::Response::IPC - Response class for running external programs
 
 =head1 Version
 
-0.11.$Revision: 236 $
+0.11.$Revision: 240 $
 
 =head1 Synopsis
 
