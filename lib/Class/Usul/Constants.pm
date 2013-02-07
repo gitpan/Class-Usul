@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 236 2012-12-04 20:05:42Z pjf $
+# @(#)$Id: Constants.pm 243 2013-02-07 20:24:14Z pjf $
 
 package Class::Usul::Constants;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 236 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
@@ -16,19 +16,23 @@ class_has 'Assert'          => is => 'rw', isa => 'Maybe[CodeRef]';
 class_has 'Config_Extn'     => is => 'rw', isa => 'Str',
    default                  => q(.json);
 
+class_has 'Config_Key'      => is => 'rw', isa => 'Str',
+   default                  => q(Plugin::Usul);
+
 class_has 'Exception_Class' => is => 'rw', isa => 'File::DataClass::Exception',
    default                  => q(File::DataClass::Exception);
 
 my @_constants;
 
 BEGIN {
-   @_constants = ( qw(ARRAY ASSERT BRK CODE CONFIG_EXTN DEFAULT_DIR
-                      DEFAULT_ENCODING DEFAULT_L10N_DOMAIN
-                      DIGEST_ALGORITHMS ENCODINGS EVIL EXCEPTION_CLASS EXTNS
-                      FAILED FALSE HASH LANG LBRACE LOCALIZE LOG_LEVELS
-                      MODE NO NUL OK PHASE PREFIX QUIT SEP SPC TRUE
-                      UNDEFINED_RV UNTAINT_CMDLINE UNTAINT_IDENTIFIER
-                      UNTAINT_PATH UUID_PATH WIDTH YES) );
+   @_constants = ( qw(ARRAY ASSERT BRK CODE CONFIG_EXTN CONFIG_KEY
+                      DEFAULT_DIR DEFAULT_ENCODING DEFAULT_L10N_DOMAIN
+                      DIGEST_ALGORITHMS ENCODINGS EVIL EXCEPTION_CLASS
+                      EXTNS FAILED FALSE HASH LANG LBRACE LOCALIZE
+                      LOG_LEVELS MODE NO NUL OK PHASE PREFIX QUIT SEP
+                      SPC TRUE UNDEFINED_RV UNTAINT_CMDLINE
+                      UNTAINT_IDENTIFIER UNTAINT_PATH UUID_PATH WIDTH
+                      YES) );
 }
 
 use Sub::Exporter::Progressive -setup => {
@@ -61,6 +65,7 @@ sub YES      () { q(y)               }
 
 sub ASSERT              () { __PACKAGE__->Assert || sub {} }
 sub CONFIG_EXTN         () { __PACKAGE__->Config_Extn }
+sub CONFIG_KEY          () { __PACKAGE__->Config_Key }
 sub DEFAULT_DIR         () { [ q(), qw(etc default) ] }
 sub DEFAULT_ENCODING    () { q(UTF-8) }
 sub DEFAULT_L10N_DOMAIN () { q(default) }
@@ -91,7 +96,7 @@ Class::Usul::Constants - Definitions of constant values
 
 =head1 Version
 
-0.11.$Rev: 236 $
+0.11.$Rev: 243 $
 
 =head1 Synopsis
 
@@ -128,6 +133,11 @@ String C<CODE>
 
 The default configuration file extension, F<.json>. Change this by
 setting the C<Config_Extn> class attribute
+
+=head2 CONFIG_KEY
+
+Default configuration hash key, C<Plugin::Usul>. Change this by setting
+the C<Config_Key> class attribute
 
 =head2 DEFAULT_DIR
 

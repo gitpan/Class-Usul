@@ -1,9 +1,9 @@
-# @(#)$Id: Questions.pm 236 2012-12-04 20:05:42Z pjf $
+# @(#)$Id: Questions.pm 243 2013-02-07 20:24:14Z pjf $
 
 package Class::Usul::Build::Questions;
 
 use strict;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 236 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -91,7 +91,7 @@ sub q_ver {
 
    my ($major, $minor) = split m{ \. }mx, $ver;
 
-   return $major.q(.).$minor;
+   return "${major}.${minor}";
 }
 
 1;
@@ -106,7 +106,7 @@ Class::Usul::Build::Questions - Things to ask when Build runs install
 
 =head1 Version
 
-Describes Class::Usul::Build::Questions version 0.11.$Revision: 236 $
+Describes Class::Usul::Build::Questions version 0.11.$Revision: 243 $
 
 =head1 Synopsis
 

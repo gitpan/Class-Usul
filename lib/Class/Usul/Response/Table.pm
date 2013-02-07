@@ -1,8 +1,8 @@
-# @(#)$Id: Table.pm 240 2012-12-09 20:09:04Z pjf $
+# @(#)$Id: Table.pm 243 2013-02-07 20:24:14Z pjf $
 
 package Class::Usul::Response::Table;
 
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 240 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use MooseX::Aliases;
@@ -35,7 +35,7 @@ Class::Usul::Response::Table - Data structure for the table widget
 
 =head1 Version
 
-0.11.$Revision: 240 $
+0.11.$Revision: 243 $
 
 =head1 Synopsis
 
@@ -49,9 +49,7 @@ Response class for the table widget in L<HTML::FormWidgets>
 
 =head1 Subroutines/Methods
 
-=head2 flds
-
-Deprecated use C<fields> instead
+None
 
 =head1 Diagnostics
 

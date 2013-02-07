@@ -1,9 +1,9 @@
-# @(#)$Id: Programs.pm 240 2012-12-09 20:09:04Z pjf $
+# @(#)$Id: Programs.pm 243 2013-02-07 20:24:14Z pjf $
 
 package Class::Usul::Programs;
 
 use attributes ();
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 240 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
 
 use Class::Inspector;
 use Class::Usul::IPC;
@@ -131,8 +131,8 @@ sub BUILD {
 sub add_leader {
    my ($self, $text, $args) = @_; $text or return NUL; $args ||= {};
 
-   my $leader = exists $args->{no_lead}
-              ? NUL : (ucfirst $self->config->name).BRK;
+   my $leader = exists $args->{no_lead} ? NUL
+                                        : (ucfirst $self->config->name).BRK;
 
    if ($args->{fill}) {
       my $width = $args->{width} || WIDTH;
@@ -145,7 +145,7 @@ sub add_leader {
 }
 
 sub anykey {
-   my $prompt = $_[ 1 ] || 'Press any key to continue...';
+   my $prompt = $_[ 1 ] || $_[ 0 ]->loc( 'Press any key to continue...' );
 
    return __prompt( -p => $prompt, -e => NUL, -1 => TRUE );
 }
@@ -299,6 +299,9 @@ sub output {
    say $self->add_leader( $text, $args ); $args->{nl} and say;
 
    return;
+}
+
+sub print_usage_text { # Required to stop MX::Getopt from printing usage (2)
 }
 
 sub quiet {
@@ -462,7 +465,7 @@ sub _get_run_method {
    return $method;
 }
 
-sub _getopt_full_usage { # Required to stop MX::Getopt from printing usage
+sub _getopt_full_usage { # Required to stop MX::Getopt from printing usage (1)
 }
 
 sub _man_page_from {
@@ -741,7 +744,7 @@ Class::Usul::Programs - Provide support for command line programs
 
 =head1 Version
 
-This document describes Class::Usul::Programs version 0.11.$Revision: 240 $
+This document describes Class::Usul::Programs version 0.11.$Revision: 243 $
 
 =head1 Synopsis
 
@@ -957,6 +960,12 @@ I<STDOUT>
    $self->_output_version
 
 Prints out the version of the C::U::Programs subclass and the exits
+
+=head2 print_usage_text
+
+Empty method used to override L<MooseX::Getop::Basic>'s latest API
+incantation. Used to be C<_getopt_full_usage> which we still have to
+maintain because *we* do not break backward compatibility
 
 =head2 __prompt
 

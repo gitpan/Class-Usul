@@ -1,8 +1,8 @@
-# @(#)$Id: 07podspelling.t 236 2012-12-04 20:05:42Z pjf $
+# @(#)$Id: 07podspelling.t 243 2013-02-07 20:24:14Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 236 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
 use File::Spec::Functions qw(catdir catfile updir);
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -41,6 +41,7 @@ done_testing();
 __DATA__
 flanigan
 anykey
+api
 appdir
 appldir
 argv
@@ -49,7 +50,11 @@ async
 backend
 basename
 brk
+bson
+bsonid
 buildargs
+canonicalise
+canonicalised
 changelog
 classdir
 classfile
@@ -63,9 +68,12 @@ debian
 distmeta
 distname
 extns
+fh
+fqdn
 gettext
 getopts
 hashref
+hostname
 ids
 io
 installdeps

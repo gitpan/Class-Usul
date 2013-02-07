@@ -1,8 +1,8 @@
-# @(#)$Id: Usul.pm 240 2012-12-09 20:09:04Z pjf $
+# @(#)$Id: Usul.pm 243 2013-02-07 20:24:14Z pjf $
 
 package Class::Usul;
 
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 240 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
 
 use 5.010;
 use Class::Usul::Moose;
@@ -84,8 +84,9 @@ sub __get_attr_from_class { # Coerce a hash ref from a string
       or throw error => 'Class [_1] is missing the config method',
                args  => [ $class ];
 
+   my $key    = CONFIG_KEY;
    my $config = { %{ $class->config || {} } };
-   my $attr   = { %{ delete $config->{ 'Plugin::Usul' } || {} } };
+   my $attr   = { %{ delete $config->{ $key } || {} } };
    my $name   = delete $config->{name}; $config->{appclass} ||= $name;
 
    $attr->{config} ||= $config;
@@ -107,7 +108,7 @@ Class::Usul - A base class other packages
 
 =head1 Version
 
-Describes Class::Usul version 0.11.$Revision: 240 $
+Describes Class::Usul version 0.11.$Revision: 243 $
 
 =head1 Synopsis
 

@@ -1,8 +1,8 @@
-# @(#)$Id: 20file.t 236 2012-12-04 20:05:42Z pjf $
+# @(#)$Id: 20file.t 243 2013-02-07 20:24:14Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 236 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -35,13 +35,15 @@ use Exception::Class ( q(TestException) => { fields => [ qw(arg1 arg2) ] } );
 use Class::Usul;
 use Class::Usul::File;
 
-my $cu = Class::Usul->new( config       => {
-                              appclass  => q(Class::Usul),
-                              home      => catdir( qw(lib Class Usul) ),
-                              localedir => catdir( qw(t locale) ),
-                              tempdir   => q(t), },
-                           debug        => 0,
-                           log          => Logger->new, );
+my $osname = lc $OSNAME;
+my $cu     = Class::Usul->new
+   ( config       => {
+      appclass  => q(Class::Usul),
+      home      => catdir( qw(lib Class Usul) ),
+      localedir => catdir( qw(t locale) ),
+      tempdir   => q(t), },
+     debug        => 0,
+     log          => Logger->new, );
 
 my $cuf = Class::Usul::File->new( builder => $cu );
 
@@ -69,11 +71,13 @@ unlink catfile( qw(t ipc_srlock.shm) );
 
 is $cuf->status_for( $tf )->{size}, 237, 'status_for';
 
-my $symlink = catfile( qw(t symlink) );
+if ($osname ne 'mswin32') {
+   my $symlink = catfile( qw(t symlink) );
 
-$cuf->symlink( q(t), q(test.xml), [ qw(t symlink) ] );
+   $cuf->symlink( q(t), q(test.xml), [ qw(t symlink) ] );
 
-ok -e $symlink, 'symlink'; -e _ and unlink $symlink;
+   ok -e $symlink, 'symlink'; -e _ and unlink $symlink;
+}
 
 my $tempfile = $cuf->tempfile;
 

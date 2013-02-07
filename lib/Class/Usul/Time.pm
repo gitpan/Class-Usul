@@ -1,10 +1,10 @@
-# @(#)$Id: Time.pm 236 2012-12-04 20:05:42Z pjf $
+# @(#)$Id: Time.pm 243 2013-02-07 20:24:14Z pjf $
 
 package Class::Usul::Time;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 236 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
 
 use Date::Format  ();
 use Time::HiRes qw(usleep);
@@ -249,8 +249,7 @@ sub str2time ($;$) {
 sub time2str (;$$$) {
    my ($format, $time, $zone) = @_;
 
-   defined $format or $format = '%Y-%m-%d %H:%M:%S';
-   defined $time   or $time   = time;
+   $format //= '%Y-%m-%d %H:%M:%S'; $time //= time; $zone //= 'UTC';
 
    return Date::Format::Generic->time2str( $format, $time, $zone );
 }
@@ -267,7 +266,7 @@ Class::Usul::Time - Class methods for date and time manipulation
 
 =head1 Version
 
-$Revision: 236 $
+$Revision: 243 $
 
 =head1 Synopsis
 
@@ -307,7 +306,7 @@ ninth day in November. Timezone optional
 
 Returns a formatted string representation of the given time (supplied
 in seconds elapsed since the epoch). Defaults to ISO format (%Y-%m-%d
-%H:%M:%S) and current time if non supplied
+%H:%M:%S) and current time if non supplied. The timezone defaults to C<UTC>
 
 =head1 Diagnostics
 

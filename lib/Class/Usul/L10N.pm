@@ -1,8 +1,8 @@
-# @(#)$Id: L10N.pm 240 2012-12-09 20:09:04Z pjf $
+# @(#)$Id: L10N.pm 243 2013-02-07 20:24:14Z pjf $
 
 package Class::Usul::L10N;
 
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 240 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
 
 use Class::Null;
 use Class::Usul::Moose;
@@ -115,7 +115,7 @@ sub _gettext {
    my $count   = $args->{count} || 1;
    my $default = $args->{no_default} ? NUL : $key;
    my $domain  = $self->_load_domains( $args )
-      or return ($key, $args->{plural_key})[ $count > 1 ] || $default;
+      or return ($default, $args->{plural_key})[ $count > 1 ] || $default;
    # Select either singular or plural translation
    my ($nplurals, $plural) = (1, 0);
 
@@ -184,7 +184,7 @@ Class::Usul::L10N - Localize text strings
 
 =head1 Version
 
-0.6.$Revision: 240 $
+0.6.$Revision: 243 $
 
 =head1 Synopsis
 
