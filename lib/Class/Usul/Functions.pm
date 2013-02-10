@@ -1,11 +1,11 @@
-# @(#)$Id: Functions.pm 243 2013-02-07 20:24:14Z pjf $
+# @(#)$Id: Functions.pm 245 2013-02-10 00:03:07Z pjf $
 
 package Class::Usul::Functions;
 
 use strict;
 use warnings;
 use feature      qw(state);
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 245 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Data::Printer alias => q(Dumper), colored => 1, indent => 3,
@@ -21,7 +21,7 @@ use Path::Class::Dir;
 use Scalar::Util qw(blessed openhandle);
 use Sys::Hostname;
 
-my @_functions; my $_bson_id_inc : shared = 0;
+my @_functions; my $_bson_id_inc : shared = 0; my $osname = lc $OSNAME;
 
 BEGIN {
    @_functions = ( qw(abs_path app_prefix arg_list assert_directory
@@ -46,11 +46,12 @@ use Sub::Exporter -setup => {
 sub abs_path ($) {
    my $y = shift; (defined $y and length $y) or return $y;
 
-   $OSNAME eq EVIL and not -e $y and return untaint_path( $y ); # Hate
+   ($osname eq EVIL or $osname eq q(cygwin))
+      and not -e $y and return untaint_path( $y ); # Hate
 
    $y = Cwd::abs_path( untaint_path( $y ) );
 
-   $OSNAME eq EVIL and defined $y and $y =~ s{ / }{\\}gmx; # More hate
+   $osname eq EVIL and defined $y and $y =~ s{ / }{\\}gmx; # More hate
 
    return $y;
 }
@@ -261,7 +262,7 @@ sub say (;@) {
 
    $rest[ 0 ] ||= q(); chomp( @rest );
 
-   local ($OFS, $ORS) = $OSNAME eq EVIL ? ("\r\n", "\r\n") : ("\n", "\n");
+   local ($OFS, $ORS) = $osname eq EVIL ? ("\r\n", "\r\n") : ("\n", "\n");
 
    return print {*STDOUT} @rest
       or throw( error => 'IO error [_1]', args =>[ $ERRNO ] );
@@ -480,7 +481,7 @@ CatalystX::Usul::Functions - Globally accessible functions
 
 =head1 Version
 
-0.6.$Revision: 243 $
+0.6.$Revision: 245 $
 
 =head1 Synopsis
 
@@ -887,7 +888,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2012 Peter Flanigan. All rights reserved
+Copyright (c) 2013 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

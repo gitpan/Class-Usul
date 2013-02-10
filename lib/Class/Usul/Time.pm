@@ -1,10 +1,10 @@
-# @(#)$Id: Time.pm 243 2013-02-07 20:24:14Z pjf $
+# @(#)$Id: Time.pm 245 2013-02-10 00:03:07Z pjf $
 
 package Class::Usul::Time;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 245 $ =~ /\d+/gmx );
 
 use Date::Format  ();
 use Time::HiRes qw(usleep);
@@ -249,7 +249,7 @@ sub str2time ($;$) {
 sub time2str (;$$$) {
    my ($format, $time, $zone) = @_;
 
-   $format //= '%Y-%m-%d %H:%M:%S'; $time //= time; $zone //= 'UTC';
+   $format //= '%Y-%m-%d %H:%M:%S'; $time //= time;
 
    return Date::Format::Generic->time2str( $format, $time, $zone );
 }
@@ -266,7 +266,7 @@ Class::Usul::Time - Class methods for date and time manipulation
 
 =head1 Version
 
-$Revision: 243 $
+$Revision: 245 $
 
 =head1 Synopsis
 
@@ -306,7 +306,8 @@ ninth day in November. Timezone optional
 
 Returns a formatted string representation of the given time (supplied
 in seconds elapsed since the epoch). Defaults to ISO format (%Y-%m-%d
-%H:%M:%S) and current time if non supplied. The timezone defaults to C<UTC>
+%H:%M:%S) and current time if non supplied. The timezone defaults to
+local time
 
 =head1 Diagnostics
 
@@ -346,7 +347,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2012 Peter Flanigan. All rights reserved
+Copyright (c) 2013 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

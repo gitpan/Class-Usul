@@ -1,9 +1,9 @@
-# @(#)$Id: Programs.pm 243 2013-02-07 20:24:14Z pjf $
+# @(#)$Id: Programs.pm 245 2013-02-10 00:03:07Z pjf $
 
 package Class::Usul::Programs;
 
 use attributes ();
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 245 $ =~ /\d+/gmx );
 
 use Class::Inspector;
 use Class::Usul::IPC;
@@ -744,7 +744,7 @@ Class::Usul::Programs - Provide support for command line programs
 
 =head1 Version
 
-This document describes Class::Usul::Programs version 0.11.$Revision: 243 $
+This document describes Class::Usul::Programs version 0.11.$Revision: 245 $
 
 =head1 Synopsis
 
@@ -1099,7 +1099,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2012 Peter Flanigan. All rights reserved
+Copyright (c) 2013 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

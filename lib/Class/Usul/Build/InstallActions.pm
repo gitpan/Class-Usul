@@ -1,9 +1,9 @@
-# @(#)$Id: InstallActions.pm 236 2012-12-04 20:05:42Z pjf $
+# @(#)$Id: InstallActions.pm 245 2013-02-10 00:03:07Z pjf $
 
 package Class::Usul::Build::InstallActions;
 
 use strict;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 236 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 245 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -111,7 +111,7 @@ Class::Usul::Build::InstallActions - Things to do after Build install
 
 =head1 Version
 
-Describes Class::Usul::Build::InstallActions version 0.11.$Revision: 236 $
+Describes Class::Usul::Build::InstallActions version 0.11.$Revision: 245 $
 
 =head1 Synopsis
 
@@ -178,7 +178,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2012 Peter Flanigan. All rights reserved
+Copyright (c) 2013 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

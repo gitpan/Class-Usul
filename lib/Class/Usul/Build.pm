@@ -1,11 +1,11 @@
-# @(#)$Id: Build.pm 243 2013-02-07 20:24:14Z pjf $
+# @(#)$Id: Build.pm 245 2013-02-10 00:03:07Z pjf $
 
 package Class::Usul::Build;
 
 use strict;
 use warnings;
 use feature qw(state);
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 245 $ =~ /\d+/gmx );
 use parent  qw(Module::Build);
 use lib;
 
@@ -1127,7 +1127,7 @@ Class::Usul::Build - M::B utility methods
 
 =head1 Version
 
-This document describes Class::Usul::Build version 0.11.$Revision: 243 $
+This document describes Class::Usul::Build version 0.11.$Revision: 245 $
 
 =head1 Synopsis
 
@@ -1428,7 +1428,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2012 Peter Flanigan. All rights reserved
+Copyright (c) 2013 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

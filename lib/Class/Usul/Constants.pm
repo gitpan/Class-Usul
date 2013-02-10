@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 243 2013-02-07 20:24:14Z pjf $
+# @(#)$Id: Constants.pm 245 2013-02-10 00:03:07Z pjf $
 
 package Class::Usul::Constants;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 245 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
@@ -42,7 +42,7 @@ use Sub::Exporter::Progressive -setup => {
 sub ARRAY    () { q(ARRAY)           }
 sub BRK      () { q(: )              }
 sub CODE     () { q(CODE)            }
-sub EVIL     () { q(MSWin32)         }
+sub EVIL     () { q(mswin32)         }
 sub EXTNS    () { ( qw(.pl .pm .t) ) }
 sub FAILED   () { 1                  }
 sub FALSE    () { 0                  }
@@ -96,7 +96,7 @@ Class::Usul::Constants - Definitions of constant values
 
 =head1 Version
 
-0.11.$Rev: 243 $
+0.11.$Rev: 245 $
 
 =head1 Synopsis
 
@@ -314,7 +314,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2012 Peter Flanigan. All rights reserved
+Copyright (c) 2013 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

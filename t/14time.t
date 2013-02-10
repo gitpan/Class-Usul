@@ -1,8 +1,8 @@
-# @(#)$Id: 14time.t 243 2013-02-07 20:24:14Z pjf $
+# @(#)$Id: 14time.t 245 2013-02-10 00:03:07Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 243 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 245 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -28,7 +28,7 @@ Math::BigInt->config()->{lib} eq q(Math::BigInt::GMP)
 
 use Class::Usul::Time qw(str2date_time str2time time2str);
 
-is time2str( undef, 0 ), q(1970-01-01 00:00:00), 'stamp';
+is time2str( undef, 0, q(UTC) ), q(1970-01-01 00:00:00), 'stamp';
 
 my $dt = q().str2date_time( q(11/9/2007 14:12), q(GMT) );
 

@@ -1,10 +1,10 @@
-# @(#)$Id: UntaintedGetopts.pm 236 2012-12-04 20:05:42Z pjf $
+# @(#)$Id: UntaintedGetopts.pm 245 2013-02-10 00:03:07Z pjf $
 
 package Class::Usul::TraitFor::UntaintedGetopts;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 236 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 245 $ =~ /\d+/gmx );
 
 use Moose::Role;
 use Class::Usul::Functions qw(untaint_cmdline);
@@ -29,7 +29,7 @@ Class::Usul::TraitFor::UntaintedGetopts - Untaints @ARGV before Getopts processe
 
 =head1 Version
 
-0.11.$Revision: 236 $
+0.11.$Revision: 245 $
 
 =head1 Synopsis
 
@@ -86,7 +86,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2012 Peter Flanigan. All rights reserved
+Copyright (c) 2013 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>
