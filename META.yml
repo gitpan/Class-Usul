@@ -25,7 +25,7 @@ no_index:
 provides:
   Class::Usul:
     file: lib/Class/Usul.pm
-    version: v0.11.245
+    version: v0.11.247
   Class::Usul::Build:
     file: lib/Class/Usul/Build.pm
     version: v0.11.245
@@ -61,7 +61,7 @@ provides:
     version: v0.11.245
   Class::Usul::IPC:
     file: lib/Class/Usul/IPC.pm
-    version: v0.11.245
+    version: v0.11.246
   Class::Usul::L10N:
     file: lib/Class/Usul/L10N.pm
     version: v0.11.245
@@ -158,4 +158,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Usul
   homepage: http://www.roxsoft.co.uk
   license: http://dev.perl.org/licenses/
-version: 0.11.245
+version: 0.11.247

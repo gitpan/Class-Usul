@@ -1,8 +1,8 @@
-# @(#)$Id: Usul.pm 245 2013-02-10 00:03:07Z pjf $
+# @(#)$Id: Usul.pm 247 2013-02-13 18:56:26Z pjf $
 
 package Class::Usul;
 
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 245 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 247 $ =~ /\d+/gmx );
 
 use 5.010;
 use Class::Usul::Moose;
@@ -108,7 +108,7 @@ Class::Usul - A base class other packages
 
 =head1 Version
 
-Describes Class::Usul version 0.11.$Revision: 245 $
+Describes Class::Usul version 0.11.$Revision: 247 $
 
 =head1 Synopsis
 
@@ -254,3 +254,4 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE
 # mode: perl
 # tab-width: 3
 # End:
+
