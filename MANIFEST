@@ -49,6 +49,7 @@ t/14time.t
 t/18programs.t
 t/20file.t
 t/21ipc.t
+t/22crypt.t
 t/critic.rc
 t/locale/de/LC_MESSAGES/default.po
 t/test.xml

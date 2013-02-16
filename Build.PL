@@ -1,9 +1,9 @@
-# @(#)$Id: Build.PL 237 2012-12-04 22:21:11Z pjf $
+# @(#)$Id: Build.PL 249 2013-02-15 20:27:55Z pjf $
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 237 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 249 $ =~ /\d+/gmx );
 
 Bob->new( {
    module     => q(Class::Usul),
@@ -18,7 +18,7 @@ Bob->new( {
       'Class::Load'                   => 0.18,
       'Class::Null'                   => 1.09,
       'Crypt::CBC'                    => 2.30,
-      'Crypt::Twofish'                => 2.12,
+      'Crypt::Twofish2'               => 1.02,
       'Data::Printer'                 => 0.24,
       'Date::Format'                  => 2.22,
       'DateTime::Format::Epoch'       => 0.11,

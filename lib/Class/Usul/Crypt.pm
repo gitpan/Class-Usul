@@ -1,11 +1,11 @@
-# @(#)$Id: Crypt.pm 245 2013-02-10 00:03:07Z pjf $
+# @(#)$Id: Crypt.pm 249 2013-02-15 20:27:55Z pjf $
 
 package Class::Usul::Crypt;
 
 use strict;
 use warnings;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 245 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 249 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions qw(create_token is_coderef is_hashref);
@@ -30,11 +30,11 @@ sub encrypt (;$$) {
 }
 
 sub cipher_list () {
-   ( qw(Blowfish Rijndael Twofish) );
+   ( qw(Blowfish Rijndael Twofish2) );
 }
 
 sub default_cipher () {
-   q(Twofish);
+   q(Twofish2);
 }
 
 # Private functions
@@ -81,7 +81,7 @@ Class::Usul::Crypt - Encryption/decryption functions
 
 =head1 Version
 
-0.11.$Revision: 245 $
+0.12.$Revision: 249 $
 
 =head1 Synopsis
 

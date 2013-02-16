@@ -1,8 +1,8 @@
-# @(#)$Id: Meta.pm 245 2013-02-10 00:03:07Z pjf $
+# @(#)$Id: Meta.pm 248 2013-02-13 23:17:39Z pjf $
 
 package Class::Usul::Response::Meta;
 
-use version; our $VERSION = qv( sprintf '0.11.%d', q$Rev: 245 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 248 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use YAML::Syck;
@@ -32,7 +32,7 @@ Class::Usul::Response::Meta - Class for CPAN Meta file
 
 =head1 Version
 
-This document describes Class::Usul::Response::Meta version 0.11.$Revision: 245 $
+This document describes Class::Usul::Response::Meta version 0.12.$Revision: 248 $
 
 =head1 Synopsis
 
