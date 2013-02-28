@@ -1,8 +1,8 @@
-# @(#)$Id: Log.pm 248 2013-02-13 23:17:39Z pjf $
+# @(#)$Id: Log.pm 252 2013-02-27 22:06:19Z pjf $
 
 package Class::Usul::Log;
 
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 248 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 252 $ =~ /\d+/gmx );
 
 use Class::Null;
 use Class::Usul::Moose;
@@ -43,9 +43,9 @@ around 'BUILDARGS' => sub {
 };
 
 sub BUILD {
-   my $self = shift; my $class = blessed $self;
+   my $self = shift; my $class = blessed $self; my $meta = $class->meta;
 
-   my $meta = $class->meta; $meta->make_mutable;
+   $meta->make_mutable;
 
    for my $method (LOG_LEVELS) {
       $meta->has_method( $method ) or $meta->add_method( $method => sub {
@@ -56,15 +56,15 @@ sub BUILD {
          return;
       } );
 
-      my $msg_meth = "${method}_message";
+      my $meth_msg = "${method}_message";
 
-      $meta->has_method( $msg_meth ) or $meta->add_method( $msg_meth => sub {
+      $meta->has_method( $meth_msg ) or $meta->add_method( $meth_msg => sub {
          my ($self, $opts, $msg) = @_; my $text;
 
          my $user = $opts->{user} ? $opts->{user}->username : q(unknown);
 
          $msg ||= NUL; $msg = NUL.$msg; chomp $msg;
-         $text  = (ucfirst $opts->{leader} || NUL).q([).($user || NUL).q(]).SPC;
+         $text  = (ucfirst $opts->{leader} || NUL)."[${user}] ";
          $text .= (ucfirst $msg || 'no message');
          $self->$method( $text );
          return;
@@ -112,7 +112,7 @@ Class::Usul::Log - Create methods for each logging level that encode their outpu
 
 =head1 Version
 
-0.12.$Revision: 248 $
+0.12.$Revision: 252 $
 
 =head1 Synopsis
 

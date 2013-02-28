@@ -1,11 +1,11 @@
-# @(#)$Id: Crypt.pm 249 2013-02-15 20:27:55Z pjf $
+# @(#)$Id: Crypt.pm 254 2013-02-28 15:42:57Z pjf $
 
 package Class::Usul::Crypt;
 
 use strict;
 use warnings;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 249 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 254 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions qw(create_token is_coderef is_hashref);
@@ -81,7 +81,7 @@ Class::Usul::Crypt - Encryption/decryption functions
 
 =head1 Version
 
-0.12.$Revision: 249 $
+0.12.$Revision: 254 $
 
 =head1 Synopsis
 
@@ -91,7 +91,7 @@ Class::Usul::Crypt - Encryption/decryption functions
    my $args = 'salt'; # OR
    my $args = { salt => 'salt', seed => 'whiten this' };
 
-   $args->{cipher} = 'Twofish'; # Optionally
+   $args->{cipher} = 'Twofish2'; # Optionally
 
    my $base64_encrypted_text = encrypt( $args, $plain_text );
 
@@ -122,7 +122,7 @@ text result. See the L</encrypt> method
    my $encoded = encrypt( $salt || \%params, $plain );
 
 Encrypts the plain text passed in the C<$plain> argument and returns
-it Base64 encoded. By default L<Crypt::Twofish> is used to do the
+it Base64 encoded. By default L<Crypt::Twofish2> is used to do the
 encryption. The optional C<< $params->{cipher} >> attribute overrides this
 
 =head2 cipher_list
@@ -136,7 +136,7 @@ all be installed
 
    $ciper_name = default_cipher();
 
-Returns I<Twofish>
+Returns I<Twofish2>
 
 =head2 __cipher
 
@@ -159,7 +159,7 @@ None
 
 =item L<Crypt::CBC>
 
-=item L<Crypt::Twofish>
+=item L<Crypt::Twofish2>
 
 =item L<MIME::Base64>
 

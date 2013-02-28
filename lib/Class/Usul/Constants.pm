@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 248 2013-02-13 23:17:39Z pjf $
+# @(#)$Id: Constants.pm 252 2013-02-27 22:06:19Z pjf $
 
 package Class::Usul::Constants;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 248 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 252 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
@@ -25,14 +25,14 @@ class_has 'Exception_Class' => is => 'rw', isa => 'File::DataClass::Exception',
 my @_constants;
 
 BEGIN {
-   @_constants = ( qw(ARRAY ASSERT BRK CODE CONFIG_EXTN CONFIG_KEY
-                      DEFAULT_DIR DEFAULT_ENCODING DEFAULT_L10N_DOMAIN
+   @_constants = ( qw(ARRAY ASSERT BRK CODE CONFIG_EXTN DEFAULT_DIR
+                      DEFAULT_ENCODING DEFAULT_L10N_DOMAIN
                       DIGEST_ALGORITHMS ENCODINGS EVIL EXCEPTION_CLASS
                       EXTNS FAILED FALSE HASH LANG LBRACE LOCALIZE
                       LOG_LEVELS MODE NO NUL OK PHASE PREFIX QUIT SEP
                       SPC TRUE UNDEFINED_RV UNTAINT_CMDLINE
-                      UNTAINT_IDENTIFIER UNTAINT_PATH UUID_PATH WIDTH
-                      YES) );
+                      UNTAINT_IDENTIFIER UNTAINT_PATH USUL_CONFIG_KEY
+                      UUID_PATH WIDTH YES) );
 }
 
 use Sub::Exporter::Progressive -setup => {
@@ -65,7 +65,6 @@ sub YES      () { q(y)               }
 
 sub ASSERT              () { __PACKAGE__->Assert || sub {} }
 sub CONFIG_EXTN         () { __PACKAGE__->Config_Extn }
-sub CONFIG_KEY          () { __PACKAGE__->Config_Key }
 sub DEFAULT_DIR         () { [ q(), qw(etc default) ] }
 sub DEFAULT_ENCODING    () { q(UTF-8) }
 sub DEFAULT_L10N_DOMAIN () { q(default) }
@@ -77,6 +76,7 @@ sub UNDEFINED_RV        () { -1 }
 sub UNTAINT_CMDLINE     () { qr{ \A ([^\$%;|&><\*]+) \z }mx }
 sub UNTAINT_IDENTIFIER  () { qr{ \A ([a-zA-Z0-9_]+)  \z }mx }
 sub UNTAINT_PATH        () { qr{ \A ([^\$%;|&><\*]+) \z }mx }
+sub USUL_CONFIG_KEY     () { __PACKAGE__->Config_Key }
 sub UUID_PATH           () { [ q(), qw(proc sys kernel random uuid) ] }
 
 __PACKAGE__->meta->make_immutable;
@@ -96,7 +96,7 @@ Class::Usul::Constants - Definitions of constant values
 
 =head1 Version
 
-0.12.$Rev: 248 $
+0.12.$Rev: 252 $
 
 =head1 Synopsis
 
@@ -133,11 +133,6 @@ String C<CODE>
 
 The default configuration file extension, F<.json>. Change this by
 setting the C<Config_Extn> class attribute
-
-=head2 CONFIG_KEY
-
-Default configuration hash key, C<Plugin::Usul>. Change this by setting
-the C<Config_Key> class attribute
 
 =head2 DEFAULT_DIR
 
@@ -260,6 +255,11 @@ Regular expression used to untaint identifier strings
 =head2 UNTAINT_PATH
 
 Regular expression used to untaint path strings
+
+=head2 USUL_CONFIG_KEY
+
+Default configuration hash key, C<Plugin::Usul>. Change this by setting
+the C<Config_Key> class attribute
 
 =head2 UUID_PATH
 
