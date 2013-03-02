@@ -1,9 +1,9 @@
-# @(#)$Id: Programs.pm 248 2013-02-13 23:17:39Z pjf $
+# @(#)$Id: Programs.pm 256 2013-03-02 14:59:40Z pjf $
 
 package Class::Usul::Programs;
 
 use attributes ();
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 248 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 256 $ =~ /\d+/gmx );
 
 use Class::Inspector;
 use Class::Usul::IPC;
@@ -78,6 +78,7 @@ has '_quiet'       => is => 'rw', isa => Bool, default => FALSE,
 has 'version'      => is => 'ro', isa => Bool, default => FALSE,
    documentation   => 'Displays the version number of the program class',
    traits          => [ 'Getopt' ], cmd_aliases => q(V), cmd_flag => 'version';
+
 
 has '_file'    => is => 'lazy', isa => FileType,
    default     => sub { Class::Usul::File->new( builder => $_[ 0 ] ) },
@@ -229,7 +230,7 @@ sub get_meta {
 
    $path and unshift @paths, $self->io( $path );
 
-   return $meta_class->new( $_ ) for (grep { $_->is_file } @paths);
+   return $meta_class->new( $_ ) for (grep { $_->exists } @paths);
 
    throw 'No META.yml file';
    return;
@@ -326,9 +327,10 @@ sub run {
 
       umask $self->mode;
 
-      try { defined ($rv = $self->$method( @{ $params } ))
-               or throw error => 'Method [_1] return value undefined',
-                        args  => [ $method ];
+      try {
+         defined ($rv = $self->$method( @{ $params } ))
+            or throw error => 'Method [_1] return value undefined',
+                     args  => [ $method ];
       }
       catch { $rv = $self->_catch_run_exception( $_ ) };
    }
@@ -428,7 +430,7 @@ sub _build__os {
 }
 
 sub _catch_run_exception {
-   my ($self, $error) = @_; my $e = exception $error;
+   my ($self, $error) = @_; my $e = exception $error or return UNDEFINED_RV;
 
    $e->out and $self->output( $e->out );
    $self->error( $e->error, { args => $e->args } );
@@ -744,7 +746,7 @@ Class::Usul::Programs - Provide support for command line programs
 
 =head1 Version
 
-This document describes Class::Usul::Programs version 0.12.$Revision: 248 $
+This document describes Class::Usul::Programs version 0.12.$Revision: 256 $
 
 =head1 Synopsis
 
@@ -1010,7 +1012,7 @@ line. Returns the exit code
 
 =head2 run_chain
 
-   $exit_code = $self->chain_controller( $method );
+   $exit_code = $self->run_chain( $method );
 
 Called by L</run> when C<_get_run_method> cannot determine which method to
 call. Outputs usage if C<$method> is undefined. Logs an error if
@@ -1069,13 +1071,25 @@ Turning debug on produces some more output
 
 =over 3
 
+=item L<Class::Inspector>
+
 =item L<Class::Usul>
 
-=item L<File::DataClass>
+=item L<Class::Usul::IPC>
 
-=item L<Getopt::Mixed>
+=item L<Class::Usul::File>
+
+=item L<Class::Usul::TraitFor::LoadingClasses>
+
+=item L<Class::Usul::TraitFor::UntaintedGetopts>
+
+=item L<Encode>
+
+=item L<File::HomeDir>
 
 =item L<IO::Interactive>
+
+=item L<MooseX::Getopt::Dashes>
 
 =item L<Term::ReadKey>
 

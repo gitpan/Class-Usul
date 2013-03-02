@@ -102,7 +102,7 @@
    "provides" : {
       "Class::Usul" : {
          "file" : "lib/Class/Usul.pm",
-         "version" : "v0.12.254"
+         "version" : "v0.12.260"
       },
       "Class::Usul::Build" : {
          "file" : "lib/Class/Usul/Build.pm",
@@ -150,7 +150,7 @@
       },
       "Class::Usul::IPC" : {
          "file" : "lib/Class/Usul/IPC.pm",
-         "version" : "v0.12.252"
+         "version" : "v0.12.256"
       },
       "Class::Usul::L10N" : {
          "file" : "lib/Class/Usul/L10N.pm",
@@ -170,7 +170,7 @@
       },
       "Class::Usul::Programs" : {
          "file" : "lib/Class/Usul/Programs.pm",
-         "version" : "v0.12.248"
+         "version" : "v0.12.256"
       },
       "Class::Usul::Response::IPC" : {
          "file" : "lib/Class/Usul/Response/IPC.pm",
@@ -207,5 +207,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.12.254"
+   "version" : "0.12.260"
 }
