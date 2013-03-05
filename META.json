@@ -4,7 +4,7 @@
       "Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.112621",
+   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.120921",
    "license" : [
       "perl_5"
    ],
@@ -69,7 +69,7 @@
             "MooseX::Aliases" : "0.1",
             "MooseX::AttributeShortcuts" : "0.014",
             "MooseX::ClassAttribute" : "0.1",
-            "MooseX::Getopt::Dashes" : "0.33",
+            "MooseX::Getopt" : "0.5",
             "MooseX::MethodAttributes" : "0.24",
             "MooseX::Role::Parameterized" : "0.19",
             "MooseX::Role::WithOverloading" : "0.08",
@@ -102,7 +102,7 @@
    "provides" : {
       "Class::Usul" : {
          "file" : "lib/Class/Usul.pm",
-         "version" : "v0.12.260"
+         "version" : "v0.12.262"
       },
       "Class::Usul::Build" : {
          "file" : "lib/Class/Usul/Build.pm",
@@ -150,7 +150,7 @@
       },
       "Class::Usul::IPC" : {
          "file" : "lib/Class/Usul/IPC.pm",
-         "version" : "v0.12.256"
+         "version" : "v0.12.262"
       },
       "Class::Usul::L10N" : {
          "file" : "lib/Class/Usul/L10N.pm",
@@ -170,7 +170,7 @@
       },
       "Class::Usul::Programs" : {
          "file" : "lib/Class/Usul/Programs.pm",
-         "version" : "v0.12.256"
+         "version" : "v0.12.261"
       },
       "Class::Usul::Response::IPC" : {
          "file" : "lib/Class/Usul/Response/IPC.pm",
@@ -207,5 +207,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.12.260"
+   "version" : "0.12.262"
 }

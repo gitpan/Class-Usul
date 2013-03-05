@@ -11,7 +11,7 @@ configure_requires:
   Module::Build: 0.38
   version: 0.77
 dynamic_config: 1
-generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.112621'
+generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.120921'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -25,7 +25,7 @@ no_index:
 provides:
   Class::Usul:
     file: lib/Class/Usul.pm
-    version: v0.12.260
+    version: v0.12.262
   Class::Usul::Build:
     file: lib/Class/Usul/Build.pm
     version: v0.12.248
@@ -61,7 +61,7 @@ provides:
     version: v0.12.253
   Class::Usul::IPC:
     file: lib/Class/Usul/IPC.pm
-    version: v0.12.256
+    version: v0.12.262
   Class::Usul::L10N:
     file: lib/Class/Usul/L10N.pm
     version: v0.12.248
@@ -76,7 +76,7 @@ provides:
     version: v0.12.248
   Class::Usul::Programs:
     file: lib/Class/Usul/Programs.pm
-    version: v0.12.256
+    version: v0.12.261
   Class::Usul::Response::IPC:
     file: lib/Class/Usul/Response/IPC.pm
     version: v0.12.248
@@ -127,7 +127,7 @@ requires:
   MooseX::Aliases: 0.1
   MooseX::AttributeShortcuts: 0.014
   MooseX::ClassAttribute: 0.1
-  MooseX::Getopt::Dashes: 0.33
+  MooseX::Getopt: 0.5
   MooseX::MethodAttributes: 0.24
   MooseX::Role::Parameterized: 0.19
   MooseX::Role::WithOverloading: 0.08
@@ -158,4 +158,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Usul
   homepage: http://www.roxsoft.co.uk
   license: http://dev.perl.org/licenses/
-version: 0.12.260
+version: 0.12.262
