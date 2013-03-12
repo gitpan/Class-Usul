@@ -1,8 +1,8 @@
-# @(#)$Id: 21ipc.t 262 2013-03-05 19:56:42Z pjf $
+# @(#)$Id: 21ipc.t 264 2013-03-12 17:12:15Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 262 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 264 $ =~ /\d+/gmx );
 use File::Spec::Functions qw( catdir catfile tmpdir updir );
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -34,7 +34,6 @@ use File::Basename;
 use Class::Usul::Programs;
 use Class::Usul::Constants qw(EXCEPTION_CLASS);
 
-my $debug  = 1;
 my $osname = lc $OSNAME;
 my $perl   = $EXECUTABLE_NAME;
 my $prog   = Class::Usul::Programs->new( appclass => q(Class::Usul),
@@ -58,8 +57,7 @@ my $cmd = "${perl} -v"; my $r;
 
 like popen_test( q(out), $cmd ), qr{ larry \s+ wall }imsx, 'popen';
 
-$cmd = "${perl} -e \"exit 2\"";
-$r   = popen_test( q(out), $cmd, { debug => $debug } );
+$cmd = "${perl} -e \"exit 2\""; $r = popen_test( q(out), $cmd );
 
 is ref $r, EXCEPTION_CLASS, 'popen exception is right class';
 
@@ -69,8 +67,8 @@ is popen_test( q(rv), $cmd, { expected_rv => 2 } ), 2, 'popen expected rv';
 
 $cmd = "${perl} -e \"die q(In a pit of fire)\"";
 
-like popen_test( q(out), $cmd, { debug => $debug } ),
-   qr{ pit \s+ of \s+ fire }msx, 'popen expected error string';
+like popen_test( q(out), $cmd ), qr{ pit \s+ of \s+ fire }msx,
+   'popen expected error string';
 
 $cmd = "${perl} -e \"print <>\"";
 

@@ -1,4 +1,4 @@
-# @(#)$Id: CPANTesting.pm 254 2013-02-28 15:42:57Z pjf $
+# @(#)$Id: CPANTesting.pm 264 2013-03-12 17:12:15Z pjf $
 # Bob-Version: 1.7
 
 package CPANTesting;
@@ -13,6 +13,10 @@ sub is_testing { !! ($ENV{AUTOMATED_TESTING} || $ENV{PERL_CR_SMOKER_CURRENT}
                  || ($ENV{PERL5OPT} || q()) =~ m{ CPAN-Reporter }mx) }
 
 sub should_abort {
+   is_testing() or return 0;
+
+   $ENV{PERL5LIB} =~ m{ Archibald }msx and warn "Host: ${host}\n";
+
    return 0;
 }
 

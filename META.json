@@ -52,7 +52,7 @@
             "Digest::MD5" : "2.39",
             "Digest::SHA1" : "2.11",
             "Email::Date::Format" : "1.002",
-            "File::DataClass" : "v0.13.0",
+            "File::DataClass" : "v0.14.0",
             "Getopt::Mixed" : "1.1",
             "Git::Class" : "0.12",
             "IO::Interactive" : "v0.0.5",
@@ -102,7 +102,7 @@
    "provides" : {
       "Class::Usul" : {
          "file" : "lib/Class/Usul.pm",
-         "version" : "v0.12.262"
+         "version" : "v0.12.264"
       },
       "Class::Usul::Build" : {
          "file" : "lib/Class/Usul/Build.pm",
@@ -150,7 +150,7 @@
       },
       "Class::Usul::IPC" : {
          "file" : "lib/Class/Usul/IPC.pm",
-         "version" : "v0.12.262"
+         "version" : "v0.12.264"
       },
       "Class::Usul::L10N" : {
          "file" : "lib/Class/Usul/L10N.pm",
@@ -170,7 +170,7 @@
       },
       "Class::Usul::Programs" : {
          "file" : "lib/Class/Usul/Programs.pm",
-         "version" : "v0.12.261"
+         "version" : "v0.12.264"
       },
       "Class::Usul::Response::IPC" : {
          "file" : "lib/Class/Usul/Response/IPC.pm",
@@ -207,5 +207,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.12.262"
+   "version" : "0.12.264"
 }

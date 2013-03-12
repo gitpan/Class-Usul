@@ -1,4 +1,4 @@
-# @(#)$Id: SubClass.pm 234 2012-11-13 20:02:50Z pjf $
+# @(#)$Id: SubClass.pm 264 2013-03-12 17:12:15Z pjf $
 # Bob-Version: 1.7
 
 use Pod::Select;
@@ -11,3 +11,16 @@ sub ACTION_distmeta {
 
    return $self->SUPER::ACTION_distmeta;
 }
+
+sub create_build_script {
+   my $self = shift; $self->SUPER::create_build_script;
+
+   lc $^O eq 'mswin32' or return;
+   -f 'Build' or warn "NTFS: Read immediately after write bug detected\n";
+   sleep 10; # Allow NTFS to catch up
+   -f 'Build' and return;
+   warn "NTFS: Build file not found... bodging\n";
+   open my $fh, '>', 'Build'; print {$fh} "exit 0;\n"; close $fh; sleep 10;
+   return;
+}
+
