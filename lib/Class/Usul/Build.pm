@@ -1,11 +1,11 @@
-# @(#)$Id: Build.pm 248 2013-02-13 23:17:39Z pjf $
+# @(#)$Id: Build.pm 270 2013-04-14 18:38:18Z pjf $
 
 package Class::Usul::Build;
 
 use strict;
 use warnings;
 use feature qw(state);
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 248 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 270 $ =~ /\d+/gmx );
 use parent  qw(Module::Build);
 use lib;
 
@@ -52,6 +52,7 @@ my %CONFIG =
      manifest_file => q(MANIFEST),
      meta_keys     => {
         perl       => 'Perl_5',
+        perl_5     => 'Perl_5',
         apache     => [ map { "Apache_$_" } qw(1_1 2_0) ],
         artistic   => 'Artistic_1_0',
         artistic_2 => 'Artistic_2_0',
@@ -1127,7 +1128,7 @@ Class::Usul::Build - M::B utility methods
 
 =head1 Version
 
-This document describes Class::Usul::Build version 0.12.$Revision: 248 $
+This document describes Class::Usul::Build version 0.13.$Revision: 270 $
 
 =head1 Synopsis
 
@@ -1405,8 +1406,6 @@ Edits and stores config information in the file F<build.json>
 =item L<Class::Usul::Programs>
 
 =item L<Module::Build>
-
-=item L<SVN::Class>
 
 =item L<XML::Simple>
 

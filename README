@@ -1,22 +1,36 @@
 Name
-    Class::Usul - A base class other packages
+    Class::Usul - A base class providing config, locking, logging, and l10n
 
 Version
-    Describes Class::Usul version 0.12.$Revision: 264 $
+    Describes Class::Usul version 0.13.$Revision: 270 $
 
 Synopsis
        use Class::Usul::Moose;
 
        extends qw(Class::Usul);
 
-Description
-    These modules provide a set of base classes for Perl packages and
-    applications
-
-Configuration and Environment
        $self = Class::Usul->new( $attr );
 
-    The $attr argument is a hash ref containing the object attributes.
+Description
+    These modules provide a set of base classes for Perl packages and
+    applications that provide configuration file loading
+    Class::Usul::Config, locking to single thread processes IPC::SRLock,
+    logging Class::Usul::Log and localization Class::Usul::L10N
+
+    The class Class::Usul::Programs is a base class for command line
+    interfaces
+
+    Interprocess communication is handled by Class::Usul::IPC
+
+    Class::Usul::File makes the functionality of File::DataClass available
+
+    The Module::Build subclass Class::Usul::Build adds methods for the
+    management and deployment of applications
+
+    Class::Usul::Moose is a custom Moose exporter
+
+Configuration and Environment
+    Defines the following attributes;
 
     config
        The "config" attribute should be a hash ref that may define key/value
@@ -35,7 +49,9 @@ Configuration and Environment
     encoding
        Decode input and encode output. Defaults to "UTF-8"
 
-    Defined the application context log. Defaults to a Class::Null object
+    Defines an instance of IPC::SRLock
+
+    Defines the application context log. Defaults to a Log::Handler object
 
 Subroutines/Methods
   new_from_class
@@ -89,7 +105,7 @@ Bugs and Limitations
     address below. Patches are welcome
 
 Author
-    Peter Flanigan, "<Support at RoxSoft.co.uk>"
+    Peter Flanigan, "<pjfl@cpan.org>"
 
 Acknowledgements
     Larry Wall - For the Perl programming language

@@ -1,16 +1,15 @@
-# @(#)$Id: Programs.pm 264 2013-03-12 17:12:15Z pjf $
+# @(#)$Id: Programs.pm 270 2013-04-14 18:38:18Z pjf $
 
 package Class::Usul::Programs;
 
 use attributes ();
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 264 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 270 $ =~ /\d+/gmx );
 
 use Class::Inspector;
 use Class::Usul::IPC;
 use Class::Usul::File;
 use Class::Usul::Moose;
 use Class::Usul::Constants;
-use Class::Usul::Response::Meta;
 use Class::Usul::Functions qw(abs_path app_prefix arg_list assert_directory
                               class2appdir classdir elapsed env_prefix
                               exception find_source is_arrayref is_hashref
@@ -39,6 +38,8 @@ has '+config_class' => default => sub { 'Class::Usul::Config::Programs' };
 
 has '+debug'        => traits => [ 'Getopt' ], cmd_aliases => q(D),
    cmd_flag         => 'debug';
+
+has '+help_flag'    => cmd_aliases => [ qw(usage ?) ];
 
 
 has 'help_options' => is => 'ro', isa => Bool, default => FALSE,
@@ -80,38 +81,42 @@ has 'version'      => is => 'ro', isa => Bool, default => FALSE,
    traits          => [ 'Getopt' ], cmd_aliases => q(V), cmd_flag => 'version';
 
 
-has '_file'    => is => 'lazy', isa => FileType,
-   default     => sub { Class::Usul::File->new( builder => $_[ 0 ] ) },
-   handles     => [ qw(io) ], init_arg => undef, reader => 'file';
+has '_file'        => is => 'lazy', isa => FileType,
+   default         => sub { Class::Usul::File->new( builder => $_[ 0 ] ) },
+   handles         => [ qw(io) ], init_arg => undef, reader => 'file';
 
-has '_ipc'     => is => 'lazy', isa => IPCType,
-   default     => sub { Class::Usul::IPC->new( builder => $_[ 0 ] ) },
-   handles     => [ qw(run_cmd) ], init_arg => undef, reader => 'ipc';
+has '_ipc'         => is => 'lazy', isa => IPCType,
+   default         => sub { Class::Usul::IPC->new( builder => $_[ 0 ] ) },
+   handles         => [ qw(run_cmd) ], init_arg => undef, reader => 'ipc';
 
-has '_logname' => is => 'lazy', isa => NonEmptySimpleStr,
-   default     => sub { untaint_identifier( $ENV{USER} || $ENV{LOGNAME} ) },
-   init_arg    => undef, reader => 'logname';
+has '_logname'     => is => 'lazy', isa => NonEmptySimpleStr,
+   default         => sub { untaint_identifier( $ENV{USER} || $ENV{LOGNAME} ) },
+   init_arg        => undef, reader => 'logname';
 
-has '_mode'    => is => 'rw',   isa => PositiveInt, accessor => 'mode',
-   default     => sub { $_[ 0 ]->config->mode }, init_arg => 'mode',
-   lazy        => TRUE;
+has '_meta_class'  => is => 'lazy', isa => LoadableClass, coerce => TRUE,
+   default         => sub { 'Class::Usul::Response::Meta' },
+   reader          => 'meta_class';
 
-has '_os'      => is => 'lazy', isa => HashRef, init_arg => undef,
-   reader      => 'os';
+has '_mode'        => is => 'rw',   isa => PositiveInt, accessor => 'mode',
+   default         => sub { $_[ 0 ]->config->mode }, init_arg => 'mode',
+   lazy            => TRUE;
 
-has '_params'  => is => 'ro',   isa => HashRef, default => sub { {} },
-   init_arg    => 'params', reader => 'params';
+has '_os'          => is => 'lazy', isa => HashRef, init_arg => undef,
+   reader          => 'os';
 
-has '_pwidth'  => is => 'rw',   isa => PositiveInt, accessor => 'pwidth',
-   default     => 60, init_arg => 'pwidth';
+has '_params'      => is => 'ro',   isa => HashRef, default => sub { {} },
+   init_arg        => 'params', reader => 'params';
+
+has '_pwidth'      => is => 'rw',   isa => PositiveInt, accessor => 'pwidth',
+   default         => 60, init_arg => 'pwidth';
 
 around 'BUILDARGS' => sub {
-   my ($next, $class, @args) = @_; my $attr = $class->$next( @args );
+   my ($next, $self, @args) = @_; my $attr = $self->$next( @args );
 
    my $cfg = $attr->{config} ||= {};
 
    $cfg->{appclass} ||= delete $attr->{appclass} || prefix2class $PROGRAM_NAME;
-   $cfg->{home    } ||= __get_apphome ( $cfg->{appclass}, $attr->{home} );
+   $cfg->{home    } ||= __find_apphome( $cfg->{appclass}, $attr->{home} );
    $cfg->{cfgfiles} ||= __get_cfgfiles( $cfg->{appclass},  $cfg->{home} );
 
    return $attr;
@@ -152,9 +157,8 @@ sub anykey {
 }
 
 sub can_call {
-   return ($_[ 0 ]->can( $_[ 1 ] ) && (is_member $_[ 1 ],
-                                       __list_methods_of( $_[ 0 ] )))
-        ? TRUE : FALSE;
+   return ($_[ 0 ]->can( $_[ 1 ] )
+           && (is_member $_[ 1 ], __list_methods_of( $_[ 0 ] ))) ? TRUE : FALSE;
 }
 
 sub debug_flag {
@@ -222,18 +226,13 @@ sub get_line { # General text input routine.
 }
 
 sub get_meta {
-   my ($self, $path) = @_; my $meta_class = q(Class::Usul::Response::Meta);
+   my ($self, $dir) = @_; my $cfg = $self->config;
 
-   my @paths = ( $self->config->appldir->catfile( q(META.yml) ),
-                 $self->config->ctrldir->catfile( q(META.yml) ),
-                 $self->io( q(META.yml) ) );
+   my @dirs = ($cfg->appldir, $cfg->ctrldir);
 
-   $path and unshift @paths, $self->io( $path );
+   $dir and unshift @dirs, $self->io( $dir );
 
-   return $meta_class->new( $_ ) for (grep { $_->exists } @paths);
-
-   throw 'No META.yml file';
-   return;
+   return $self->meta_class->new( directories => \@dirs );
 }
 
 sub get_option {
@@ -412,7 +411,7 @@ sub _apply_encoding {
 
    binmode $_, ":encoding(${enc})" for (*STDIN, *STDOUT, *STDERR);
 
-   $_ = decode( $enc , $_ ) for @ARGV;
+   $_ = decode( $enc, $_ ) for @ARGV;
 
    return;
 }
@@ -440,7 +439,7 @@ sub _catch_run_exception {
 
    $e->out and $self->output( $e->out );
    $self->error( $e->error, { args => $e->args } );
-   $self->debug and __print_fh( \*STDERR, $e->stacktrace."\n" );
+   $self->debug and __output_stacktrace( $e );
 
    return $e->rv || (defined $e->rv ? FAILED : UNDEFINED_RV);
 }
@@ -536,7 +535,7 @@ sub _usage_for {
 
 # Private functions
 
-sub __get_apphome {
+sub __find_apphome {
    my ($appclass, $home) = @_; my ($file, $path);
 
    # 0. Pass the directory in
@@ -754,7 +753,7 @@ Class::Usul::Programs - Provide support for command line programs
 
 =head1 Version
 
-This document describes Class::Usul::Programs version 0.12.$Revision: 264 $
+This document describes Class::Usul::Programs version 0.13.$Revision: 270 $
 
 =head1 Synopsis
 
@@ -915,9 +914,9 @@ get a full line of input
    $res_obj = $self->get_meta( $dir );
 
 Extracts; I<name>, I<version>, I<author> and I<abstract> from the
-F<META.yml> file.  Optionally look in C<$dir> for the file instead of
-C<< $self->appldir >>. Returns a response object with accessors
-defined
+F<META.json> or F<META.yml> file.  Looks in the optional C<$dir> directory
+for the file in addition to C<< $self->appldir >> and C<< $self->ctrldir >>.
+Returns a response object with read-only accessors defined
 
 =head2 get_option
 

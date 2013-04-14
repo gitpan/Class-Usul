@@ -1,14 +1,14 @@
-# @(#)$Id: Build.PL 264 2013-03-12 17:12:15Z pjf $
+# @(#)$Id: Build.PL 270 2013-04-14 18:38:18Z pjf $
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 264 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 270 $ =~ /\d+/gmx );
 
 Bob->new( {
-   module     => q(Class::Usul),
-   home_page  => q(http://www.roxsoft.co.uk),
-   requires   => {
+   module    => q(Class::Usul),
+   home_page => q(http://www.roxsoft.co.uk),
+   requires  => {
       'perl'                          => 5.010,
       'namespace::autoclean'          => 0.09,
       'namespace::clean'              => 0.11,
@@ -25,7 +25,7 @@ Bob->new( {
       'Digest::MD5'                   => 2.39,
       'Digest::SHA1'                  => 2.11,
       'Email::Date::Format'           => 1.002,
-      'File::DataClass'               => q(0.14.0),
+      'File::DataClass'               => q(0.16.0),
       'Getopt::Mixed'                 => 1.10,
       'Git::Class'                    => 0.12,
       'Import::Into'                  => 1.001000,
@@ -38,10 +38,10 @@ Bob->new( {
       'Module::CoreList'              => 2.24,
       'Module::Load::Conditional'     => 0.26,
       'Module::Pluggable'             => 3.9,
-      'Moose'                         => 2.0402,
+      'Moose'                         => 2.0801,
       'MooseX::Aliases'               => 0.10,
       'MooseX::AttributeShortcuts'    => 0.014,
-      'MooseX::ClassAttribute'        => 0.10,
+      'MooseX::ClassAttribute'        => 0.27,
       'MooseX::Getopt'                => 0.50,
       'MooseX::MethodAttributes'      => 0.24,
       'MooseX::Role::Parameterized'   => 0.19,
@@ -65,7 +65,8 @@ Bob->new( {
       'Try::Tiny'                     => 0.09,
       'YAML::Syck'                    => 1.05, },
    recommends              => {
-      'App::cpanminus'     => 1.4004,
+      'App::cpanminus'     => 1.6005,
+      'Pod::Markdown'      => 1.322,
       'Proc::ProcessTable' => 0.42, },
    configure_requires      => {
       'version'            => 0.77,

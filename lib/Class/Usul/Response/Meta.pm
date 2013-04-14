@@ -1,21 +1,45 @@
-# @(#)$Id: Meta.pm 248 2013-02-13 23:17:39Z pjf $
+# @(#)$Id: Meta.pm 270 2013-04-14 18:38:18Z pjf $
 
 package Class::Usul::Response::Meta;
 
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 248 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 270 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
+use Class::Usul::File;
+use Class::Usul::Functions qw(is_arrayref throw);
+use Cwd                    qw(getcwd);
 use YAML::Syck;
 
 has 'abstract' => is => 'ro', isa => 'Maybe[Str]';
 has 'author'   => is => 'ro', isa => 'Maybe[ArrayRef]';
-has 'license'  => is => 'ro', isa => 'Maybe[Str]';
+has 'license'  => is => 'ro', isa => 'Maybe[ArrayRef]';
 has 'name'     => is => 'ro', isa => 'Maybe[Str]';
 has 'provides' => is => 'ro', isa => 'Maybe[HashRef]';
 has 'version'  => is => 'ro', isa => 'Maybe[Str]';
 
 around 'BUILDARGS' => sub {
-   return LoadFile( q().$_[2] ) || {};
+   my ($next, $self, @args) = @_; my $attr = $self->$next( @args );
+
+   my $file_class = 'Class::Usul::File';
+
+   for my $dir (@{ $attr->{directories} || [] }, $file_class->io( getcwd )) {
+      my $file = $dir->catfile( 'META.json' );
+
+      $file->exists and return $file_class->data_load( paths => [ $file ] );
+      $file = $dir->catfile( 'META.yml' );
+
+      if ($file->exists) {
+         my $meta_data = LoadFile( $file->pathname ) || {};
+
+         exists $meta_data->{license}
+            and not is_arrayref $meta_data->{license}
+            and $meta_data->{license} = [ $meta_data->{license} ];
+         return $meta_data;
+      }
+   }
+
+   throw error => 'No META.json or META.yml file', level => 7;
+   return;
 };
 
 __PACKAGE__->meta->make_immutable;
@@ -32,7 +56,7 @@ Class::Usul::Response::Meta - Class for CPAN Meta file
 
 =head1 Version
 
-This document describes Class::Usul::Response::Meta version 0.12.$Revision: 248 $
+This document describes Class::Usul::Response::Meta version 0.13.$Revision: 270 $
 
 =head1 Synopsis
 

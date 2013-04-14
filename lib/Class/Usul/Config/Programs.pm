@@ -1,8 +1,8 @@
-# @(#)$Id: Programs.pm 248 2013-02-13 23:17:39Z pjf $
+# @(#)$Id: Programs.pm 270 2013-04-14 18:38:18Z pjf $
 
 package Class::Usul::Config::Programs;
 
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 248 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 270 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -51,7 +51,7 @@ Class::Usul::Config::Programs - Additional configuration attributes for CLI prog
 
 =head1 Version
 
-0.12.$Revision: 248 $
+0.13.$Revision: 270 $
 
 =head1 Synopsis
 

@@ -1,11 +1,11 @@
-# @(#)$Id: Crypt.pm 254 2013-02-28 15:42:57Z pjf $
+# @(#)$Id: Crypt.pm 270 2013-04-14 18:38:18Z pjf $
 
 package Class::Usul::Crypt;
 
 use strict;
 use warnings;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.12.%d', q$Rev: 254 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 270 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions qw(create_token is_coderef is_hashref);
@@ -81,7 +81,7 @@ Class::Usul::Crypt - Encryption/decryption functions
 
 =head1 Version
 
-0.12.$Revision: 254 $
+0.13.$Revision: 270 $
 
 =head1 Synopsis
 
