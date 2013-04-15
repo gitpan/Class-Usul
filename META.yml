@@ -25,7 +25,7 @@ no_index:
 provides:
   Class::Usul:
     file: lib/Class/Usul.pm
-    version: v0.13.270
+    version: v0.13.272
   Class::Usul::Build:
     file: lib/Class/Usul/Build.pm
     version: v0.13.270
@@ -112,6 +112,7 @@ requires:
   Digest::SHA1: 2.11
   Email::Date::Format: 1.002
   File::DataClass: v0.16.0
+  File::Gettext: v0.16.0
   Getopt::Mixed: 1.1
   Git::Class: 0.12
   IO::Interactive: v0.0.5
@@ -159,4 +160,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Usul
   homepage: http://www.roxsoft.co.uk
   license: http://dev.perl.org/licenses/
-version: v0.13.270
+version: v0.13.272
