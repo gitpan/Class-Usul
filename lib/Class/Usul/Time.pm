@@ -1,10 +1,10 @@
-# @(#)$Id: Time.pm 270 2013-04-14 18:38:18Z pjf $
+# @(#)$Id: Time.pm 277 2013-04-21 20:02:29Z pjf $
 
 package Class::Usul::Time;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 270 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 277 $ =~ /\d+/gmx );
 
 use Date::Format  ();
 use Time::HiRes qw(usleep);
@@ -266,7 +266,7 @@ Class::Usul::Time - Class methods for date and time manipulation
 
 =head1 Version
 
-$Revision: 270 $
+$Revision: 277 $
 
 =head1 Synopsis
 

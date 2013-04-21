@@ -1,9 +1,9 @@
-# @(#)$Id: InstallActions.pm 270 2013-04-14 18:38:18Z pjf $
+# @(#)$Id: InstallActions.pm 277 2013-04-21 20:02:29Z pjf $
 
 package Class::Usul::Build::InstallActions;
 
 use strict;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 270 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 277 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::Constants;
@@ -111,7 +111,7 @@ Class::Usul::Build::InstallActions - Things to do after Build install
 
 =head1 Version
 
-Describes Class::Usul::Build::InstallActions version 0.13.$Revision: 270 $
+Describes Class::Usul::Build::InstallActions version 0.14.$Revision: 277 $
 
 =head1 Synopsis
 

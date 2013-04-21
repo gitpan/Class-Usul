@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 270 2013-04-14 18:38:18Z pjf $
+# @(#)$Id: Constants.pm 277 2013-04-21 20:02:29Z pjf $
 
 package Class::Usul::Constants;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 270 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 277 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::ClassAttribute;
@@ -96,7 +96,7 @@ Class::Usul::Constants - Definitions of constant values
 
 =head1 Version
 
-0.13.$Rev: 270 $
+0.14.$Rev: 277 $
 
 =head1 Synopsis
 

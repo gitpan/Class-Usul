@@ -1,10 +1,10 @@
-# @(#)$Id: Constraints.pm 270 2013-04-14 18:38:18Z pjf $
+# @(#)$Id: Constraints.pm 277 2013-04-21 20:02:29Z pjf $
 
 package Class::Usul::Constraints;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 270 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 277 $ =~ /\d+/gmx );
 
 use Encode                      qw(find_encoding);
 use Class::Load                 qw(load_first_existing_class);
@@ -89,7 +89,7 @@ Class::Usul::Constraints - Defines Moose type constraints
 
 =head1 Version
 
-This document describes Class::Usul::Constraints version 0.13.$Revision: 270 $
+This document describes Class::Usul::Constraints version 0.14.$Revision: 277 $
 
 =head1 Synopsis
 

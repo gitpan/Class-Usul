@@ -1,11 +1,11 @@
-# @(#)$Id: Build.pm 270 2013-04-14 18:38:18Z pjf $
+# @(#)$Id: Build.pm 277 2013-04-21 20:02:29Z pjf $
 
 package Class::Usul::Build;
 
 use strict;
 use warnings;
 use feature qw(state);
-use version; our $VERSION = qv( sprintf '0.13.%d', q$Rev: 270 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 277 $ =~ /\d+/gmx );
 use parent  qw(Module::Build);
 use lib;
 
@@ -579,7 +579,8 @@ sub _get_config {
       $cache = $cfg
              = $file->dataclass_schema( $cfg->{config_attrs} )->load( $path );
    }
-   else { $self->cli->warning( 'Path [_1] not found', { args => [ $path ] } ) }
+   # TODO: Is this more trouble than its worth?
+   #else { $self->cli->warning( 'Path [_1] not found', { args => [ $path ] } ) }
 
    $cfg->{version} .= NUL;
    return $cfg;
@@ -1128,7 +1129,7 @@ Class::Usul::Build - M::B utility methods
 
 =head1 Version
 
-This document describes Class::Usul::Build version 0.13.$Revision: 270 $
+This document describes Class::Usul::Build version 0.14.$Revision: 277 $
 
 =head1 Synopsis
 

@@ -17,6 +17,7 @@
       "directory" : [
          "examples",
          "inc",
+         "share",
          "t"
       ]
    },
@@ -60,7 +61,7 @@
             "IO::Interactive" : "v0.0.5",
             "IPC::Cmd" : "0.42",
             "IPC::Open3" : "1.02",
-            "IPC::SRLock" : "v0.8.202",
+            "IPC::SRLock" : "v0.9.0",
             "Import::Into" : "1.001",
             "Log::Handler" : "0.63",
             "Module::Build" : "0.38",
@@ -90,6 +91,7 @@
             "Sub::Exporter::Progressive" : "0.001006",
             "Term::ReadKey" : "2.3",
             "Text::Autoformat" : "1.13",
+            "Text::Format" : "0.53",
             "Time::Zone" : "2.22",
             "Try::Tiny" : "0.09",
             "YAML::Syck" : "1.05",
@@ -104,99 +106,99 @@
    "provides" : {
       "Class::Usul" : {
          "file" : "lib/Class/Usul.pm",
-         "version" : "v0.13.272"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Build" : {
          "file" : "lib/Class/Usul/Build.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Build::InstallActions" : {
          "file" : "lib/Class/Usul/Build/InstallActions.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Build::Questions" : {
          "file" : "lib/Class/Usul/Build/Questions.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Build::VCS" : {
          "file" : "lib/Class/Usul/Build/VCS.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Config" : {
          "file" : "lib/Class/Usul/Config.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Config::Programs" : {
          "file" : "lib/Class/Usul/Config/Programs.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Constants" : {
          "file" : "lib/Class/Usul/Constants.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Constraints" : {
          "file" : "lib/Class/Usul/Constraints.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Crypt" : {
          "file" : "lib/Class/Usul/Crypt.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::File" : {
          "file" : "lib/Class/Usul/File.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Functions" : {
          "file" : "lib/Class/Usul/Functions.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::IPC" : {
          "file" : "lib/Class/Usul/IPC.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::L10N" : {
          "file" : "lib/Class/Usul/L10N.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Log" : {
          "file" : "lib/Class/Usul/Log.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Moose" : {
          "file" : "lib/Class/Usul/Moose.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Plugin::Build::Debian" : {
          "file" : "lib/Class/Usul/Plugin/Build/Debian.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Programs" : {
          "file" : "lib/Class/Usul/Programs.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Response::IPC" : {
          "file" : "lib/Class/Usul/Response/IPC.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Response::Meta" : {
          "file" : "lib/Class/Usul/Response/Meta.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Response::Table" : {
          "file" : "lib/Class/Usul/Response/Table.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::Time" : {
          "file" : "lib/Class/Usul/Time.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::TraitFor::LoadingClasses" : {
          "file" : "lib/Class/Usul/TraitFor/LoadingClasses.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       },
       "Class::Usul::TraitFor::UntaintedGetopts" : {
          "file" : "lib/Class/Usul/TraitFor/UntaintedGetopts.pm",
-         "version" : "v0.13.270"
+         "version" : "v0.14.277"
       }
    },
    "release_status" : "stable",
@@ -209,5 +211,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.13.272"
+   "version" : "v0.14.277"
 }
