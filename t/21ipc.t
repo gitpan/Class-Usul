@@ -1,8 +1,8 @@
-# @(#)$Id: 21ipc.t 277 2013-04-21 20:02:29Z pjf $
+# @(#)$Id: 21ipc.t 278 2013-04-25 19:09:59Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 277 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 278 $ =~ /\d+/gmx );
 use File::Spec::Functions qw( catdir catfile tmpdir updir );
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -72,8 +72,12 @@ like popen_test( q(out), $cmd ), qr{ pit \s+ of \s+ fire }msx,
 
 $cmd = "${perl} -e \"print <>\"";
 
-is popen_test( q(out), $cmd, { in => [ 'some text' ] } ), 'some text',
-   'popen captures stdin and stdout';
+SKIP: {
+   $osname eq q(mswin32) and skip 'popen capture stdin - not on MSWin32', 1;
+
+   is popen_test( q(out), $cmd, { in => [ 'some text' ] } ), 'some text',
+      'popen captures stdin and stdout';
+}
 
 sub run_cmd_test {
    my $want = shift; my $r = eval { $prog->run_cmd( @_ ) };
