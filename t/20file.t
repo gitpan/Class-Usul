@@ -1,8 +1,8 @@
-# @(#)$Id: 20file.t 277 2013-04-21 20:02:29Z pjf $
+# @(#)$Id: 20file.t 280 2013-04-26 19:35:39Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 277 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 280 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -102,10 +102,10 @@ ok $cuf->tempname =~ m{ $PID .{4} }msx, 'Temporary filename correct pattern';
 my $io = $cuf->io( q(t) ); my $entry;
 
 while (defined ($entry = $io->next)) {
-   $entry->filename eq q(10functions.t) and last;
+   $entry->filename eq q(20file.t) and last;
 }
 
-ok defined $entry && $entry->filename eq q(10functions.t), 'Directory listing';
+ok defined $entry && $entry->filename eq q(20file.t), 'Directory listing';
 
 done_testing;
 

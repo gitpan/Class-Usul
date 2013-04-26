@@ -1,8 +1,8 @@
-# @(#)$Id: 18programs.t 277 2013-04-21 20:02:29Z pjf $
+# @(#)$Id: 18programs.t 279 2013-04-26 17:56:22Z pjf $
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 277 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 279 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -57,7 +57,7 @@ eval { $prog->file->io( 'Dummy' )->all }; my $e = $EVAL_ERROR || q();
 
 like $e, qr{ Dummy \s+ cannot \s+ open }mx, 'Non existant file';
 
-is ref $e, 'File::DataClass::Exception', 'File exception class';
+is ref $e, 'Class::Usul::Exception', 'Our exception class';
 
 unlink $logfile; my $io = $prog->file->io( $logfile ); $io->touch;
 

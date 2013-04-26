@@ -1,15 +1,15 @@
-# @(#)$Id: Constants.pm 277 2013-04-21 20:02:29Z pjf $
+# @(#)$Id: Constants.pm 279 2013-04-26 17:56:22Z pjf $
 
 package Class::Usul::Constants;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 277 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 279 $ =~ /\d+/gmx );
 
+use Class::Usul::Exception;
+use File::DataClass::Constants ();
 use Moose;
 use MooseX::ClassAttribute;
-use File::DataClass::Constants ();
-use File::DataClass::Exception;
 
 class_has 'Assert'          => is => 'rw', isa => 'Maybe[CodeRef]';
 
@@ -20,7 +20,7 @@ class_has 'Config_Key'      => is => 'rw', isa => 'Str',
    default                  => q(Plugin::Usul);
 
 class_has 'Exception_Class' => is => 'rw', isa => 'File::DataClass::Exception',
-   default                  => q(File::DataClass::Exception);
+   default                  => q(Class::Usul::Exception);
 
 my @_constants;
 
@@ -96,7 +96,7 @@ Class::Usul::Constants - Definitions of constant values
 
 =head1 Version
 
-0.14.$Rev: 277 $
+0.15.$Rev: 279 $
 
 =head1 Synopsis
 

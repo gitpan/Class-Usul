@@ -1,10 +1,10 @@
-# @(#)$Id: Debian.pm 277 2013-04-21 20:02:29Z pjf $
+# @(#)$Id: Debian.pm 279 2013-04-26 17:56:22Z pjf $
 
 package Class::Usul::Plugin::Build::Debian;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 277 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 279 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions qw(throw);
@@ -464,7 +464,7 @@ Class::Usul::Build::Debian - Create a Debian package from a standalone applicati
 
 =head1 Version
 
-0.14.$Revision: 277 $
+0.15.$Revision: 279 $
 
 =head1 Synopsis
 

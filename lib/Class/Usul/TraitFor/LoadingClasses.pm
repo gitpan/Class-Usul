@@ -1,10 +1,10 @@
-# @(#)$Id: LoadingClasses.pm 277 2013-04-21 20:02:29Z pjf $
+# @(#)$Id: LoadingClasses.pm 279 2013-04-26 17:56:22Z pjf $
 
 package Class::Usul::TraitFor::LoadingClasses;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 277 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 279 $ =~ /\d+/gmx );
 
 use Moose::Role;
 use Class::MOP;
@@ -96,7 +96,7 @@ Class::Usul::TraitFor::LoadingClasses - Load classes at runtime
 
 =head1 Version
 
-0.14.$Revision: 277 $
+0.15.$Revision: 279 $
 
 =head1 Synopsis
 

@@ -26,76 +26,82 @@ no_index:
 provides:
   Class::Usul:
     file: lib/Class/Usul.pm
-    version: v0.14.278
+    version: v0.15.281
   Class::Usul::Build:
     file: lib/Class/Usul/Build.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Build::InstallActions:
     file: lib/Class/Usul/Build/InstallActions.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Build::Questions:
     file: lib/Class/Usul/Build/Questions.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Build::VCS:
     file: lib/Class/Usul/Build/VCS.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Config:
     file: lib/Class/Usul/Config.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Config::Programs:
     file: lib/Class/Usul/Config/Programs.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Constants:
     file: lib/Class/Usul/Constants.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Constraints:
     file: lib/Class/Usul/Constraints.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Crypt:
     file: lib/Class/Usul/Crypt.pm
-    version: v0.14.277
+    version: v0.15.279
+  Class::Usul::Exception:
+    file: lib/Class/Usul/Exception.pm
+    version: v0.15.280
   Class::Usul::File:
     file: lib/Class/Usul/File.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Functions:
     file: lib/Class/Usul/Functions.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::IPC:
     file: lib/Class/Usul/IPC.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::L10N:
     file: lib/Class/Usul/L10N.pm
-    version: v0.14.277
+    version: v0.15.279
+  Class::Usul::Lock:
+    file: lib/Class/Usul/Lock.pm
+    version: v0.15.281
   Class::Usul::Log:
     file: lib/Class/Usul/Log.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Moose:
     file: lib/Class/Usul/Moose.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Plugin::Build::Debian:
     file: lib/Class/Usul/Plugin/Build/Debian.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Programs:
     file: lib/Class/Usul/Programs.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Response::IPC:
     file: lib/Class/Usul/Response/IPC.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Response::Meta:
     file: lib/Class/Usul/Response/Meta.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Response::Table:
     file: lib/Class/Usul/Response/Table.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::Time:
     file: lib/Class/Usul/Time.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::TraitFor::LoadingClasses:
     file: lib/Class/Usul/TraitFor/LoadingClasses.pm
-    version: v0.14.277
+    version: v0.15.279
   Class::Usul::TraitFor::UntaintedGetopts:
     file: lib/Class/Usul/TraitFor/UntaintedGetopts.pm
-    version: v0.14.277
+    version: v0.15.279
 recommends:
   App::cpanminus: 1.6005
   Pod::Markdown: 1.322
@@ -162,4 +168,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Usul
   homepage: http://www.roxsoft.co.uk
   license: http://dev.perl.org/licenses/
-version: v0.14.278
+version: v0.15.281

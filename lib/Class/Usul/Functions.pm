@@ -1,11 +1,11 @@
-# @(#)$Id: Functions.pm 277 2013-04-21 20:02:29Z pjf $
+# @(#)$Id: Functions.pm 279 2013-04-26 17:56:22Z pjf $
 
 package Class::Usul::Functions;
 
 use strict;
 use warnings;
 use feature      qw(state);
-use version; our $VERSION = qv( sprintf '0.14.%d', q$Rev: 277 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 279 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Data::Printer alias => q(Dumper), colored => 1, indent => 3,
@@ -485,7 +485,7 @@ CatalystX::Usul::Functions - Globally accessible functions
 
 =head1 Version
 
-0.6.$Revision: 277 $
+0.6.$Revision: 279 $
 
 =head1 Synopsis
 
