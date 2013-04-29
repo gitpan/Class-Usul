@@ -1,15 +1,14 @@
-# @(#)$Id: Constraints.pm 279 2013-04-26 17:56:22Z pjf $
+# @(#)$Id: Constraints.pm 289 2013-04-29 15:25:46Z pjf $
 
 package Class::Usul::Constraints;
 
 use strict;
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 279 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 289 $ =~ /\d+/gmx );
 
 use Encode                      qw(find_encoding);
 use Class::Load                 qw(load_first_existing_class);
 use Class::Usul::Constants;
-use Class::Usul::Functions;
 use MooseX::Types -declare => [ qw(BaseType ClassName ConfigType EncodingType
                                    FileType IPCType L10NType LockType LogType
                                    NullLoadingClass RequestType) ];
@@ -46,7 +45,9 @@ subtype LockType, as Object,
 
 subtype LogType, as Object,
    where   { $_->isa( q(Class::Null) ) or __has_log_level_methods( $_ ) },
-   message { 'Object '.(blessed $_ || $_).' is missing a log level method' };
+   message { blessed $_
+                ? 'Object '.(blessed $_).' is missing a log level method'
+                : "Scalar ${_} is not on object reference" };
 
 subtype NullLoadingClass, as MooseClassName;
 coerce  NullLoadingClass,
@@ -55,7 +56,9 @@ coerce  NullLoadingClass,
 
 subtype RequestType, as Object,
    where   { $_->can( q(params) ) },
-   message { 'Object '.(blessed $_ || $_).' is missing a params method' };
+   message { blessed $_
+                ? 'Object '.(blessed $_).' is missing a params method'
+                : "Scalar ${_} is not on object reference" };
 
 sub __has_log_level_methods {
    my $obj = shift;
@@ -89,7 +92,7 @@ Class::Usul::Constraints - Defines Moose type constraints
 
 =head1 Version
 
-This document describes Class::Usul::Constraints version 0.15.$Revision: 279 $
+This document describes Class::Usul::Constraints version 0.16.$Revision: 289 $
 
 =head1 Synopsis
 

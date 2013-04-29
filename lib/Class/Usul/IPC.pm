@@ -1,8 +1,8 @@
-# @(#)$Id: IPC.pm 279 2013-04-26 17:56:22Z pjf $
+# @(#)$Id: IPC.pm 289 2013-04-29 15:25:46Z pjf $
 
 package Class::Usul::IPC;
 
-use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 279 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 289 $ =~ /\d+/gmx );
 
 use Class::Null;
 use Class::Usul::Moose;
@@ -411,7 +411,7 @@ sub _run_cmd_using_ipc_run {
    if ($rv > $opts->{expected_rv}) {
       $error ||= 'Unknown error';
       $opts->{debug} and $self->log->debug( "RV ${rv}: ${error}" );
-      throw error => $error, rv => $rv;
+      throw error => $error, out => $out, rv => $rv;
    }
 
    return $self->response_class->new( core   => $core,   out    => $out,
@@ -492,7 +492,7 @@ sub _run_cmd_using_system {
    if ($rv > $opts->{expected_rv}) {
       $error ||= 'Unknown error';
       $opts->{debug} and $self->log->debug( "RV ${rv}: ${error}" );
-      throw error => $error, rv => $rv;
+      throw error => $error, out => $out, rv => $rv;
    }
 
    return $self->response_class->new( core   => $core,   out    => $out,
@@ -654,7 +654,7 @@ Class::Usul::IPC - List/Create/Delete processes
 
 =head1 Version
 
-0.15.$Revision: 279 $
+0.16.$Revision: 289 $
 
 =head1 Synopsis
 

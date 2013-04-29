@@ -1,13 +1,11 @@
-# @(#)$Id: Programs.pm 279 2013-04-26 17:56:22Z pjf $
+# @(#)$Id: Programs.pm 289 2013-04-29 15:25:46Z pjf $
 
 package Class::Usul::Programs;
 
 use attributes ();
-use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 279 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 289 $ =~ /\d+/gmx );
 
 use Class::Inspector;
-use Class::Usul::IPC;
-use Class::Usul::File;
 use Class::Usul::Moose;
 use Class::Usul::Constants;
 use Class::Usul::Functions qw(abs_path app_prefix arg_list assert_directory
@@ -15,6 +13,8 @@ use Class::Usul::Functions qw(abs_path app_prefix arg_list assert_directory
                               exception find_source is_arrayref is_hashref
                               is_member say throw untaint_identifier
                               untaint_path);
+use Class::Usul::File;
+use Class::Usul::IPC;
 use Config;
 use Encode                 qw(decode);
 use English                qw(-no_match_vars);
@@ -322,13 +322,11 @@ sub run {
    my $text  = 'Started by '.$self->logname.' Version '.$self->VERSION.SPC;
       $text .= 'Pid '.(abs $PID);
 
-   $self->output( $text );
+   $self->output( $text ); umask $self->mode;
 
    if ($method eq 'run_chain' or $self->can_call( $method )) {
       my $params = exists $self->params->{ $method }
                  ? $self->params->{ $method } : [];
-
-      umask $self->mode;
 
       try {
          defined ($rv = $self->$method( @{ $params } ))
@@ -359,7 +357,7 @@ sub run {
 sub run_chain {
    my ($self, $method) = @_; $method or $self->_output_usage( 0 );
 
-   $self->error( "Method ${method} unknown" );
+   $self->fatal( exception "Method ${method} unknown" );
    return FAILED;
 }
 
@@ -433,9 +431,9 @@ sub _build__os {
 }
 
 sub _catch_run_exception {
-   my ($self, $method, $error) = @_; my $e = exception $error;
+   my ($self, $method, $error) = @_; my $e;
 
-   unless ($e) {
+   unless ($e = exception $error) {
       $self->error( 'Method [_1] exception without error',
                     { args => [ $method ] } );
       return UNDEFINED_RV;
@@ -646,7 +644,7 @@ sub __output_stacktrace {
    my $e = shift;
 
    $e and blessed $e and $e->can( q(stacktrace) )
-      and __print_fh( \*STDERR, $e->stacktrace );
+      and __print_fh( \*STDERR, NUL.$e->stacktrace );
 
    return;
 }
@@ -757,7 +755,7 @@ Class::Usul::Programs - Provide support for command line programs
 
 =head1 Version
 
-This document describes Class::Usul::Programs version 0.15.$Revision: 279 $
+This document describes Class::Usul::Programs version 0.16.$Revision: 289 $
 
 =head1 Synopsis
 

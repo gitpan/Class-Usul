@@ -1,11 +1,11 @@
-# @(#)$Id: Moose.pm 279 2013-04-26 17:56:22Z pjf $
+# @(#)$Id: Moose.pm 289 2013-04-29 15:25:46Z pjf $
 
 package Class::Usul::Moose;
 
 use strict;
 use warnings;
 use feature ();
-use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 279 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 289 $ =~ /\d+/gmx );
 use namespace::autoclean ();
 
 use Class::Usul::Constraints ();
@@ -44,7 +44,7 @@ sub _do_import {
       ( into => $target, also => $opts->{also} || [] );
 
    feature->import( qw(state switch) );
-   namespace::autoclean->import( -cleanee => $target );
+   $opts->{no_autoclean} or namespace::autoclean->import( -cleanee => $target );
    $class->$import( { into => $target } );
    Class::Usul::Constraints->import( { into => $target }, q(:all) );
    MooseX::AttributeShortcuts->import::into( $target );
@@ -74,7 +74,7 @@ Class::Usul::Moose - Moose, the way I like it.
 
 =head1 Version
 
-0.15.$Revision: 279 $
+0.16.$Revision: 289 $
 
 =head1 Synopsis
 

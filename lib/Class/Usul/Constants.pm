@@ -1,10 +1,10 @@
-# @(#)$Id: Constants.pm 279 2013-04-26 17:56:22Z pjf $
+# @(#)$Id: Constants.pm 289 2013-04-29 15:25:46Z pjf $
 
 package Class::Usul::Constants;
 
 use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 279 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 289 $ =~ /\d+/gmx );
 
 use Class::Usul::Exception;
 use File::DataClass::Constants ();
@@ -19,7 +19,7 @@ class_has 'Config_Extn'     => is => 'rw', isa => 'Str',
 class_has 'Config_Key'      => is => 'rw', isa => 'Str',
    default                  => q(Plugin::Usul);
 
-class_has 'Exception_Class' => is => 'rw', isa => 'File::DataClass::Exception',
+class_has 'Exception_Class' => is => 'rw', isa => 'ClassName',
    default                  => q(Class::Usul::Exception);
 
 my @_constants;
@@ -96,7 +96,7 @@ Class::Usul::Constants - Definitions of constant values
 
 =head1 Version
 
-0.15.$Rev: 279 $
+0.16.$Rev: 289 $
 
 =head1 Synopsis
 

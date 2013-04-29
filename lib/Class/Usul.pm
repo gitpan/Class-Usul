@@ -1,8 +1,8 @@
-# @(#)$Id: Usul.pm 282 2013-04-27 01:10:20Z pjf $
+# @(#)$Id: Usul.pm 290 2013-04-29 17:33:10Z pjf $
 
 package Class::Usul;
 
-use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 282 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 290 $ =~ /\d+/gmx );
 
 use 5.010;
 use Class::Usul::Moose;
@@ -108,7 +108,7 @@ Class::Usul - A base class providing config, locking, logging, and l10n
 
 =head1 Version
 
-Describes Class::Usul version 0.15.$Revision: 282 $
+Describes Class::Usul version 0.16.$Revision: 290 $
 
 =head1 Synopsis
 
@@ -271,4 +271,3 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE
 # mode: perl
 # tab-width: 3
 # End:
-

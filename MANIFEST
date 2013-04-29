@@ -45,7 +45,6 @@ t/04critic.t
 t/05kwalitee.t
 t/06yaml.t
 t/07podspelling.t
-t/10excepton.t
 t/11functions.t
 t/12l10n.t
 t/14time.t

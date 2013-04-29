@@ -1,11 +1,11 @@
-# @(#)$Id: Functions.pm 279 2013-04-26 17:56:22Z pjf $
+# @(#)$Id: Functions.pm 289 2013-04-29 15:25:46Z pjf $
 
 package Class::Usul::Functions;
 
 use strict;
 use warnings;
 use feature      qw(state);
-use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 279 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 289 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Data::Printer alias => q(Dumper), colored => 1, indent => 3,
@@ -152,7 +152,7 @@ sub escape_TT (;$$) {
 }
 
 sub exception (;@) {
-   return EXCEPTION_CLASS->catch( @_ );
+   return EXCEPTION_CLASS->caught( @_ );
 }
 
 sub find_source ($) {
@@ -485,7 +485,7 @@ CatalystX::Usul::Functions - Globally accessible functions
 
 =head1 Version
 
-0.6.$Revision: 279 $
+0.6.$Revision: 289 $
 
 =head1 Synopsis
 
@@ -808,7 +808,7 @@ Returns the id of this thread. Returns zero if threads are not loaded
 
    throw error => q(error_key), args => [ q(error_arg) ];
 
-Expose L<File::DataClass::Exception/throw>. L<Class::Usul::Constants> has a
+Expose L<Class::Usul::Exception/throw>. L<Class::Usul::Constants> has a
 class attribute I<Exception_Class> which can be set change the class
 of the thrown exception
 

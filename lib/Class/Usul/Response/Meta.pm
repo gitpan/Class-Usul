@@ -1,8 +1,8 @@
-# @(#)$Id: Meta.pm 279 2013-04-26 17:56:22Z pjf $
+# @(#)$Id: Meta.pm 289 2013-04-29 15:25:46Z pjf $
 
 package Class::Usul::Response::Meta;
 
-use version; our $VERSION = qv( sprintf '0.15.%d', q$Rev: 279 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 289 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::File;
@@ -56,7 +56,7 @@ Class::Usul::Response::Meta - Class for CPAN Meta file
 
 =head1 Version
 
-This document describes Class::Usul::Response::Meta version 0.15.$Revision: 279 $
+This document describes Class::Usul::Response::Meta version 0.16.$Revision: 289 $
 
 =head1 Synopsis
 
