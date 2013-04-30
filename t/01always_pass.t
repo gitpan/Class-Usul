@@ -1,4 +1,4 @@
-# @(#)$Id: 01always_pass.t 234 2012-11-13 20:02:50Z pjf $
+# @(#)$Ident: 01always_pass.t 2013-04-29 19:23 pjf ;
 # Bob-Version: 1.7
 
 use strict;

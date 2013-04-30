@@ -1,10 +1,10 @@
-# @(#)$Id: Build.PL 116 2012-04-18 08:18:15Z pjf $
+# @(#)$Id$
 # Definitions. Change these in case of live use
 
 use strict;
 use warnings;
 use inc::Bob; # Module::Build subclass
-use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 116 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.6.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 my $pattern  = 's{ \Q${from}\E \\.%d    }{${to}.%d}gmx; ';
    $pattern .= 's{ \Q${from}\E \\.\$Rev }{${to}.\$Rev}gmx';

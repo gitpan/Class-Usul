@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
-# @(#)$Id: usul_cli 130 2012-05-01 00:30:29Z pjf $
+# @(#)$Id$
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 130 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.1.%d', q$Rev: 1 $ =~ /\d+/gmx );
 use File::Spec::Functions qw(catdir updir);
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -44,7 +44,7 @@ Displays a list of available methods
 
 =head1 VERSION
 
-0.1.$Rev: 130 $
+0.1.$Rev: 1 $
 
 =head1 DESCRIPTION
 

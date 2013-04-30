@@ -1,11 +1,11 @@
-# @(#)$Id: Functions.pm 289 2013-04-29 15:25:46Z pjf $
+# @(#)$Ident: Functions.pm 2013-04-29 21:41 pjf ;
 
 package Class::Usul::Functions;
 
 use strict;
 use warnings;
 use feature      qw(state);
-use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 289 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.17.%d', q$Rev: 4 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Data::Printer alias => q(Dumper), colored => 1, indent => 3,
@@ -337,8 +337,11 @@ sub untaint_path (;$) {
 sub untaint_string ($;$) {
    my ($regex, $string) = @_; my ($untainted) = ($string || q()) =~ $regex;
 
-   (defined $untainted and $untainted eq $string)
-      or throw( 'String '.($string // 'undef')." contains possible taint\n" );
+   unless (defined $untainted and $untainted eq $string) {
+      my $err = 'String '.($string // '<undef>')." contains possible taint\n";
+
+      throw( error => $err, level => 3 );
+   }
 
    return $untainted;
 }
@@ -485,7 +488,7 @@ CatalystX::Usul::Functions - Globally accessible functions
 
 =head1 Version
 
-0.6.$Revision: 289 $
+This documents version v0.17.$Rev: 4 $
 
 =head1 Synopsis
 

@@ -1,10 +1,9 @@
-# @(#)$Id: Constants.pm 289 2013-04-29 15:25:46Z pjf $
+# @(#)$Ident: Constants.pm 2013-04-29 19:41 pjf ;
 
 package Class::Usul::Constants;
 
-use strict;
 use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.16.%d', q$Rev: 289 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.17.%d', q$Rev: 4 $ =~ /\d+/gmx );
 
 use Class::Usul::Exception;
 use File::DataClass::Constants ();
@@ -96,7 +95,7 @@ Class::Usul::Constants - Definitions of constant values
 
 =head1 Version
 
-0.16.$Rev: 289 $
+This documents version v0.17.$Rev: 4 $
 
 =head1 Synopsis
 
