@@ -1,9 +1,9 @@
-# @(#)$Ident: Programs.pm 2013-05-02 14:04 pjf ;
+# @(#)$Ident: Programs.pm 2013-05-10 20:36 pjf ;
 
 package Class::Usul::Programs;
 
 use attributes ();
-use version; our $VERSION = qv( sprintf '0.18.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.18.%d', q$Rev: 5 $ =~ /\d+/gmx );
 
 use Class::Inspector;
 use Class::Usul::Moose;
@@ -11,7 +11,7 @@ use Class::Usul::Constants;
 use Class::Usul::Functions qw(abs_path app_prefix arg_list assert_directory
                               class2appdir classdir elapsed env_prefix
                               exception find_source is_arrayref is_hashref
-                              is_member say throw untaint_identifier
+                              is_member logname say throw untaint_identifier
                               untaint_path);
 use Class::Usul::File;
 use Class::Usul::IPC;
@@ -28,7 +28,6 @@ use Pod::Usage;
 use Term::ReadKey;
 use Text::Autoformat;
 use Try::Tiny;
-use User::pwent;
 
 extends q(Class::Usul);
 with    q(MooseX::Getopt::Dashes);
@@ -36,7 +35,6 @@ with    q(Class::Usul::TraitFor::LoadingClasses);
 with    q(Class::Usul::TraitFor::UntaintedGetopts);
 
 # Override attributes in base class
-
 has '+config_class' => default => sub { 'Class::Usul::Config::Programs' };
 
 has '+debug'        => traits => [ 'Getopt' ], cmd_aliases => q(D),
@@ -45,7 +43,6 @@ has '+debug'        => traits => [ 'Getopt' ], cmd_aliases => q(D),
 has '+help_flag'    => cmd_aliases => [ qw(usage ?) ];
 
 # Public attributes
-
 has 'help_options' => is => 'ro', isa => Bool, default => FALSE,
    documentation   => 'Uses Pod::Usage to describe the program options',
    traits          => [ 'Getopt' ], cmd_aliases => q(h), cmd_flag => 'help_opt';
@@ -85,7 +82,6 @@ has 'version'      => is => 'ro', isa => Bool, default => FALSE,
    traits          => [ 'Getopt' ], cmd_aliases => q(V), cmd_flag => 'version';
 
 # Private attributes
-
 has '_file'        => is => 'lazy', isa => FileType,
    default         => sub { Class::Usul::File->new( builder => $_[ 0 ] ) },
    handles         => [ qw(io) ], init_arg => undef, reader => 'file';
@@ -93,9 +89,6 @@ has '_file'        => is => 'lazy', isa => FileType,
 has '_ipc'         => is => 'lazy', isa => IPCType,
    default         => sub { Class::Usul::IPC->new( builder => $_[ 0 ] ) },
    handles         => [ qw(run_cmd) ], init_arg => undef, reader => 'ipc';
-
-has '_logname'     => is => 'lazy', isa => NonEmptySimpleStr,
-   init_arg        => undef, reader => 'logname';
 
 has '_meta_class'  => is => 'lazy', isa => LoadableClass, coerce => TRUE,
    default         => sub { 'Class::Usul::Response::Meta' },
@@ -114,6 +107,7 @@ has '_params'      => is => 'ro',   isa => HashRef, default => sub { {} },
 has '_pwidth'      => is => 'rw',   isa => PositiveInt, accessor => 'pwidth',
    default         => 60, init_arg => 'pwidth';
 
+# Construction
 around 'BUILDARGS' => sub {
    my ($next, $self, @args) = @_; my $attr = $self->$next( @args );
 
@@ -138,6 +132,7 @@ sub BUILD {
    return;
 }
 
+# Public methods
 sub add_leader {
    my ($self, $text, $args) = @_; $text or return NUL; $args ||= {};
 
@@ -319,7 +314,7 @@ sub quiet {
 sub run {
    my $self  = shift; my $method = $self->_get_run_method; my $rv;
 
-   my $text  = 'Started by '.$self->logname.' Version '.$self->VERSION.SPC;
+   my $text  = 'Started by '.logname.' Version '.$self->VERSION.SPC;
       $text .= 'Pid '.(abs $PID);
 
    $self->output( $text ); umask $self->mode;
@@ -405,7 +400,6 @@ sub yorn { # General yes or no input routine
 }
 
 # Private methods
-
 sub _apply_encoding {
    my $self = shift; my $enc = $self->encoding;
 
@@ -416,11 +410,6 @@ sub _apply_encoding {
    $_ = decode( $enc, $_ ) for @ARGV;
 
    return;
-}
-
-sub _build__logname {
-   return untaint_identifier( $ENV{USER} || $ENV{LOGNAME}
-                              || getpwuid( $UID )->name || 'unknown' );
 }
 
 sub _build__os {
@@ -541,7 +530,6 @@ sub _usage_for {
 }
 
 # Private functions
-
 sub __find_apphome {
    my ($appclass, $home) = @_; my ($file, $path);
 
@@ -760,7 +748,7 @@ Class::Usul::Programs - Provide support for command line programs
 
 =head1 Version
 
-This document describes Class::Usul::Programs version v0.18.$Rev: 1 $
+This document describes Class::Usul::Programs version v0.18.$Rev: 5 $
 
 =head1 Synopsis
 

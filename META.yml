@@ -26,7 +26,7 @@ no_index:
 provides:
   Class::Usul:
     file: lib/Class/Usul.pm
-    version: v0.18.3
+    version: v0.18.5
   Class::Usul::Build:
     file: lib/Class/Usul/Build.pm
     version: v0.18.1
@@ -41,19 +41,19 @@ provides:
     version: v0.18.1
   Class::Usul::Config:
     file: lib/Class/Usul/Config.pm
-    version: v0.18.1
+    version: v0.18.4
   Class::Usul::Config::Programs:
     file: lib/Class/Usul/Config/Programs.pm
     version: v0.18.1
   Class::Usul::Constants:
     file: lib/Class/Usul/Constants.pm
-    version: v0.18.1
+    version: v0.18.4
   Class::Usul::Constraints:
     file: lib/Class/Usul/Constraints.pm
     version: v0.18.1
   Class::Usul::Crypt:
     file: lib/Class/Usul/Crypt.pm
-    version: v0.18.1
+    version: v0.18.4
   Class::Usul::Exception:
     file: lib/Class/Usul/Exception.pm
     version: v0.18.3
@@ -62,13 +62,13 @@ provides:
     version: v0.18.1
   Class::Usul::Functions:
     file: lib/Class/Usul/Functions.pm
-    version: v0.18.1
+    version: v0.18.5
   Class::Usul::IPC:
     file: lib/Class/Usul/IPC.pm
-    version: v0.18.1
+    version: v0.18.4
   Class::Usul::L10N:
     file: lib/Class/Usul/L10N.pm
-    version: v0.18.1
+    version: v0.18.4
   Class::Usul::Lock:
     file: lib/Class/Usul/Lock.pm
     version: v0.18.1
@@ -83,13 +83,13 @@ provides:
     version: v0.18.1
   Class::Usul::Programs:
     file: lib/Class/Usul/Programs.pm
-    version: v0.18.1
+    version: v0.18.5
   Class::Usul::Response::IPC:
     file: lib/Class/Usul/Response/IPC.pm
     version: v0.18.1
   Class::Usul::Response::Meta:
     file: lib/Class/Usul/Response/Meta.pm
-    version: v0.18.1
+    version: v0.18.4
   Class::Usul::Response::Table:
     file: lib/Class/Usul/Response/Table.pm
     version: v0.18.1
@@ -138,10 +138,8 @@ requires:
   MooseX::ClassAttribute: 0.27
   MooseX::Getopt: 0.5
   MooseX::MethodAttributes: 0.24
-  MooseX::Role::Parameterized: 0.19
-  MooseX::Role::WithOverloading: 0.08
-  MooseX::Traits::Pluggable: 0.1
   MooseX::Types: 0.25
+  MooseX::Types::Common: 0.001008
   MooseX::Types::LoadableClass: 0.007
   POSIX: 1.09
   Path::Class: 0.16
@@ -169,4 +167,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Usul
   homepage: http://www.roxsoft.co.uk
   license: http://dev.perl.org/licenses/
-version: v0.18.3
+version: v0.18.5
