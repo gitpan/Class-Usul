@@ -1,19 +1,18 @@
-# @(#)Ident: Exception.pm 2013-05-07 23:19 pjf ;
+# @(#)Ident: Exception.pm 2013-05-09 14:17 pjf ;
 
 package Class::Usul::Exception;
 
 use namespace::autoclean;
-use version; our $VERSION = qv( sprintf '0.18.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.18.%d', q$Rev: 3 $ =~ /\d+/gmx );
 
 use Moose;
 use MooseX::Types::Common::Numeric qw(PositiveInt);
 use MooseX::Types::Moose           qw(Int Str);
 
-extends q(File::DataClass::Exception);
+extends q(Unexpected);
+with    q(Unexpected::TraitFor::ErrorLeader);
 
-File::DataClass::Exception->add_roles( 'ErrorLeader' );
-
-File::DataClass::Exception->ignore_class( 'Class::Usul::IPC' );
+__PACKAGE__->ignore_class( 'Class::Usul::IPC' );
 
 has '+class' => default => __PACKAGE__;
 
@@ -21,7 +20,8 @@ has 'out'    => is => 'ro', isa => Str, default => q();
 
 has 'rv'     => is => 'ro', isa => Int, default => 1;
 
-has 'time'   => is => 'ro', isa => PositiveInt, default => CORE::time();
+has 'time'   => is => 'ro', isa => PositiveInt, default => CORE::time(),
+   init_arg  => undef;
 
 __PACKAGE__->meta->make_immutable;
 
@@ -31,13 +31,15 @@ __END__
 
 =pod
 
+=encoding utf8
+
 =head1 Name
 
 Class::Usul::Exception - Exception handling
 
 =head1 Version
 
-This documents version v0.18.$Rev: 1 $ of L<Class::Usul::Exception>
+This documents version v0.18.$Rev: 3 $ of L<Class::Usul::Exception>
 
 =head1 Synopsis
 
@@ -77,9 +79,8 @@ leader
 
 =head1 Configuration and Environment
 
-The C<< File::DataClass::Exception->Ignore >> class attribute is an
-array ref of methods whose presence should be ignored by the error
-message leader
+The C<< __PACKAGE__->ignore_class >> class method contains a classes
+whose presence should be ignored by the error message leader
 
 Defines the following list of read only attributes;
 
@@ -124,19 +125,6 @@ Return value which defaults to one
 A positive integer which defaults to the C<CORE::time> the exception was
 thrown
 
-=item C<trace>
-
-An instance of the C<trace_class>
-
-=item C<trace_args>
-
-A hash ref of arguments passed the C<trace_class> constructor when the
-C<trace> attribute is instantiated
-
-=item C<trace_class>
-
-A loadable class which defaults to L<Devel::StackTrace>
-
 =back
 
 =head1 Subroutines/Methods
@@ -178,11 +166,6 @@ in this case
 
 Calls L</caught> passing in the options C<@args> and if there was an
 exception L</throw>s it
-
-=head2 trace_from_filter
-
-Lifted from L<StackTrace::Auto> this methods filters out frames from the
-raw stacktrace that are not of interest. If is very clever
 
 =head1 Diagnostics
 

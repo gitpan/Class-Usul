@@ -94,6 +94,7 @@
             "Text::Format" : "0.53",
             "Time::Zone" : "2.22",
             "Try::Tiny" : "0.09",
+            "Unexpected" : "v0.1.0",
             "YAML::Syck" : "1.05",
             "namespace::autoclean" : "0.09",
             "namespace::clean" : "0.11",
@@ -106,7 +107,7 @@
    "provides" : {
       "Class::Usul" : {
          "file" : "lib/Class/Usul.pm",
-         "version" : "v0.18.1"
+         "version" : "v0.18.3"
       },
       "Class::Usul::Build" : {
          "file" : "lib/Class/Usul/Build.pm",
@@ -146,7 +147,7 @@
       },
       "Class::Usul::Exception" : {
          "file" : "lib/Class/Usul/Exception.pm",
-         "version" : "v0.18.1"
+         "version" : "v0.18.3"
       },
       "Class::Usul::File" : {
          "file" : "lib/Class/Usul/File.pm",
@@ -219,5 +220,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.18.1"
+   "version" : "v0.18.3"
 }
