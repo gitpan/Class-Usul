@@ -26,10 +26,10 @@ no_index:
 provides:
   Class::Usul:
     file: lib/Class/Usul.pm
-    version: v0.18.5
+    version: v0.18.6
   Class::Usul::Build:
     file: lib/Class/Usul/Build.pm
-    version: v0.18.1
+    version: v0.18.6
   Class::Usul::Build::InstallActions:
     file: lib/Class/Usul/Build/InstallActions.pm
     version: v0.18.1
@@ -125,7 +125,7 @@ requires:
   IO::Interactive: v0.0.5
   IPC::Cmd: 0.42
   IPC::Open3: 1.02
-  IPC::SRLock: v0.11.0
+  IPC::SRLock: v0.11.11
   Import::Into: 1.001
   Log::Handler: 0.63
   Module::Build: 0.38
@@ -167,4 +167,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Usul
   homepage: http://www.roxsoft.co.uk
   license: http://dev.perl.org/licenses/
-version: v0.18.5
+version: v0.18.6
