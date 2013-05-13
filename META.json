@@ -62,10 +62,7 @@
             "Import::Into" : "1.001",
             "Log::Handler" : "0.63",
             "MRO::Compat" : "0.11",
-            "Module::Build" : "0.4004",
-            "Module::Load::Conditional" : "0.26",
             "Module::Metadata" : "1.000011",
-            "Module::Pluggable" : "3.9",
             "Moose" : "2.0802",
             "MooseX::Aliases" : "0.1",
             "MooseX::AttributeShortcuts" : "0.014",
@@ -98,7 +95,7 @@
    "provides" : {
       "Class::Usul" : {
          "file" : "lib/Class/Usul.pm",
-         "version" : "v0.19.3"
+         "version" : "v0.19.6"
       },
       "Class::Usul::Build" : {
          "file" : "lib/Class/Usul/Build.pm",
@@ -136,6 +133,10 @@
          "file" : "lib/Class/Usul/Crypt.pm",
          "version" : "v0.19.1"
       },
+      "Class::Usul::Crypt::Util" : {
+         "file" : "lib/Class/Usul/Crypt/Util.pm",
+         "version" : "v0.19.5"
+      },
       "Class::Usul::Exception" : {
          "file" : "lib/Class/Usul/Exception.pm",
          "version" : "v0.19.1"
@@ -146,7 +147,7 @@
       },
       "Class::Usul::Functions" : {
          "file" : "lib/Class/Usul/Functions.pm",
-         "version" : "v0.19.1"
+         "version" : "v0.19.6"
       },
       "Class::Usul::IPC" : {
          "file" : "lib/Class/Usul/IPC.pm",
@@ -211,5 +212,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.19.3"
+   "version" : "v0.19.6"
 }

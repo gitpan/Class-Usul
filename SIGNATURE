@@ -14,13 +14,13 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 894c7c4ddecf43f09c40339fc5d03dc3f858f827 Build.PL
-SHA1 32d3d5cff538483cc090de7414607819da754f8e Changes
+SHA1 e254d00f865ec8c3d2b996da8f021d593f444667 Build.PL
+SHA1 74e011b985c57806fb43fcc04ee27294affada08 Changes
 SHA1 2b3ccb88f716f614f8af721a1c69dba0bcdbbb32 LICENSE
-SHA1 aea559bb5e62e5f8b0e97691b2d2eb0cf6703707 MANIFEST
-SHA1 44b8ed687be17ba603d25e0cad7756e52325146e META.json
-SHA1 c2b8a199a897bbe14f0c0b9498d6ee6ee17a8907 META.yml
-SHA1 29145832918c25df79fe5e89cfd2979eeb28d543 README
+SHA1 0bce1208064baaa32a14cf9b454ec765f9e7f21c MANIFEST
+SHA1 b770b7485128766c820555df4fb89e0c85f31ec4 META.json
+SHA1 3a018aa958e0cc17fc67b38ef1c9433abe4c83d1 META.yml
+SHA1 02f6ae3492ab4563eccd71066ad2d28171d299f0 README
 SHA1 9dd700256ab2ad5c1107efd5ec9ea1416e3fa14f examples/Build.PL
 SHA1 6c8f251079fba867ffb8def839e24fbfeebadbb3 examples/usul_cli
 SHA1 1117239c120158b15163678a5ca333d1c1309168 inc/Bob.pm
@@ -28,7 +28,7 @@ SHA1 0ba6528f386a10f6f61f7e28c9be4857070ec1e0 inc/CPANTesting.pm
 SHA1 ac8d1008c0d2c63d4943d30ba5cc5ea29c5d4164 inc/M_B_Base.patch
 SHA1 cf52326f33bffefa070f6ff8b05b2a4b5d2575b4 inc/M_B_PodParser.patch
 SHA1 32d0d60cba78d86b9c2cc6ce3b511c0fbe6e0b91 inc/SubClass.pm
-SHA1 2de2c0024c783e3fca2b32a6a5ea8331eb16be9d lib/Class/Usul.pm
+SHA1 340ce6f011dddc16b5475891c66a42de2711c243 lib/Class/Usul.pm
 SHA1 92dbb3c72873bb14e523c2f03a48f40c54fbc6ad lib/Class/Usul/Build.pm
 SHA1 88fcb9b932aa3eff9198d24c4e63d72c9c2bd3b0 lib/Class/Usul/Build/InstallActions.pm
 SHA1 a6b6a5380371cfa3cb7035fce475aa024d67f439 lib/Class/Usul/Build/Questions.pm
@@ -38,9 +38,10 @@ SHA1 9b9405056ac0799cd0cf07c2146ab85e7b3ef611 lib/Class/Usul/Config/Programs.pm
 SHA1 1fff5e8f2503932c002c95c513b953cdf032b505 lib/Class/Usul/Constants.pm
 SHA1 f0f5ebe8c74e41d1141c8e4ae81e7766403b2a57 lib/Class/Usul/Constraints.pm
 SHA1 e827025037cba5d8ff797cc7bcee40ecf58b7b0c lib/Class/Usul/Crypt.pm
+SHA1 70be5e1271a90c00779c8e9757caf856371c9297 lib/Class/Usul/Crypt/Util.pm
 SHA1 af788335c1baef2b766aa30a98473c8a3c882c80 lib/Class/Usul/Exception.pm
 SHA1 3fd7a160892b5e19fbda8b28ec64470a04a66775 lib/Class/Usul/File.pm
-SHA1 5bca6f2365ece86f900eaf891e2032d25359c234 lib/Class/Usul/Functions.pm
+SHA1 9649ae600b0ec826bfa9a4d1c8953c90390f3a6e lib/Class/Usul/Functions.pm
 SHA1 2f3487c76dca6403d0940aa9002f98bbefddbddf lib/Class/Usul/IPC.pm
 SHA1 85f142fbbd0bf40b9e1794c4079b105e2e9d1fc9 lib/Class/Usul/L10N.pm
 SHA1 b99daa9b84551cb4b99182d9464c305769dd0208 lib/Class/Usul/Lock.pm
@@ -75,11 +76,11 @@ SHA1 9a0c4ec392bd326ab3c350592fb77f8384a7b924 t/test.xml
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 
-iQEcBAEBAgAGBQJRjkeWAAoJEK492j4Im1Bpq/UH/Ausee1xdCEqk95Mg0cFpl/W
-o23Q/5sEW77e5K7GGd9cy3UKuG7DOATzeLBbB5kfLJv8UrykSk6BFQBXrtN6MwYA
-wMPsfUZhY+/WYPmwETqXCaO61bXLhNUpaAWg5Y6dIgPOrlI3b92JnTIazO4PgOSE
-KyKXkv2t1v5bEuFIsLwumTTf21XIOz/1CCXpEpslsF8Hko29DYLQMLOKEME6iczN
-PP8li0b/r/dXJuOmpSoK87CqhNXbXstJfFhQUY3xHjwERqf34224Yd7NYTz55sDv
-o3wUaUVyW9ba+az6pqGlbip+It2CaBJn91HdrQZLl7s1DtogXFbymyrroxOcZas=
-=UL5A
+iQEcBAEBAgAGBQJRkFIAAAoJEK492j4Im1BpkXYIAKD3iTTqlcD4NFaw8/6hyPZx
+W7UIzjpWIElIfyHxsBCKNGa2elLJFWFVXRJPX2sn80aYVkA4qkJOqODBYaj4y81L
+NPWdXyqpKo0WMruO7qdzmADdif/iAa0lT6lw2C3bmqF8f8OW/DL442kLmgaBsUe/
+bg24zfNxSppM/Uf+hkZqWPfYty5nVdLTBq0h4kXOx4WNOTmThnBll2aiw8mtsifO
+un76tqmEX1nvMEMmkj6wHvfLevebX4hg2nT9zgV46epM6rHzB3anI1+cCp4FXEtK
+pSgszJcMktl0IFLU4ty3ESUy4YsuOBipXl25YeRvx+G+kCCmmYhviz3OMjXEscA=
+=4ZS0
 -----END PGP SIGNATURE-----
