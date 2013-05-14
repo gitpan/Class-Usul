@@ -8,10 +8,6 @@ inc/M_B_Base.patch
 inc/M_B_PodParser.patch
 inc/SubClass.pm
 lib/Class/Usul.pm
-lib/Class/Usul/Build.pm
-lib/Class/Usul/Build/InstallActions.pm
-lib/Class/Usul/Build/Questions.pm
-lib/Class/Usul/Build/VCS.pm
 lib/Class/Usul/Config.pm
 lib/Class/Usul/Config/Programs.pm
 lib/Class/Usul/Constants.pm
@@ -26,7 +22,6 @@ lib/Class/Usul/L10N.pm
 lib/Class/Usul/Lock.pm
 lib/Class/Usul/Log.pm
 lib/Class/Usul/Moose.pm
-lib/Class/Usul/Plugin/Build/Debian.pm
 lib/Class/Usul/Programs.pm
 lib/Class/Usul/Response/IPC.pm
 lib/Class/Usul/Response/Meta.pm
