@@ -1,8 +1,8 @@
-# @(#)$Ident: Meta.pm 2013-05-10 15:43 pjf ;
+# @(#)$Ident: Meta.pm 2013-05-15 00:59 pjf ;
 
 package Class::Usul::Response::Meta;
 
-use version; our $VERSION = qv( sprintf '0.20.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.21.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Moose;
 use Class::Usul::File;
@@ -38,7 +38,7 @@ around 'BUILDARGS' => sub {
       }
    }
 
-   throw error => 'No META.json or META.yml file', level => 5;
+   throw error => 'No META.json or META.yml file', level => 3;
    return;
 };
 
