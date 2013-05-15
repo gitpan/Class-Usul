@@ -84,7 +84,7 @@
    "provides" : {
       "Class::Usul" : {
          "file" : "lib/Class/Usul.pm",
-         "version" : "v0.21.1"
+         "version" : "v0.21.2"
       },
       "Class::Usul::Config" : {
          "file" : "lib/Class/Usul/Config.pm",
@@ -120,7 +120,7 @@
       },
       "Class::Usul::Functions" : {
          "file" : "lib/Class/Usul/Functions.pm",
-         "version" : "v0.21.1"
+         "version" : "v0.21.2"
       },
       "Class::Usul::IPC" : {
          "file" : "lib/Class/Usul/IPC.pm",
@@ -181,5 +181,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.21.1"
+   "version" : "v0.21.2"
 }
