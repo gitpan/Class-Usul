@@ -50,7 +50,7 @@
             "Date::Format" : "2.24",
             "DateTime::Format::Epoch" : "0.13",
             "Digest::SHA1" : "2.11",
-            "File::DataClass" : "v0.20.0",
+            "File::DataClass" : "v0.20.10",
             "File::Gettext" : "v0.16.0",
             "File::HomeDir" : "0.93",
             "IO::Interactive" : "v0.0.6",
@@ -84,7 +84,7 @@
    "provides" : {
       "Class::Usul" : {
          "file" : "lib/Class/Usul.pm",
-         "version" : "v0.21.2"
+         "version" : "v0.21.3"
       },
       "Class::Usul::Config" : {
          "file" : "lib/Class/Usul/Config.pm",
@@ -181,5 +181,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.21.2"
+   "version" : "v0.21.3"
 }
