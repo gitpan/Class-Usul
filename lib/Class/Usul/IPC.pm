@@ -1,44 +1,49 @@
-# @(#)$Ident: IPC.pm 2013-05-15 01:00 pjf ;
+# @(#)$Ident: IPC.pm 2013-06-27 14:46 pjf ;
 
 package Class::Usul::IPC;
 
-use version; our $VERSION = qv( sprintf '0.21.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use namespace::sweep;
+use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 4 $ =~ /\d+/gmx );
 
 use Class::Null;
-use Class::Usul::Moose;
 use Class::Usul::Constants;
 use Class::Usul::File;
-use Class::Usul::Functions    qw(arg_list is_arrayref is_coderef is_win32
-                                 merge_attributes strip_leader throw);
-use Class::Usul::Time         qw(time2str);
-use English                   qw(-no_match_vars);
-use File::Basename            qw(basename);
+use Class::Usul::Functions    qw( arg_list is_arrayref is_coderef is_win32
+                                  merge_attributes strip_leader throw );
+use Class::Usul::Time         qw( time2str );
+use Class::Usul::Types        qw( BaseType FileType LoadableClass );
+use English                   qw( -no_match_vars );
+use File::Basename            qw( basename );
 use File::Spec;
 use IO::Handle;
 use IO::Select;
 use IPC::Open3;
-use Module::Load::Conditional qw(can_load);
-use POSIX                     qw(WIFEXITED WNOHANG);
-use Socket                    qw(AF_UNIX SOCK_STREAM PF_UNSPEC);
+use Module::Load::Conditional qw( can_load );
+use Moo;
+use POSIX                     qw( WIFEXITED WNOHANG );
+use Scalar::Util              qw( blessed );
+use Socket                    qw( AF_UNIX SOCK_STREAM PF_UNSPEC );
 use Try::Tiny;
 
 our ($CHILD_ENUM, $CHILD_PID);
 
 # Public attributes
-has 'response_class' => is => 'lazy', isa => LoadableClass, coerce => TRUE,
-   default           => sub { 'Class::Usul::Response::IPC' };
+has 'response_class' => is => 'lazy', isa => LoadableClass,
+   default           => 'Class::Usul::Response::IPC',
+   coerce            => LoadableClass->coercion;
 
-has 'table_class'    => is => 'lazy', isa => LoadableClass, coerce => TRUE,
-   default           => sub { 'Class::Usul::Response::Table' };
+has 'table_class'    => is => 'lazy', isa => LoadableClass,
+   default           => 'Class::Usul::Response::Table',
+   coerce            => LoadableClass->coercion;
 
 # Private attributes
 has '_file' => is => 'lazy', isa => FileType,
-   default  => sub { Class::Usul::File->new( builder => $_[ 0 ]->usul ) },
-   handles  => [ qw(io) ], init_arg => undef, reader => 'file';
+   default  => sub { Class::Usul::File->new( builder => $_[ 0 ]->_usul ) },
+   handles  => [ qw( io tempdir tempfile ) ], init_arg => undef;
 
 has '_usul' => is => 'ro',   isa => BaseType,
-   handles  => [ qw(config debug lock log) ], init_arg => 'builder',
-   reader   => 'usul', required => TRUE, weak_ref => TRUE;
+   handles  => [ qw( config debug lock log ) ], init_arg => 'builder',
+   required => TRUE, weak_ref => TRUE;
 
 # Public methods
 sub child_list {
@@ -268,8 +273,8 @@ sub _default_run_options {
    $opts->{debug      } ||= $self->debug;
    $opts->{expected_rv} ||= 0;
    $opts->{in         } ||= q(stdin);
-   $opts->{tempdir    } ||= $self->file->tempdir;
-   $opts->{pid_ref    } ||= $self->file->tempfile( $opts->{tempdir} );
+   $opts->{tempdir    } ||= $self->tempdir;
+   $opts->{pid_ref    } ||= $self->tempfile( $opts->{tempdir} );
    return $opts;
 }
 
@@ -337,14 +342,14 @@ sub _run_cmd_system_args {
    my $self = shift; my $opts = $self->_default_run_options( @_ );
 
    if ($opts->{in} ne q(stdin)) {
-      $opts->{in_ref} ||= $self->file->tempfile( $opts->{tempdir} );
+      $opts->{in_ref} ||= $self->tempfile( $opts->{tempdir} );
       $opts->{in_ref}->print( $opts->{in} );
       $opts->{in} = $opts->{in_ref}->pathname;
    }
 
    # Different semi-random file names in the temp directory
-   $opts->{err_ref} ||= $self->file->tempfile( $opts->{tempdir} );
-   $opts->{out_ref} ||= $self->file->tempfile( $opts->{tempdir} );
+   $opts->{err_ref} ||= $self->tempfile( $opts->{tempdir} );
+   $opts->{out_ref} ||= $self->tempfile( $opts->{tempdir} );
    $opts->{err    } ||= q(out) if ($opts->{async});
    $opts->{err    } ||= $opts->{err_ref}->pathname;
    $opts->{out    } ||= $opts->{out_ref}->pathname;
@@ -352,7 +357,7 @@ sub _run_cmd_system_args {
 }
 
 sub _run_cmd_using_ipc_run {
-   my ($self, $cmd, @opts) = @_; my ($buf_err, $buf_out, $error, $rv);
+   my ($self, $cmd, @opts) = @_; my ($buf_err, $buf_out, $error, $h, $rv);
 
    my $opts     = $self->_run_cmd_ipc_run_args( @opts );
    my $cmd_ref  = __partition_command( $cmd );
@@ -365,18 +370,21 @@ sub _run_cmd_using_ipc_run {
    my @cmd_args = ();
 
    if    ($in  eq q(null))   { push @cmd_args, q(0<).$null      }
+   elsif (blessed $in)       { push @cmd_args, "0<${in}"        }
    elsif ($in  ne q(stdin))  { push @cmd_args, q(0<), \$in      }
 
    if    ($out eq q(null))   { push @cmd_args, q(1>).$null      }
+   elsif (blessed $out)      { push @cmd_args, "1>${out}"       }
    elsif ($out ne q(stdout)) { push @cmd_args, q(1>), \$buf_out }
 
    if    ($err eq q(out))    { push @cmd_args, q(2>&1)          }
    elsif ($err eq q(null))   { push @cmd_args, q(2>).$null      }
+   elsif (blessed $err)      { push @cmd_args, "2>${err}"       }
    elsif ($err ne q(stderr)) { push @cmd_args, q(2>), \$buf_err }
 
    $opts->{debug} and $self->log->debug( "Running ${cmd_str}" );
 
-   try   { $rv = __ipc_run_harness( $opts, $cmd_ref, @cmd_args ) }
+   try   { ($rv, $h) = __ipc_run_harness( $opts, $cmd_ref, @cmd_args ) }
    catch { throw $_ };
 
    $opts->{debug} and $self->log->debug( "Run harness returned ${rv}" );
@@ -388,26 +396,27 @@ sub _run_cmd_using_ipc_run {
 
       $out = "Started ${prog}(${pid}) in the background";
 
-      return $self->response_class->new( core => $core, out => $out,
-                                         pid  => $pid,  rv  => $rv,
-                                         sig  => $sig );
+      return $self->response_class->new( core => $core, harness => $h,
+                                         out  => $out,  pid     => $pid,
+                                         rv   => $rv,   sig     => $sig );
    }
 
    my ($stderr, $stdout);
 
    if ($out ne q(null) and $out ne q(stdout)) {
-      $out = __run_cmd_filter_out( $stdout = $buf_out );
+       not blessed $out and $out = __run_cmd_filter_out( $stdout = $buf_out );
    }
    else { $out = $stdout = NUL }
 
-   if ($err eq q(out)) { $stderr = $stdout; $error = $out; chomp $error }
+   if    ($err eq q(out)) { $stderr = $stdout; $error = $out; chomp $error }
+   elsif (blessed $err)   { $stderr = $error = $err->all; chomp $error }
    elsif ($err ne q(null) and $err ne q(stderr)) {
       $stderr = $error = $buf_err; chomp $error;
    }
    else { $stderr = $error = NUL }
 
    if ($rv > $opts->{expected_rv}) {
-      $error ||= 'Unknown error';
+      $error ||= "Unknown error rv ${rv}";
       $opts->{debug} and $self->log->debug( "RV ${rv}: ${error}" );
       throw error => $error, out => $out, rv => $rv;
    }
@@ -488,7 +497,7 @@ sub _run_cmd_using_system {
    else { $stderr = $error = NUL }
 
    if ($rv > $opts->{expected_rv}) {
-      $error ||= 'Unknown error';
+      $error ||= "Unknown error rv ${rv}";
       $opts->{debug} and $self->log->debug( "RV ${rv}: ${error}" );
       throw error => $error, out => $out, rv => $rv;
    }
@@ -577,13 +586,13 @@ sub __ipc_run_harness {
       my $h = IPC::Run::harness( $cmd_ref, @cmd_args, init => sub {
          $opts->{pid_ref}->print( $PID )->close }, '&' );
 
-      $h->start; return 0;
+      $h->start; return (0, $h);
    }
 
    my $h  = IPC::Run::harness( $cmd_ref, @cmd_args ); $h->run;
    my $rv = $h->full_result || 0; $rv =~ m{ unknown }msx and throw $rv;
 
-   return $rv;
+   return ($rv, $h);
 }
 
 sub __new_proc_process_table {
@@ -637,8 +646,6 @@ sub __run_cmd_filter_out {
                      split m{ [\n] }msx, $_[ 0 ];
 }
 
-__PACKAGE__->meta->make_immutable;
-
 1;
 
 __END__
@@ -651,7 +658,7 @@ Class::Usul::IPC - List/Create/Delete processes
 
 =head1 Version
 
-This documents version v0.21.$Rev: 1 $
+This documents version v0.22.$Rev: 4 $
 
 =head1 Synopsis
 

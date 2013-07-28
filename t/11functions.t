@@ -1,8 +1,8 @@
-# @(#)$Ident: 11functions.t 2013-05-13 15:10 pjf ;
+# @(#)$Ident: 11functions.t 2013-07-28 17:11 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.21.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 13 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -17,6 +17,12 @@ BEGIN {
             and plan skip_all => $current->notes->{stop_tests};
 }
 
+use Class::Usul::Constants ();
+
+BEGIN {
+   Class::Usul::Constants->Assert( sub { 1 } );
+}
+
 use Class::Usul::Functions qw(:all);
 use English qw( -no_match_vars );
 
@@ -29,6 +35,8 @@ is app_prefix( undef ), q(), 'app_prefix - undef arg';
 my $list = arg_list( 'key1' => 'value1', 'key2' => 'value2' );
 
 is $list->{key2}, q(value2), 'arg_list';
+
+is assert, 1, 'assert - can set coderef';
 
 like assert_directory( q(t) ), qr{ t \z }mx, 'assert_directory - true';
 ok ! assert_directory( q(dummy) ),           'assert_directory - false';
@@ -63,6 +71,8 @@ ok $token eq q(ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27
    || $token eq q(098f6bcd4621d373cade4e832627b4f6), 'create_token';
 
 is distname( q(Test::Application) ), q(Test-Application), 'distname';
+
+#close STDOUT; emit 'shit';
 
 is env_prefix( q(Test::Application) ), q(TEST_APPLICATION), 'env_prefix';
 
@@ -127,7 +137,9 @@ eval { throw( error => q(eNoMessage) ) }; my $e = $EVAL_ERROR;
 
 like $e->as_string, qr{ eNoMessage }msx, 'try/throw/catch';
 
-is trim( q(  test string  ) ), q(test string), 'trim';
+is trim( q(  test string  ) ), q(test string), 'trim - spaces';
+
+is trim( q(/test string/), q(/) ), q(test string), 'trim - other chars';
 
 is { zip( qw(a b c), qw(1 2 3) ) }->{b}, 2, 'zip';
 

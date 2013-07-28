@@ -1,24 +1,25 @@
-# @(#)$Ident: Meta.pm 2013-05-15 00:59 pjf ;
+# @(#)$Ident: Meta.pm 2013-06-25 22:57 pjf ;
 
 package Class::Usul::Response::Meta;
 
-use version; our $VERSION = qv( sprintf '0.21.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
-use Class::Usul::Moose;
 use Class::Usul::File;
-use Class::Usul::Functions qw(is_arrayref throw);
-use Cwd                    qw(getcwd);
+use Class::Usul::Functions  qw( is_arrayref throw );
+use Class::Usul::Types      qw( ArrayRef HashRef Maybe Str );
+use Cwd                     qw( getcwd );
+use Moo;
 use YAML::Syck;
 
-has 'abstract' => is => 'ro', isa => 'Maybe[Str]';
-has 'author'   => is => 'ro', isa => 'Maybe[ArrayRef]';
-has 'license'  => is => 'ro', isa => 'Maybe[ArrayRef]';
-has 'name'     => is => 'ro', isa => 'Maybe[Str]';
-has 'provides' => is => 'ro', isa => 'Maybe[HashRef]';
-has 'version'  => is => 'ro', isa => 'Maybe[Str]';
+has 'abstract' => is => 'ro', isa => Maybe[Str];
+has 'author'   => is => 'ro', isa => Maybe[ArrayRef];
+has 'license'  => is => 'ro', isa => Maybe[ArrayRef];
+has 'name'     => is => 'ro', isa => Maybe[Str];
+has 'provides' => is => 'ro', isa => Maybe[HashRef];
+has 'version'  => is => 'ro', isa => Maybe[Str];
 
 around 'BUILDARGS' => sub {
-   my ($next, $self, @args) = @_; my $attr = $self->$next( @args );
+   my ($orig, $self, @args) = @_; my $attr = $orig->( $self, @args );
 
    my $file_class = 'Class::Usul::File';
 
@@ -42,8 +43,6 @@ around 'BUILDARGS' => sub {
    return;
 };
 
-__PACKAGE__->meta->make_immutable;
-
 1;
 
 __END__
@@ -56,7 +55,7 @@ Class::Usul::Response::Meta - Class for CPAN Meta file
 
 =head1 Version
 
-This document describes Class::Usul::Response::Meta version v0.16.$Rev: 1 $
+This document describes Class::Usul::Response::Meta version v0.16.$Rev: 2 $
 
 =head1 Synopsis
 
@@ -69,13 +68,29 @@ This document describes Class::Usul::Response::Meta version v0.16.$Rev: 1 $
 Uses L<YAML::Syck> to load the specified YAML file and returns on object
 which define accessors for it's attributes
 
-=head1 Subroutines/Methods
-
-None
-
 =head1 Configuration and Environment
 
-None
+=over 3
+
+=item C<abstract>
+
+=item C<author>
+
+=item C<license>
+
+=item C<name>
+
+=item C<provides>
+
+=item C<version>
+
+=back
+
+=head1 Subroutines/Methods
+
+=head2 BUILDARGS
+
+Monkey with the constructors signature
 
 =head1 Diagnostics
 

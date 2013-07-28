@@ -1,16 +1,21 @@
-# @(#)$Ident: Log.pm 2013-04-29 19:13 pjf ;
+# @(#)$Ident: Log.pm 2013-07-01 15:39 pjf ;
 
 package Class::Usul::Log;
 
-use version; our $VERSION = qv( sprintf '0.21.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use namespace::clean -except => [ qw( class_stash meta ) ];
+use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 10 $ =~ /\d+/gmx );
 
 use Class::Null;
-use Class::Usul::Moose;
 use Class::Usul::Constants;
-use Class::Usul::Functions       qw(merge_attributes);
+use Class::Usul::Functions  qw( merge_attributes );
+use Class::Usul::Types      qw( Bool EncodingType HashRef
+                                LoadableClass LogType Undef );
 use Encode;
-use File::Basename               qw(dirname);
-use File::DataClass::Constraints qw(Path);
+use File::Basename          qw( dirname );
+use File::DataClass::Types  qw( Path );
+use Moo;
+use MooX::ClassStash;
+use Scalar::Util            qw( blessed );
 
 has '_debug_flag'     => is => 'ro',   isa => Bool, init_arg => 'debug',
    default            => FALSE;
@@ -23,14 +28,15 @@ has '_log'            => is => 'lazy', isa => LogType, init_arg => 'log';
 has '_log_attributes' => is => 'ro',   isa => HashRef,
    init_arg           => 'log_attributes', default => sub { {} };
 
-has '_log_class'      => is => 'lazy', isa => LoadableClass, coerce => TRUE,
+has '_log_class'      => is => 'lazy', isa => LoadableClass,
+   coerce             => LoadableClass->coercion,
    default            => sub { 'Log::Handler' }, init_arg => 'log_class';
 
-has '_logfile'        => is => 'ro',   isa => Path | Undef, coerce => TRUE,
-   init_arg           => 'logfile';
+has '_logfile'        => is => 'ro',   isa => Path | Undef,
+   coerce             => Path->coercion, init_arg => 'logfile';
 
 around 'BUILDARGS' => sub {
-   my ($next, $class, @rest) = @_; my $attr = $class->$next( @rest );
+   my ($orig, $class, @args) = @_; my $attr = $orig->( $class, @args );
 
    my $builder = delete $attr->{builder} or return $attr;
    my $config  = $builder->can( q(config) ) ? $builder->config : {};
@@ -43,9 +49,7 @@ around 'BUILDARGS' => sub {
 };
 
 sub BUILD {
-   my $self = shift; my $class = blessed $self; my $meta = $class->meta;
-
-   $meta->make_mutable;
+   my $self = shift; my $class = blessed $self; my $meta = $class->class_stash;
 
    for my $method (LOG_LEVELS) {
       $meta->has_method( $method ) or $meta->add_method( $method => sub {
@@ -71,7 +75,6 @@ sub BUILD {
       } );
    }
 
-   $meta->make_immutable;
    return;
 }
 
@@ -79,26 +82,31 @@ sub fh {
    return $_[ 0 ]->_log->output( 'file-out' )->{fh};
 }
 
-# Private methods
+sub get_log_attributes {
+   my $self = shift; my $attr = { %{ $self->_log_attributes } };
 
-sub _build__log {
-   my $self    = shift;
-   my $attr    = { %{ $self->_log_attributes } };
-   my $fattr   = $attr->{file} ||= {};
-   my $logfile = $fattr->{filename} || $self->_logfile;
+   if ($self->_log_class eq 'Log::Handler') {
+      my $fattr   = $attr->{file} ||= {};
+      my $logfile = $fattr->{filename} || $self->_logfile;
 
-   ($logfile and -d dirname( NUL.$logfile )) or return Class::Null->new;
+      ($logfile and -d dirname( NUL.$logfile )) or return;
 
-   $fattr->{alias   }   = 'file-out';
-   $fattr->{filename}   = NUL.$logfile;
-   $fattr->{maxlevel}   = $self->_debug_flag
-                        ? 'debug' : $fattr->{maxlevel} || 'info';
-   $fattr->{mode    } ||= q(append);
+      $fattr->{alias   }   = 'file-out';
+      $fattr->{filename}   = NUL.$logfile;
+      $fattr->{maxlevel}   = $self->_debug_flag
+                           ? 'debug' : $fattr->{maxlevel} || 'info';
+      $fattr->{mode    } ||= q(append);
+   }
 
-   return $self->_log_class->new( %{ $attr } );
+   return $attr;
 }
 
-__PACKAGE__->meta->make_immutable;
+# Private methods
+sub _build__log {
+   my $self = shift; my $attr = $self->get_log_attributes;
+
+   return $attr ? $self->_log_class->new( %{ $attr } ) : Class::Null->new;
+}
 
 1;
 
@@ -112,7 +120,7 @@ Class::Usul::Log - Create methods for each logging level that encode their outpu
 
 =head1 Version
 
-This documents version v0.21.$Rev: 1 $
+This documents version v0.22.$Rev: 10 $
 
 =head1 Synopsis
 
@@ -171,6 +179,10 @@ Path to the logfile
 
 =head1 Subroutines/Methods
 
+=head2 BUILDARGS
+
+Monkey with the constructors signature
+
 =head2 BUILD
 
 Creates a set of methods defined by the C<LOG_LEVELS> constant. The
@@ -181,6 +193,12 @@ level
 =head2 fh
 
 Return the loggers file handle
+
+=head2 get_log_attributes
+
+Returns the hash ref passed to the constructor of the log class. Returns
+undef to indicate no logging, an instance of L<Class::Null> is used
+instead
 
 =head1 Diagnostics
 
@@ -200,7 +218,7 @@ None
 
 =item L<Encode>
 
-=item L<File::DataClass::Constraints>
+=item L<File::DataClass::Types>
 
 =item L<Log::Handler>
 

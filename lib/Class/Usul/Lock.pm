@@ -1,28 +1,30 @@
-# @(#)Ident: Lock.pm 2013-05-15 17:20 pjf ;
+# @(#)Ident: Lock.pm 2013-06-30 16:08 pjf ;
 
 package Class::Usul::Lock;
 
-use version; our $VERSION = qv( sprintf '0.21.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use namespace::sweep;
+use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 8 $ =~ /\d+/gmx );
 
-use Class::Usul::Moose;
 use Class::Usul::Constants;
-use Class::Usul::Functions qw(emit);
+use Class::Usul::Functions  qw( emit );
 use Class::Usul::Time;
+use Class::Usul::Types      qw( Int Str );
+use Moo;
+use MooX::Options;
 
 extends q(Class::Usul::Programs);
 
-has 'lock_key'     => is => 'ro', isa => Str,
-   documentation   => 'Key used to set/reset a lock',
-   traits          => [ 'Getopt' ], cmd_aliases => q(k), cmd_flag => 'lock-key';
+option 'lock_key'     => is => 'ro', format => 's',
+   documentation      => 'Key used to set/reset a lock',
+   short              => q(k);
 
-has 'lock_pid'     => is => 'ro', isa => Int,
-   documentation   => 'Process id associated with a lock. Defaults to $$',
-   traits          => [ 'Getopt' ], cmd_aliases => q(p), cmd_flag => 'lock-pid';
+option 'lock_pid'     => is => 'ro', format => 'i',
+   documentation      => 'Process id associated with a lock. Defaults to $$',
+   short              => q(p);
 
-has 'lock_timeout' => is => 'ro', isa => Int,
-   documentation   => 'Timeout in secounds before a lock is declared stale',
-   traits          => [ 'Getopt' ], cmd_aliases => q(t),
-   cmd_flag        => 'lock-timeout';
+option 'lock_timeout' => is => 'ro', format => 'i',
+   documentation      => 'Timeout in secounds before a lock is declared stale',
+   short              => q(t);
 
 sub list : method {
    my $self = shift; my $line;
@@ -50,8 +52,6 @@ sub set : method {
    return OK;
 }
 
-__PACKAGE__->meta->make_immutable;
-
 1;
 
 __END__
@@ -66,7 +66,7 @@ Class::Usul::Lock - Command line access to the L<IPC::SRLock> methods
 
 =head1 Version
 
-This documents version v0.21.$Rev: 1 $ of L<Class::Usul::Lock>
+This documents version v0.22.$Rev: 8 $ of L<Class::Usul::Lock>
 
 =head1 Synopsis
 

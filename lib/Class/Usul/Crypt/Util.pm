@@ -1,24 +1,23 @@
-# @(#)Ident: Util.pm 2013-05-13 02:11 pjf ;
+# @(#)Ident: Util.pm 2013-07-12 22:05 pjf ;
 
 package Class::Usul::Crypt::Util;
 
+use 5.010001;
 use strict;
 use warnings;
-use feature qw(state);
-use namespace::clean -except => 'meta';
-use version; our $VERSION = qv( sprintf '0.21.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 12 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
-use Class::Usul::Crypt     qw(decrypt default_cipher encrypt);
-use Class::Usul::File;
-use Class::Usul::Functions qw(merge_attributes throw);
-use Scalar::Util           qw(blessed);
+use Class::Usul::Crypt      qw( decrypt default_cipher encrypt );
+use Class::Usul::Functions  qw( merge_attributes throw );
+use English                 qw( -no_match_vars );
+use Exporter 5.57           qw( import  );
+use File::Spec::Functions   qw( catfile );
+use Scalar::Util            qw( blessed );
 use Try::Tiny;
 
-use Sub::Exporter::Progressive -setup => {
-   exports => [ qw(decrypt_from_config encrypt_for_config is_encrypted) ],
-   groups  => { default => [], },
-};
+our @EXPORT_OK = qw( decrypt_from_config encrypt_for_config
+                     get_cipher is_encrypted );
 
 # Public functions
 sub decrypt_from_config {
@@ -38,6 +37,10 @@ sub encrypt_for_config {
    return $password ? "{${cipher}}".(encrypt $args, $password) : $password;
 }
 
+sub get_cipher {
+   my ($cipher) = __extract_crypt_params( $_[ 0 ] ); return $cipher;
+}
+
 sub is_encrypted {
    return $_[ 0 ] =~ m{ \A [{] .+ [}] .* \z }mx ? TRUE : FALSE;
 }
@@ -50,39 +53,43 @@ sub __extract_crypt_params {
         ? ($1, $2) : $_[ 0 ] ? ($_[ 0 ]) : (default_cipher, $_[ 0 ]);
 }
 
-sub __get_cached_crypt_args { # Sets salt and seed keys in args hash
-   my $params = shift; state $cache; $cache and return $cache;
-
-   my $args   = { salt => $params->{salt} || $params->{prefix} || NUL };
-   my $file   = $params->{prefix} || q(seed);
-
-   if ($params->{read_secure}) { # munchies_admin -qnc read_secure --
-      my $cmd = $params->{read_secure}." ${file}.key";
-
-      try   { $args->{seed} = qx( $cmd ) }
-      catch { throw "Reading secure file: ${_}" }
-   }
-   elsif ($params->{seed}) { $args->{seed} = $params->{seed} }
-   else {
-      my $dir  = $params->{ctrldir} || $params->{tempdir};
-      my $path = Class::Usul::File->io( [ $dir, "${file}.key" ] );
-
-      $path->exists and $path->is_readable and $args->{seed} = $path->all;
-   }
-
-   return $cache = $args;
-}
-
-sub __get_crypt_args {
-   my ($config, $cipher) = @_; my $params = {};
+sub __get_crypt_args { # Sets cipher, salt, and seed keys in args hash
+   my ($config, $cipher) = @_; my $params = {}; state $cache //= {};
 
    # Works if config is an object or a hash
    merge_attributes $params, $config, {},
-      [ qw(ctrldir prefix read_secure salt seed suid tempdir) ];
+      [ qw(ctrldir prefix read_secure salt seed seed_file suid tempdir) ];
 
-   my $args = __get_cached_crypt_args( $params ); $args->{cipher} = $cipher;
+   my $args = { cipher => $cipher,
+                salt   => $params->{salt} || $params->{prefix} || NUL };
+   my $file = $params->{seed_file} || $params->{prefix} || 'seed';
+
+   if    ($params->{seed})           { $args->{seed} = $params->{seed}   }
+   elsif (defined $cache->{ $file }) { $args->{seed} = $cache->{ $file } }
+   elsif ($params->{read_secure})    { # munchies_admin -qnc read_secure --
+      my $cmd = $params->{read_secure}." ${file}.key";
+
+      try   { $args->{seed} = $cache->{ $file } = qx( $cmd ) }
+      catch { throw "Reading secure file: ${_}" }
+   }
+   else {
+      my $dir  = $params->{ctrldir} || $params->{tempdir};
+      my $path = catfile( $dir, "${file}.key" );
+
+      -e $path and -r $path and $args->{seed}
+         = $cache->{ $file } = __read_all_from( $path );
+   }
 
    return $args;
+}
+
+# Private functions
+sub __read_all_from {
+   my $path = shift;
+
+   open my $fh, '<', $path or die 'Path ${path} cannot open: ${OS_ERROR}';
+
+   local $RS = undef; my $content = <$fh>; close $fh; return $content;
 }
 
 1;
@@ -105,7 +112,7 @@ Class::Usul::Crypt::Util - Decrypts/Encrypts password from/to configuration file
 
 =head1 Version
 
-This documents version v0.21.$Rev: 1 $ of L<Class::Usul::Crypt::Util>
+This documents version v0.22.$Rev: 12 $ of L<Class::Usul::Crypt::Util>
 
 =head1 Description
 
@@ -129,6 +136,12 @@ Strips the C<{Twofish2}> prefix and then decrypts the password
 
 Returns the encrypted value of the plain value prefixed with C<{Twofish2}>
 for storage in a configuration file
+
+=head2 get_cipher
+
+   $cipher = get_cipher( $encrypted_value );
+
+Returns the name of the cipher used to encrypt the value
 
 =head2 is_encrypted
 
@@ -165,7 +178,7 @@ None
 
 =item L<Try::Tiny>
 
-=item L<Sub::Exporter::Progressive>
+=item L<Exporter>
 
 =back
 

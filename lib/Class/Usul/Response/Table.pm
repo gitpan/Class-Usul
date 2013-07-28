@@ -1,18 +1,18 @@
-# @(#)$Ident: Table.pm 2013-04-29 19:26 pjf ;
+# @(#)$Ident: Table.pm 2013-06-25 21:21 pjf ;
 
 package Class::Usul::Response::Table;
 
-use version; our $VERSION = qv( sprintf '0.21.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use namespace::sweep;
+use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 2 $ =~ /\d+/gmx );
 
-use Class::Usul::Moose;
-use MooseX::Aliases;
+use Class::Usul::Types qw( ArrayRef HashRef Int Str );
+use Moo;
 
 has 'caption'  => is => 'ro', isa => Str,           default => q();
 has 'class'    => is => 'ro', isa => HashRef | Str, default => q();
 has 'classes'  => is => 'ro', isa => HashRef,       default => sub { {} };
 has 'count'    => is => 'ro', isa => Int,           default => 0;
-has 'fields'   => is => 'ro', isa => ArrayRef,      default => sub { [] },
-   alias       => q(flds);
+has 'fields'   => is => 'ro', isa => ArrayRef,      default => sub { [] };
 has 'hclass'   => is => 'ro', isa => HashRef,       default => sub { {} };
 has 'labels'   => is => 'ro', isa => HashRef,       default => sub { {} };
 has 'sizes'    => is => 'ro', isa => HashRef,       default => sub { {} };
@@ -20,8 +20,6 @@ has 'typelist' => is => 'ro', isa => HashRef,       default => sub { {} };
 has 'values'   => is => 'ro', isa => ArrayRef,      default => sub { [] };
 has 'widths'   => is => 'ro', isa => HashRef,       default => sub { {} };
 has 'wrap'     => is => 'ro', isa => HashRef,       default => sub { {} };
-
-__PACKAGE__->meta->make_immutable;
 
 1;
 
@@ -35,7 +33,7 @@ Class::Usul::Response::Table - Data structure for the table widget
 
 =head1 Version
 
-This documents version v0.21.$Rev: 1 $
+This documents version v0.22.$Rev: 2 $
 
 =head1 Synopsis
 
@@ -47,15 +45,43 @@ This documents version v0.21.$Rev: 1 $
 
 Response class for the table widget in L<HTML::FormWidgets>
 
+=head1 Configuration and Environment
+
+Defines the following attributes;
+
+=over 3
+
+=item C<caption>
+
+=item C<class>
+
+=item C<classes>
+
+=item C<count>
+
+=item C<fields>
+
+=item C<hclass>
+
+=item C<labels>
+
+=item C<sizes>
+
+=item C<typelist>
+
+=item C<values>
+
+=item C<widths>
+
+=item C<wrap>
+
+=back
+
 =head1 Subroutines/Methods
 
 None
 
 =head1 Diagnostics
-
-None
-
-=head1 Configuration and Environment
 
 None
 

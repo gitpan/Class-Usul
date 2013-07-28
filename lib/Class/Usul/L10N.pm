@@ -1,28 +1,33 @@
-# @(#)$Ident: L10N.pm 2013-05-10 17:47 pjf ;
+# @(#)$Ident: L10N.pm 2013-06-26 02:11 pjf ;
 
 package Class::Usul::L10N;
 
-use version; our $VERSION = qv( sprintf '0.21.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use 5.010001;
+use namespace::sweep;
+use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 3 $ =~ /\d+/gmx );
 
 use Class::Null;
-use Class::Usul::Moose;
 use Class::Usul::Constants;
-use Class::Usul::Functions       qw(assert is_arrayref merge_attributes);
-use File::DataClass::Constraints qw(Directory Lock Path);
+use Class::Usul::Functions  qw( assert is_arrayref merge_attributes );
+use Class::Usul::Types      qw( ArrayRef Bool HashRef LogType
+                                SimpleStr Str Undef );
+use File::DataClass::Types  qw( Directory Lock Path );
 use File::Gettext::Constants;
 use File::Gettext;
 use File::Spec;
+use Moo;
 use Try::Tiny;
 
 # Public attributes
 has 'debug'           => is => 'rw',   isa => Bool, default => FALSE;
 
-has 'l10n_attributes' => is => 'ro',   isa => HashRef, default => sub { {} };
-
 has 'domain_names'    => is => 'ro',   isa => ArrayRef[Str],
    default            => sub { [ q(messages) ] };
 
-has 'localedir'       => is => 'ro',   isa => Path | Undef, coerce => TRUE;
+has 'l10n_attributes' => is => 'ro',   isa => HashRef, default => sub { {} };
+
+has 'localedir'       => is => 'ro',   isa => Path | Undef,
+   coerce             => Path->coercion;
 
 has 'lock'            => is => 'ro',   isa => Lock,
    default            => sub { Class::Null->new };
@@ -32,14 +37,14 @@ has 'log'             => is => 'ro',   isa => LogType,
 
 has 'source_name'     => is => 'lazy', isa => SimpleStr;
 
-has 'tempdir'         => is => 'ro',   isa => Directory, coerce => TRUE,
-   default            => File::Spec->tmpdir;
+has 'tempdir'         => is => 'ro',   isa => Directory,
+   coerce             => Directory->coercion, default => File::Spec->tmpdir;
 
 has 'use_country'     => is => 'lazy', isa => Bool;
 
 # Construction
 around 'BUILDARGS' => sub {
-   my ($next, $class, @args) = @_; my $attr = $class->$next( @args );
+   my ($orig, $class, @args) = @_; my $attr = $orig->( $class, @args );
 
    my $builder = delete $attr->{builder} or return $attr;
    my $config  = $builder->can( q(config) ) ? $builder->config : {};
@@ -76,8 +81,8 @@ sub localize {
       0 > index $text, LOCALIZE and return $text;
 
       # Expand positional parameters of the form [_<n>]
-      my @args = map { defined $_ ? $_ : '[?]' } @{ $args->{params} },
-                 map { '[?]' } 0 .. 9;
+      my @args = map { $_ // '[?]' } @{ $args->{params} },
+                 map {       '[?]' } 0 .. 9;
 
       $text =~ s{ \[ _ (\d+) \] }{$args[ $1 - 1 ]}gmx; return $text;
    }
@@ -172,8 +177,6 @@ sub _gettext {
    }
 }
 
-__PACKAGE__->meta->make_immutable;
-
 1;
 
 __END__
@@ -186,7 +189,7 @@ Class::Usul::L10N - Localize text strings
 
 =head1 Version
 
-This documents version v0.21.$Rev: 1 $
+This documents version v0.22.$Rev: 3 $
 
 =head1 Synopsis
 
@@ -216,7 +219,33 @@ then the language and country are used from I<locale>. By default
 I<use_country> is false and only the language from the I<locale>
 attribute is used
 
+Defines the following attributes;
+
+=over 3
+
+=item C<domain_names>
+
+=item C<l10n_attributes>
+
+=item C<localedir>
+
+=item C<lock>
+
+=item C<log>
+
+=item C<source_name>
+
+=item C<tempdir>
+
+=item C<use_country>
+
+=back
+
 =head1 Subroutines/Methods
+
+=head2 BUILDARGS
+
+Monkey with the constructors signature
 
 =head2 BUILD
 
@@ -265,7 +294,7 @@ Asserts that the I<locale> attribute is set
 
 =item L<Class::Usul::Moose>
 
-=item L<File::DataClass::Constraints>
+=item L<File::DataClass::Types>
 
 =item L<File::Gettext>
 

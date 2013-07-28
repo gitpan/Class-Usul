@@ -11,7 +11,6 @@ lib/Class/Usul.pm
 lib/Class/Usul/Config.pm
 lib/Class/Usul/Config/Programs.pm
 lib/Class/Usul/Constants.pm
-lib/Class/Usul/Constraints.pm
 lib/Class/Usul/Crypt.pm
 lib/Class/Usul/Crypt/Util.pm
 lib/Class/Usul/Exception.pm
@@ -21,7 +20,6 @@ lib/Class/Usul/IPC.pm
 lib/Class/Usul/L10N.pm
 lib/Class/Usul/Lock.pm
 lib/Class/Usul/Log.pm
-lib/Class/Usul/Moose.pm
 lib/Class/Usul/Programs.pm
 lib/Class/Usul/Response/IPC.pm
 lib/Class/Usul/Response/Meta.pm
@@ -29,6 +27,7 @@ lib/Class/Usul/Response/Table.pm
 lib/Class/Usul/Time.pm
 lib/Class/Usul/TraitFor/LoadingClasses.pm
 lib/Class/Usul/TraitFor/UntaintedGetopts.pm
+lib/Class/Usul/Types.pm
 LICENSE
 MANIFEST			This list of files
 META.json

@@ -1,132 +1,151 @@
-# @(#)$Ident: Programs.pm 2013-05-15 17:20 pjf ;
+# @(#)$Ident: Programs.pm 2013-07-19 14:28 pjf ;
 
 package Class::Usul::Programs;
 
 use attributes ();
-use version; our $VERSION = qv( sprintf '0.21.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use namespace::sweep;
+use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 12 $ =~ /\d+/gmx );
 
 use Class::Inspector;
-use Class::Usul::Moose;
 use Class::Usul::Constants;
-use Class::Usul::Functions qw(abs_path app_prefix arg_list assert_directory
-                              class2appdir classdir elapsed emit env_prefix
-                              exception find_source is_arrayref is_hashref
-                              is_member logname throw untaint_identifier
-                              untaint_path);
+use Class::Usul::Functions  qw( abs_path arg_list elapsed emit
+                                exception find_apphome find_source
+                                get_cfgfiles is_arrayref is_hashref is_member
+                                logname pad throw untaint_identifier );
 use Class::Usul::File;
 use Class::Usul::IPC;
+use Class::Usul::Types      qw( ArrayRef Bool EncodingType FileType HashRef Int
+                                IPCType LoadableClass NonZeroPositiveInt
+                                PositiveInt SimpleStr );
 use Config;
-use Encode                 qw(decode);
-use English                qw(-no_match_vars);
-use File::Basename         qw(dirname);
-use File::HomeDir          qw();
-use File::Spec::Functions  qw(catdir catfile);
-use IO::Interactive        qw(is_interactive);
-use List::Util             qw(first);
+use English                 qw( -no_match_vars );
+use File::Basename          qw( dirname );
+use File::DataClass::Types  qw( Directory );
+use File::Spec::Functions   qw( catdir catfile );
+use IO::Interactive         qw( is_interactive );
+use List::Util              qw( first );
+use Moo;
+use MooX::Options;
+use Pod::Eventual::Simple;
 use Pod::Man;
 use Pod::Usage;
+use Scalar::Util            qw( blessed );
 use Term::ReadKey;
 use Text::Autoformat;
 use Try::Tiny;
 
 extends q(Class::Usul);
-with    q(MooseX::Getopt::Dashes);
 with    q(Class::Usul::TraitFor::LoadingClasses);
-with    q(Class::Usul::TraitFor::UntaintedGetopts);
+
+my $EXTNS = [ keys %{ Class::Usul::File->extensions } ];
 
 # Override attributes in base class
-has '+config_class' => default => sub { 'Class::Usul::Config::Programs' };
-
-has '+debug'        => traits => [ 'Getopt' ], cmd_aliases => q(D),
-   cmd_flag         => 'debug';
-
-has '+help_flag'    => cmd_aliases => [ qw(usage ?) ];
+has '+config_class'   => default => sub { 'Class::Usul::Config::Programs' };
 
 # Public attributes
-has 'help_options' => is => 'ro', isa => Bool, default => FALSE,
-   documentation   => 'Uses Pod::Usage to describe the program options',
-   traits          => [ 'Getopt' ], cmd_aliases => q(h), cmd_flag => 'help_opt';
+option 'debug'        => is => 'rw',   isa => Bool, default => FALSE,
+   documentation      => 'Turn debugging on. Prompts if interactive',
+   short              => 'D', trigger => TRUE;
 
-has 'help_manual'  => is => 'ro', isa => Bool, default => FALSE,
-   documentation   => 'Uses Pod::Man to display the program documentation',
-   traits          => [ 'Getopt' ], cmd_aliases => q(H), cmd_flag => 'man_page';
+option 'encoding'     => is => 'lazy', isa => EncodingType, format => 's',
+   documentation      => 'Decode/encode input/output using this encoding',
+   default            => sub { $_[ 0 ]->config->encoding };
 
-has 'home'         => is => 'ro', isa => SimpleStr,
-   documentation   => 'Directory containing the configuration file',
-   traits          => [ 'Getopt' ], cmd_flag => 'home';
+option 'help_manual'  => is => 'ro',   isa => Bool, default => FALSE,
+   documentation      => 'Displays the documentation for the program',
+   short              => 'H';
 
-has 'language'     => is => 'ro', isa => SimpleStr,  default => NUL,
-   documentation   => 'Loads the specified language message catalog',
-   traits          => [ 'Getopt' ], cmd_aliases => q(L), cmd_flag => 'language';
+option 'help_options' => is => 'ro',   isa => Bool, default => FALSE,
+   documentation      => 'Describes program options and methods',
+   short              => 'h';
 
-has 'method'       => is => 'rw', isa => SimpleStr | Undef,  default => NUL,
-   documentation   => 'Name of the method to call',
-   traits          => [ 'Getopt' ], cmd_aliases => q(c), cmd_flag => 'command';
+option 'help_usage'   => is => 'ro',   isa => Bool, default => FALSE,
+   documentation      => 'Displays this command line usage',
+   short              => '?';
 
-has 'nodebug'      => is => 'ro', isa => Bool, default => FALSE,
-   documentation   => 'Do not prompt for debugging',
-   traits          => [ 'Getopt' ], cmd_aliases => q(n), cmd_flag => 'nodebug';
+option 'home'         => is => 'lazy', isa => Directory, format => 's',
+   documentation      => 'Directory containing the configuration file',
+   default            => sub { $_[ 0 ]->config->home },
+   coerce             => Directory->coercion;
 
-has 'options'      => is => 'ro', isa => HashRef, default => sub { {} },
-   documentation   =>
+option 'language'     => is => 'ro',   isa => SimpleStr, format => 's',
+   documentation      => 'Loads the specified language message catalog',
+   default            => NUL, short => 'L';
+
+option 'method'       => is => 'rw',   isa => SimpleStr, format => 's',
+   documentation      => 'Name of the method to call',
+   default            => NUL, order => 1, short => 'c';
+
+option 'nodebug'      => is => 'ro',   isa => Bool, default => FALSE,
+   documentation      => 'Do not prompt for debugging',
+   short              => 'n';
+
+option 'options'      => is => 'ro',   isa => HashRef, format => 's%',
+   documentation      =>
       'Zero, one or more key/value pairs available to the method call',
-   traits          => [ 'Getopt' ], cmd_aliases => q(o), cmd_flag => 'option';
+   default            => sub { {} }, short => 'o';
 
-has '_quiet'       => is => 'rw', isa => Bool, default => FALSE,
-   documentation   => 'Quiet the display of information messages',
-   traits          => [ 'Getopt' ], cmd_aliases => q(q), cmd_flag => 'quiet',
-   init_arg        => 'quiet';
+option 'quiet'        => is => 'ro',   isa => Bool, default => FALSE,
+   documentation      => 'Quiet the display of information messages',
+   reader             => 'quiet_flag', short => 'q';
 
-has 'version'      => is => 'ro', isa => Bool, default => FALSE,
-   documentation   => 'Displays the version number of the program class',
-   traits          => [ 'Getopt' ], cmd_aliases => q(V), cmd_flag => 'version';
+option 'verbose'      => is => 'ro',   isa => Int,  default => 0,
+   documentation      => 'Increase the verbosity of the output',
+   repeatable         => TRUE, short => 'v';
+
+option 'version'      => is => 'ro',   isa => Bool, default => FALSE,
+   documentation      => 'Displays the version number of the program class',
+   short              => 'V';
+
+with q(Class::Usul::TraitFor::UntaintedGetopts);
+
+has 'meta_class'  => is => 'lazy', isa => LoadableClass,
+   default        => 'Class::Usul::Response::Meta',
+   coerce         => LoadableClass->coercion;
+
+has 'mode'        => is => 'rw',   isa => PositiveInt,
+   default        => sub { $_[ 0 ]->config->mode }, lazy => TRUE;
+
+has 'params'      => is => 'ro',   isa => HashRef, default => sub { {} };
+
+has 'pwidth'      => is => 'rw',   isa => NonZeroPositiveInt, default => 60;
 
 # Private attributes
-has '_file'        => is => 'lazy', isa => FileType,
-   default         => sub { Class::Usul::File->new( builder => $_[ 0 ] ) },
-   handles         => [ qw(io) ], init_arg => undef, reader => 'file';
+has '_file'       => is => 'lazy', isa => FileType,
+   default        => sub { Class::Usul::File->new( builder => $_[ 0 ] ) },
+   handles        => [ qw( io ) ], init_arg => undef, reader => 'file';
 
-has '_ipc'         => is => 'lazy', isa => IPCType,
-   default         => sub { Class::Usul::IPC->new( builder => $_[ 0 ] ) },
-   handles         => [ qw(run_cmd) ], init_arg => undef, reader => 'ipc';
+has '_ipc'        => is => 'lazy', isa => IPCType,
+   default        => sub { Class::Usul::IPC->new( builder => $_[ 0 ] ) },
+   handles        => [ qw( run_cmd ) ], init_arg => undef, reader => 'ipc';
 
-has '_meta_class'  => is => 'lazy', isa => LoadableClass, coerce => TRUE,
-   default         => sub { 'Class::Usul::Response::Meta' },
-   reader          => 'meta_class';
+has '_os'         => is => 'lazy', isa => HashRef, init_arg => undef,
+   reader         => 'os';
 
-has '_mode'        => is => 'rw',   isa => PositiveOrZeroInt,
-   accessor        => 'mode', default => sub { $_[ 0 ]->config->mode },
-   init_arg        => 'mode', lazy => TRUE;
-
-has '_os'          => is => 'lazy', isa => HashRef, init_arg => undef,
-   reader          => 'os';
-
-has '_params'      => is => 'ro',   isa => HashRef, default => sub { {} },
-   init_arg        => 'params', reader => 'params';
-
-has '_pwidth'      => is => 'rw',   isa => PositiveInt, accessor => 'pwidth',
-   default         => 60, init_arg => 'pwidth';
+has '_quiet_flag' => is => 'rw',   isa => Bool,
+   default        => sub { $_[ 0 ]->quiet_flag },
+   init_arg       => 'quiet', lazy => TRUE, writer => '_set__quiet_flag';
 
 # Construction
 around 'BUILDARGS' => sub {
-   my ($next, $self, @args) = @_; my $attr = $self->$next( @args );
+   my ($orig, $self, @args) = @_; my $attr = $orig->( $self, @args );
 
    my $cfg = $attr->{config} ||= {};
 
    $cfg->{appclass} ||= delete $attr->{appclass} || blessed $self || $self;
-   $cfg->{home    } ||= __find_apphome( $cfg->{appclass}, $attr->{home} );
-   $cfg->{cfgfiles} ||= __get_cfgfiles( $cfg->{appclass},  $cfg->{home} );
+   $cfg->{home    } ||= find_apphome $cfg->{appclass}, $attr->{home}, $EXTNS;
+   $cfg->{cfgfiles} ||= get_cfgfiles $cfg->{appclass},  $cfg->{home}, $EXTNS;
 
    return $attr;
 };
 
 sub BUILD {
-   my $self = shift; $self->_apply_encoding;
+   my $self = shift; $self->_apply_stdio_encoding;
 
-   $self->help_flag    and $self->_output_usage( 0 );
-   $self->help_options and $self->_output_usage( 1 );
-   $self->help_manual  and $self->_output_usage( 2 );
-   $self->version      and $self->_output_version;
+   $self->help_usage   and $self->_exit_usage( 0 );
+   $self->help_options and $self->_exit_usage( 1 );
+   $self->help_manual  and $self->_exit_usage( 2 );
+   $self->version      and $self->_exit_version;
 
    $self->debug( $self->_get_debug_option );
    return;
@@ -179,7 +198,7 @@ sub error {
    $self->log->error( $_ ) for (split m{ \n }mx, NUL.$text);
 
    __print_fh( \*STDERR, $self->add_leader( $text, $args )."\n" );
-   $self->debug and __output_stacktrace( $err );
+   $self->debug and __output_stacktrace( $err, $self->verbose );
    return;
 }
 
@@ -193,7 +212,7 @@ sub fatal {
    $self->log->alert( $_ ) for (split m{ \n }mx, $text.$posn);
 
    __print_fh( \*STDERR, $self->add_leader( $text, $args ).$posn."\n" );
-   __output_stacktrace( $err );
+   __output_stacktrace( $err, $self->verbose );
    exit FAILED;
 }
 
@@ -252,6 +271,10 @@ sub get_option {
    return $opt - 1;
 }
 
+sub help : method {
+   my $self = shift; $self->_output_usage( 0 ); return OK;
+}
+
 sub info {
    my ($self, $text, $args) = @_;
 
@@ -273,7 +296,32 @@ sub interpolate_cmd {
 }
 
 sub list_methods : method {
-   emit __list_methods_of( shift ); return OK;
+   my $self = shift; my $abstract = {}; my $max = 0;
+
+   my $classes = $self->_get_classes_and_roles;
+
+   for my $method (__list_methods_of( $self )) {
+      my $mlen = length $method; $mlen > $max and $max = $mlen;
+
+      for my $class (@{ $classes }) {
+         is_member( $method, Class::Inspector->methods( $class, 'public' ))
+            or next;
+
+         my $pod = __get_pod_header_for_method( $class, $method ) or next;
+
+         (not exists $abstract->{ $method }
+           or length $pod > length $abstract->{ $method })
+            and $abstract->{ $method } = $pod;
+      }
+   }
+
+   for my $key (sort keys %{ $abstract }) {
+      my ($method, @rest) = split SPC, $abstract->{ $key };
+
+      emit( (pad $method, $max).SPC.(join SPC, @rest) );
+   }
+
+   return OK;
 }
 
 sub loc {
@@ -300,15 +348,12 @@ sub output {
    return;
 }
 
-sub print_usage_text { # Required to stop MX::Getopt from printing usage
-}
-
 sub quiet {
-   my ($self, $v) = @_; defined $v or return $self->_quiet; $v = !!$v;
+   my ($self, $v) = @_; defined $v or return $self->_quiet_flag; $v = !!$v;
 
    $v != TRUE and throw 'Cannot turn quiet mode off';
 
-   return $self->_quiet( $v );
+   return $self->_set__quiet_flag( $v );
 }
 
 sub run {
@@ -350,7 +395,7 @@ sub run {
 }
 
 sub run_chain {
-   my ($self, $method) = @_; $method or $self->_output_usage( 0 );
+   my ($self, $method) = @_; $method or $self->_exit_usage( 0 );
 
    $self->fatal( exception "Method ${method} unknown" );
    return FAILED;
@@ -400,15 +445,12 @@ sub yorn { # General yes or no input routine
 }
 
 # Private methods
-sub _apply_encoding {
+sub _apply_stdio_encoding {
    my $self = shift; my $enc = $self->encoding;
-
-   autoflush STDOUT TRUE; autoflush STDERR TRUE;
 
    binmode $_, ":encoding(${enc})" for (*STDIN, *STDOUT, *STDERR);
 
-   $_ = decode( $enc, $_ ) for @ARGV;
-
+   autoflush STDOUT TRUE; autoflush STDERR TRUE;
    return;
 }
 
@@ -435,14 +477,36 @@ sub _catch_run_exception {
 
    $e->out and $self->output( $e->out );
    $self->error( $e->error, { args => $e->args } );
-   $self->debug and __output_stacktrace( $e );
 
    return $e->rv || (defined $e->rv ? FAILED : UNDEFINED_RV);
 }
 
 sub _dont_ask {
-   return $_[ 0 ]->debug || $_[ 0 ]->help_flag || $_[ 0 ]->help_options
+   return $_[ 0 ]->debug || $_[ 0 ]->help_usage || $_[ 0 ]->help_options
        || $_[ 0 ]->help_manual || ! is_interactive();
+}
+
+sub _exit_usage {
+   exit $_[ 0 ]->_output_usage( $_[ 1 ] );
+}
+
+sub _exit_version {
+   $_[ 0 ]->output( 'Version '.$_[ 0 ]->VERSION ); exit OK;
+}
+
+sub _get_classes_and_roles {
+   my $self = shift; my %uniq = (); require mro;
+
+   my @classes = @{ mro::get_linear_isa( blessed $self ) };
+
+   while (my $class = shift @classes) {
+      $uniq{ $class } and next; $uniq{ $class }++;
+
+      exists $Role::Tiny::APPLIED_TO{ $class }
+         and push @classes, keys %{ $Role::Tiny::APPLIED_TO{ $class } };
+   }
+
+   return [ sort keys %uniq ];
 }
 
 sub _get_debug_option {
@@ -457,8 +521,8 @@ sub _get_run_method {
    my $self = shift; my $method = $self->method;
 
    unless ($method) {
-      if ($method = $self->extra_argv->[ 0 ] and $self->can_call( $method )) {
-         shift @{ $self->extra_argv };
+      if ($method = $self->extra_argv( 0 ) and $self->can_call( $method )) {
+         $method = $self->next_argv;
       }
       else { $method = NUL }
    }
@@ -484,140 +548,64 @@ sub _man_page_from {
 }
 
 sub _output_usage {
-   my ($self, $verbose) = @_;
+   my ($self, $verbose) = @_; my $method = $self->next_argv;
 
-   my $method = $self->extra_argv ? $self->extra_argv->[ 0 ] : undef;
+   defined $method and $method = untaint_identifier $method;
 
-   $method and $self->can_call( $method ) and exit $self->_usage_for( $method );
+   $method and $self->can_call( $method )
+      and return $self->_usage_for( $method );
 
-   $verbose > 1 and exit $self->_man_page_from( $self->config );
+   $verbose > 1 and return $self->_man_page_from( $self->config );
 
    if ($verbose > 0) {
       pod2usage( { -input   => NUL.$self->config->pathname, -message => SPC,
                    -verbose => $verbose } ); # Never returns
    }
 
-   my $usage = ucfirst $self->usage;
+   my $usage = ucfirst $self->options_usage;
 
    warn $usage ? $usage : "Did we forget new_with_options?\n";
-   exit OK;
-}
-
-sub _output_version {
-   $_[ 0 ]->output( 'Version '.$_[ 0 ]->VERSION ); exit OK;
+   return FAILED;
 }
 
 sub _usage_for {
-   my ($self, $method) = @_; my @classes = (blessed $self);
+   my ($self, $method) = @_;
 
-   $method = untaint_identifier $method;
+   for my $class (@{ $self->_get_classes_and_roles }) {
+      is_member( $method, Class::Inspector->methods( $class, 'public' ) )
+         or next;
 
-   while (my $class = shift @classes) {
-      no strict q(refs);
+      my $selector = Pod::Select->new(); my $tfile = $self->file->tempfile;
 
-      if (defined &{ "${class}::${method}" }) {
-         my $selector = Pod::Select->new(); $selector->select( "/${method}" );
-         my $tempfile = $self->file->tempfile;
-
-         $selector->parse_from_file( find_source $class, $tempfile->pathname );
-         return $self->_man_page_from( $tempfile );
-      }
-
-      push @classes, $_ for (@{ "${class}::ISA" });
+      $selector->select( "/${method}.*" );
+      $selector->parse_from_file( find_source $class, $tfile->pathname );
+      $tfile->stat->{size} > 0 and return $self->_man_page_from( $tfile );
    }
 
    return FAILED;
 }
 
 # Private functions
-sub __find_apphome {
-   my ($appclass, $home) = @_; my ($file, $path);
-
-   # 0. Pass the directory in
-   $path = assert_directory $home and return $path;
-
-   my $app_prefix = app_prefix   $appclass;
-   my $appdir     = class2appdir $appclass;
-   my $classdir   = classdir     $appclass;
-   my $env_prefix = env_prefix   $appclass;
-   my $my_home    = File::HomeDir->my_home;
-
-   # 1a. Environment variable - for application directory
-   $path = $ENV{ "${env_prefix}_HOME" };
-   $path = assert_directory $path and return $path;
-
-   # 1b. Environment variable - for config file
-   $file = $ENV{ "${env_prefix}_CONFIG" };
-   $path = $file ? dirname( $file ) : NUL;
-   $path = assert_directory $path and return $path;
-
-   # 2a. Users home directory - contains application directory
-   $path = catdir( $my_home, $appdir, qw(default lib), $classdir );
-   $path = assert_directory $path and return $path;
-
-   # 2b. Users home directory - dot directory containing application
-   $path = catdir( $my_home, ".${appdir}", qw(default lib), $classdir );
-   $path = assert_directory $path and return $path;
-
-   # 2c. Users home directory - dot file containing shell env variable
-   $file = catfile( $my_home, ".${app_prefix}" );
-   $path = __read_variable( $file, q(APPLDIR) );
-   $path and $path = catdir( $path, q(lib), $classdir );
-   $path = assert_directory $path and return $path;
-
-   # 2d. Users home directory - dot directory is appldir
-   $path = catdir( $my_home, ".${app_prefix}" );
-   $path = assert_directory $path and return $path;
-
-   # 3. Well known path containing shell env file
-   $file = catfile( @{ DEFAULT_DIR() }, $appdir );
-   $path = __read_variable( $file, q(APPLDIR) );
-   $path and $path = catdir( $path, q(lib), $classdir );
-   $path = assert_directory $path and return $path;
-
-   # 4. Default install prefix
-   $path = catdir( @{ PREFIX() }, $appdir, qw(default lib), $classdir );
-   $path = assert_directory $path and return $path;
-
-   # 5. Config file found in @INC
-   for $path (map { catdir( abs_path( $_ ), $classdir ) } @INC) {
-      for my $extn (keys %{ Class::Usul::File->extensions }) {
-         $file = untaint_path catfile( $path, $app_prefix.$extn );
-
-         -f $file and return dirname( $file );
-      }
-   }
-
-   # 6. Default to /tmp
-   return untaint_path( File::Spec->tmpdir );
-}
-
-sub __get_cfgfiles {
-   my ($appclass, $home) = @_; my $files = []; my $file;
-
-   my $app_prefix = app_prefix $appclass;
-   my $env_prefix = env_prefix $appclass;
-   my $suffix     = $ENV{ "${env_prefix}_CONFIG_LOCAL_SUFFIX" } || '_local';
-
-   for my $extn (keys %{ Class::Usul::File->extensions }) {
-      $file = untaint_path catfile( $home, "${app_prefix}${extn}" );
-      -f $file and push @{ $files }, $file;
-      $file = untaint_path catfile( $home, "${app_prefix}${suffix}${extn}" );
-      -f $file and push @{ $files }, $file;
-   }
-
-   return $files;
-}
-
 sub __get_control_chars {
    my $handle = shift; my %cntl = GetControlChars $handle;
 
    return ((join q(|), values %cntl), %cntl);
 }
 
+sub __get_pod_header_for_method {
+   my ($class, $method) = @_;
+
+   my $pod = Pod::Eventual::Simple->read_file( find_source $class );
+   my $out = [ grep { $_->{content} =~ m{ (?: ^|[< ]) $method (?: [ >]|$ ) }msx}
+               grep { $_->{type} eq 'command' } @{ $pod } ]->[ 0 ]->{content};
+
+   $out and chomp $out;
+   return $out;
+}
+
 sub __list_methods_of {
    return map  { s{ \A .+ :: }{}msx; $_ }
-          grep { my $method = $_; grep { $_ eq q(method) }
+          grep { my $method = $_; grep { $_ eq 'method' }
                                   attributes::get( \&{ $method } ) }
               @{ Class::Inspector->methods
                     ( blessed $_[ 0 ] || $_[ 0 ], 'full', 'public' ) };
@@ -634,10 +622,12 @@ sub __map_prompt_args {
 }
 
 sub __output_stacktrace {
-   my $e = shift;
+   my ($e, $verbose) = @_; ($e and blessed $e) or return; $verbose //= 0;
 
-   $e and blessed $e and $e->can( q(stacktrace) )
-      and __print_fh( \*STDERR, NUL.$e->stacktrace );
+   $verbose > 0 and $e->can( 'trace' )
+      and return __print_fh( \*STDERR, NUL.$e->trace );
+
+   $e->can( 'stacktrace' ) and __print_fh( \*STDERR, NUL.$e->stacktrace );
 
    return;
 }
@@ -720,21 +710,9 @@ sub __raw_mode {
    my $handle = shift; ReadMode q(raw), $handle; return;
 }
 
-sub __read_variable {
-   my ($file, $variable) = @_;
-
-   return -f $file ? first { length }
-                     map   { (split q(=), $_)[ 1 ] }
-                     grep  { m{ \A $variable [=] }mx }
-                     Class::Usul::File->io( $file )->chomp->getlines
-                   : undef;
-}
-
 sub __restore_mode {
    my $handle = shift; ReadMode q(restore), $handle; return;
 }
-
-__PACKAGE__->meta->make_immutable;
 
 1;
 
@@ -748,7 +726,7 @@ Class::Usul::Programs - Provide support for command line programs
 
 =head1 Version
 
-This document describes Class::Usul::Programs version v0.21.$Rev: 1 $
+This document describes version v0.22.$Rev: 12 $ of L<Class::Usul::Programs>
 
 =head1 Synopsis
 
@@ -773,39 +751,64 @@ Supports this list of command line options
 
 =over 3
 
-=item c method
+=item C<c method>
 
 The method in the subclass to dispatch to
 
-=item D
+=item C<D>
 
 Turn debugging on
 
-=item H
+=item C<H help_manual>
 
 Print long help text extracted from this POD
 
-=item h
+=item C<h help_options>
 
 Print short help text extracted from this POD
 
-=item L language
+=item C<? help_usage>
+
+=item C<L language>
 
 Print error messages in the selected language. If no language is
 supplied print the error code and attributes
 
-=item n
+=item C<n nodebug>
 
 Do not prompt to turn debugging on
 
-=item o key=value
+=item C<o options key=value>
 
 The method that is dispatched to can access the key/value pairs
-from the C<< $self->vars >> hash ref
+from the C<< $self->options >> hash ref
 
-=item q
+=item C<q quiet_flag>
 
 Quietens the usual started/finished information messages
+
+=item C<version>
+
+Prints the programs version number and exits
+
+=back
+
+Defines these attributes;
+
+=over 3
+
+=item C<config_class>
+
+Overrides the default in the base class, setting it to
+C<Class::Usul::Config::Programs>
+
+=item C<params>
+
+List of value that are passed to the method called by L</run>
+
+=item C<v verbose>
+
+Repeatable boolean that increases the verbosity of the output
 
 =back
 
@@ -850,11 +853,11 @@ the I<method> method attribute
 
 Returns the command line debug flag to match the current debug state
 
-=head2 dump_self
+=head2 dump_self - Dumps the program object
 
    $self->dump_self;
 
-Dumps out the self referential object using L<Data::Dumper>
+Dumps out the self referential object using L<Data::Printer>
 
 =head2 error
 
@@ -863,6 +866,18 @@ Dumps out the self referential object using L<Data::Dumper>
 Calls L<Class::Usul::localize|Class::Usul/localize> with
 the passed args. Logs the result at the error level, then adds the
 program leader and prints the result to I<STDERR>
+
+=head2 _exit_usage
+
+   $self->_exit_usage( $verbosity );
+
+Print out usage information from POD. The C<$verbosity> is; 0, 1 or 2
+
+=head2 _exit_version
+
+   $self->_exit_version
+
+Prints out the version of the C::U::Programs subclass and the exits
 
 =head2 fatal
 
@@ -920,6 +935,13 @@ Returns a response object with read-only accessors defined
 Returns the selected option number from the list of possible options passed
 in the C<$question> argument
 
+=head2 help - Display help text about a method
+
+   $exit_code = $self->help;
+
+Searches the programs classes and roles to find the method implementation.
+Displays help text from the POD that describes the method
+
 =head2 info
 
    $self->info( $text, $args );
@@ -935,9 +957,9 @@ program leader and prints the result to I<STDOUT>
 Calls C<_interpolate_${cmd}_cmd> to apply the arguments to the command in a
 command specific way
 
-=head2 list_methods
+=head2 list_methods - Lists available command line methods
 
-   $self->list_methods
+   $self->list_methods;
 
 Lists the methods (marked by the I<method> subroutine attribute) that can
 be called via the L<run method|/run>
@@ -958,12 +980,6 @@ searched. Adds C<< $self->language >> and C< $self->config->name >>
 Calls L<Class::Usul::localize|Class::Usul/localize> with
 the passed args. Adds the program leader and prints the result to
 I<STDOUT>
-
-=head2 _output_version
-
-   $self->_output_version
-
-Prints out the version of the C::U::Programs subclass and the exits
 
 =head2 print_usage_text
 
@@ -1002,7 +1018,7 @@ Prompt string
 
    $bool = $self->quiet( $bool );
 
-Custom accessor/mutator for the C<_quiet> attribute. Will throw if you try
+Custom accessor/mutator for the C<quiet_flag> attribute. Will throw if you try
 to turn quiet mode off
 
 =head2 run
@@ -1020,12 +1036,6 @@ Called by L</run> when C<_get_run_method> cannot determine which method to
 call. Outputs usage if C<$method> is undefined. Logs an error if
 C<$method> is defined but not (by definition a callable method).
 Returns exit code C<FAILED>
-
-=head2 _output_usage
-
-   $self->_output_usage( $verbosity );
-
-Print out usage information from POD. The C<$verbosity> is; 0, 1 or 2
 
 =head2 warning
 
@@ -1086,8 +1096,6 @@ Turning debug on produces some more output
 =item L<Class::Usul::TraitFor::UntaintedGetopts>
 
 =item L<Encode>
-
-=item L<File::HomeDir>
 
 =item L<IO::Interactive>
 
