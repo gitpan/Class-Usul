@@ -1,9 +1,9 @@
-# @(#)$Ident: UntaintedGetopts.pm 2013-07-21 16:10 pjf ;
+# @(#)$Ident: UntaintedGetopts.pm 2013-08-04 16:22 pjf ;
 
 package Class::Usul::TraitFor::UntaintedGetopts;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.22.%d', q$Rev: 13 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.23.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( untaint_cmdline );
@@ -12,8 +12,8 @@ use Encode                  qw( decode );
 use Getopt::Long 2.38;
 use Getopt::Long::Descriptive 0.091;
 use JSON;
-use Moo::Role;
 use Regexp::Common;
+use Moo::Role;
 
 my ($Extra_Argv, $Usage) = ([], NUL);
 
@@ -160,11 +160,11 @@ Class::Usul::TraitFor::UntaintedGetopts - Untaints @ARGV before Getopts processe
 
 =head1 Version
 
-This documents version v0.22.$Rev: 13 $
+This documents version v0.23.$Rev: 1 $
 
 =head1 Synopsis
 
-   use Class::Usul::Moose;
+   use Moo;
 
    with 'Class::Usul::TraitFor::UntaintedGetopts';
 
@@ -199,9 +199,9 @@ None
 
 =over 3
 
-=item L<Moose::Role>
+=item L<Moo::Role>
 
-=item L<MooseX::Getopt::Dashes>
+=item L<MooX::Options>
 
 =back
 

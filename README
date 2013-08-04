@@ -2,12 +2,12 @@ Name
     Class::Usul - A base class providing config, locking, logging, and l10n
 
 Version
-    Describes Class::Usul version v0.22.$Rev: 17 $
+    Describes Class::Usul version v0.23.$Rev: 1 $
 
 Synopsis
-       use Class::Usul::Moose;
+       use Moo;
 
-       extends qw(Class::Usul);
+       extends q(Class::Usul);
 
        $self = Class::Usul->new( $attr );
 
@@ -26,8 +26,6 @@ Description
 
     The Module::Build subclass Class::Usul::Build adds methods for the
     management and deployment of applications
-
-    Class::Usul::Moose is a custom Moose exporter
 
 Configuration and Environment
     Defines the following attributes;
@@ -94,8 +92,8 @@ Dependencies
     Class::Usul::Functions
     Class::Usul::L10N
     Class::Usul::Log
-    Class::Usul::Moose
     IPC::SRLock
+    Moo
 
 Incompatibilities
     There are no known incompatibilities in this module
