@@ -14,21 +14,21 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 59c90253eb1f7b3d572e5f36785d4ac4f4cd00fc Build.PL
-SHA1 8d8ebfd9fa1df76925a2cb4faebadb6717720dee Changes
+SHA1 f4166da6e86e0e98ddeca7fa5c8e8988afb0f31b Build.PL
+SHA1 c7411247dd7d653b7ed5610308e322dc4d473789 Changes
 SHA1 2b3ccb88f716f614f8af721a1c69dba0bcdbbb32 LICENSE
 SHA1 314a20d8dfaa63381062be63540ef3af7b14c6ac MANIFEST
-SHA1 091180e1d23dafcbdf103c89a2b8a798ba94d175 META.json
-SHA1 b2971450a0d8e22cbb06161a02cd80248fa9acb7 META.yml
-SHA1 a02b86a4b702e44af08be46a94b0f5950c0902a1 README
+SHA1 0c0c9618dcf30d9f6a48350341703ffdb8141dd5 META.json
+SHA1 216e93f2df7bdfad0a934180b604d98108c0dbf0 META.yml
+SHA1 4ef9470068adddbaf92dec952b1d23fecdb2350c README
 SHA1 1fdc3ede8e0beaa57a8e118eed0f72ef89776714 examples/Build.PL
 SHA1 e5903e7b225bff4584ebb9550de544d016ed1a41 examples/usul_cli
-SHA1 8bd68b75a0214b8280367f8678f5a4644a1c90d8 inc/Bob.pm
-SHA1 c5c5d78592c91b36594481ac86897a40d5795940 inc/CPANTesting.pm
+SHA1 c9d93a6ddd04ad6ade84095f7c4941d01e191ece inc/Bob.pm
+SHA1 131242855e4780fa56d5b897e712feb742074a67 inc/CPANTesting.pm
 SHA1 ac8d1008c0d2c63d4943d30ba5cc5ea29c5d4164 inc/M_B_Base.patch
 SHA1 cf52326f33bffefa070f6ff8b05b2a4b5d2575b4 inc/M_B_PodParser.patch
 SHA1 5e116d3362f35c74c500720901edbe8d3a8ab89b inc/SubClass.pm
-SHA1 21d4b5c7fedb173adc704ad21d092a24a3120fbc lib/Class/Usul.pm
+SHA1 03dadb54b307d9694d66174c95633fe705d5853b lib/Class/Usul.pm
 SHA1 f9ac0070555fc8bba6474569c3178f20d553e5a8 lib/Class/Usul/Config.pm
 SHA1 f6b233a247e08a6a8f397d6e56105cda41969f79 lib/Class/Usul/Config/Programs.pm
 SHA1 aafac69270aad2938a2c5f9cb82c2d8ea901e8d6 lib/Class/Usul/Constants.pm
@@ -49,7 +49,7 @@ SHA1 215bacc9b6ab07de6efaf9b8f23e253422fcb96a lib/Class/Usul/Time.pm
 SHA1 11fb1eb7317ecdfb3d793a61eefcc28b391a4a98 lib/Class/Usul/TraitFor/LoadingClasses.pm
 SHA1 a2edff82129f7a55626c6752a4784784b6ac22b2 lib/Class/Usul/TraitFor/UntaintedGetopts.pm
 SHA1 df0a8d395036d905122f1ef1e95f68376750f19e lib/Class/Usul/Types.pm
-SHA1 f6a4b8bb53f7818aca536596a47382ba64fb59eb t/01always_pass.t
+SHA1 d197e3f0b7305c846e1f998ded6b4f437e64ce97 t/01always_pass.t
 SHA1 ab971dc0cfc139a831fa6528d528768a4fe3e51c t/02pod.t
 SHA1 a24cfffed23a881758e2ae3624e7134e4a098d31 t/03podcoverage.t
 SHA1 26e8a96bfac5aa0597a39a076e89ee9ec160ac82 t/04critic.t
@@ -70,11 +70,11 @@ SHA1 9a0c4ec392bd326ab3c350592fb77f8384a7b924 t/test.xml
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 
-iQEcBAEBAgAGBQJR/oupAAoJEK492j4Im1BpoBoH/09pHbgfp41Hr63aOMZnIqx5
-h7ENhmYzlszA4LByQJe6NImXfFpQD8KyU3nU1L2gvDUB1sUEilYEgjyux1yngUju
-H5P+CthlcxjBb/OGjbmOr+C4jwhHlqf4SkAkz0AhOGKDe7nVSXF5fnZElrUbNiFM
-GPyBkgCnGQema7Xj7FqMISHiVrBFfyInUU76IIBJT7xGwKRkfCrT5tySgTrKFsyT
-v+XE/wmoDAqoEqmgsaTT0sdo1B8I04Nq/f2vXoa39lWz2ivQtRAlHrleI3NQgMK+
-D/1I7OIvuv0AnYEV3RHLZzG7DJbmgvQi+6LxKtyVbqm4HIvGEmF55Tb2Q+NjA+Q=
-=vk4i
+iQEcBAEBAgAGBQJSAkqCAAoJEK492j4Im1BpHPQIAJ4WmtQ4iGuhhO0VmoYOOp86
+VKuVWohc/6xD8+Gck7lJASks1Yt92hGoiXrmH+nSP/4HEFOnjsQQty7iBzIcC/2E
+5oqnGqZhT0paj2bfbLXC1VaDAmFcSn4jypOb3tAiRBeNl4bs1Az2tIWxtudcTDBD
+s88HjvS6rDV/84z81l2gSrNl5ickfq/bgww8bO2lbtReIpbn/ZqhLz2GluTDFJIn
+2JgVKpT+hinuXVABjNswSx4tVRwPoiVbgg9lfUP3wF3ScVhmmyntcQVvjv7tcRsC
+qJh9ziCNFjusxR6lvPiUzgTt5dixnLdGAeDSdXVw3fWkhABhRPwuWncT+On60o8=
+=xBkA
 -----END PGP SIGNATURE-----
