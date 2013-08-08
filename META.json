@@ -81,7 +81,7 @@
    "provides" : {
       "Class::Usul" : {
          "file" : "lib/Class/Usul.pm",
-         "version" : "v0.23.2"
+         "version" : "v0.23.3"
       },
       "Class::Usul::Config" : {
          "file" : "lib/Class/Usul/Config.pm",
@@ -174,5 +174,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.23.2"
+   "version" : "v0.23.3"
 }
