@@ -4,7 +4,7 @@
       "Peter Flanigan, C<< <pjfl@cpan.org> >>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.4004, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Module::Build version 0.4007, CPAN::Meta::Converter version 2.120921",
    "license" : [
       "perl_5"
    ],
@@ -81,7 +81,7 @@
    "provides" : {
       "Class::Usul" : {
          "file" : "lib/Class/Usul.pm",
-         "version" : "v0.23.5"
+         "version" : "v0.23.6"
       },
       "Class::Usul::Config" : {
          "file" : "lib/Class/Usul/Config.pm",
@@ -174,5 +174,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "v0.23.5"
+   "version" : "v0.23.6"
 }
