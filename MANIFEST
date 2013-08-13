@@ -1,10 +1,13 @@
 Build.PL
 Changes
+LICENSE
+MANIFEST
+META.json
+META.yml
+README
+SIGNATURE
 examples/Build.PL
 examples/usul_cli
-inc/Bob.pm
-inc/CPANTesting.pm
-inc/SubClass.pm
 lib/Class/Usul.pm
 lib/Class/Usul/Config.pm
 lib/Class/Usul/Config/Programs.pm
@@ -26,11 +29,6 @@ lib/Class/Usul/Time.pm
 lib/Class/Usul/TraitFor/LoadingClasses.pm
 lib/Class/Usul/TraitFor/UntaintedGetopts.pm
 lib/Class/Usul/Types.pm
-LICENSE
-MANIFEST			This list of files
-META.json
-META.yml
-README
 t/01always_pass.t
 t/02pod.t
 t/03podcoverage.t
@@ -49,4 +47,3 @@ t/22crypt.t
 t/critic.rc
 t/locale/de/LC_MESSAGES/default.po
 t/test.xml
-SIGNATURE    Added here by Module::Build

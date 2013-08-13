@@ -1,8 +1,8 @@
-# @(#)$Ident: 20file.t 2013-08-11 20:52 pjf ;
+# @(#)$Ident: 20file.t 2013-08-13 23:19 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.23.%d', q$Rev: 6 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.24.%d', q$Rev: 3 $ =~ /\d+/gmx );
 use File::Spec::Functions;
 use FindBin qw( $Bin );
 use lib catdir( $Bin, updir, q(lib) );
@@ -10,11 +10,11 @@ use lib catdir( $Bin, updir, q(lib) );
 use Module::Build;
 use Test::More;
 
-BEGIN {
-   my $current = eval { Module::Build->current };
+my $notes = {};
 
-   $current and $current->notes->{stop_tests}
-            and plan skip_all => $current->notes->{stop_tests};
+BEGIN {
+   my $builder = eval { Module::Build->current };
+      $builder and $notes = $builder->notes;
 }
 
 use English qw( -no_match_vars );
@@ -31,8 +31,6 @@ use English qw( -no_match_vars );
 }
 
 SKIP: {
-   eval { require XML::DTD }; $EVAL_ERROR and skip 'Requires XML::DTD', 1;
-
    use Class::Usul;
    use Class::Usul::File;
 
