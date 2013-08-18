@@ -1,4 +1,4 @@
-# @(#)$Ident: Build.PL 2013-08-13 22:31 pjf ;
+# @(#)$Ident: DZ_Build.PL 2013-08-15 13:04 pjf ;
 
 use strict;
 use warnings;
@@ -7,16 +7,19 @@ use Module::Build;
 
 sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
 
-$] >= 5.01 or whimper "Minimum required Perl version is 5.01";
+my $perl_ver = 5.010001;
+my $name     = 'Class-Usul'; $name =~ s{ - }{::}gmx;
 
-my $code = do { local $/; <DATA> };
+$] >= $perl_ver or $ENV{PERL5_CPANPLUS_IS_VERSION}
+   or whimper "Minimum required Perl version is ${perl_ver}";
 
-Module::Build->subclass( code => $code )->new(
-  'module_name' => 'Class::Usul',
-  'notes'       => { min_perl_version => 5.01 },
+Module::Build->subclass( code => do { local $/; <DATA> } )->new(
+  'module_name' => $name,
+  'notes'       => { min_perl_version => $perl_ver },
   'build_requires' => {
     'Module::Build' => '0.4004',
     'Test::Deep' => '0.108',
+    'Test::Requires' => '0.06',
     'version' => '0.88'
   },
   'configure_requires' => {
@@ -59,7 +62,8 @@ Module::Build->subclass( code => $code )->new(
     'Unexpected' => 'v0.6.0',
     'YAML::Syck' => '1.17',
     'namespace::clean' => '0.23',
-    'namespace::sweep' => '0.006'
+    'namespace::sweep' => '0.006',
+    'perl' => '5.010001'
   },
 
 )->create_build_script;
