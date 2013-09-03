@@ -1,9 +1,9 @@
-# @(#)$Ident: DZ_Build.PL 2013-08-15 13:04 pjf ;
+# @(#)$Ident: Build.PL 2013-08-26 21:23 pjf ;
 
 use strict;
 use warnings;
 
-use Module::Build;
+use Module::Build 0.4004;
 
 sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
 
@@ -40,12 +40,12 @@ Module::Build->subclass( code => do { local $/; <DATA> } )->new(
     'Date::Format' => '2.24',
     'DateTime::Format::Epoch' => '0.13',
     'Digest::SHA1' => '2.11',
-    'File::DataClass' => 'v0.24.0',
-    'File::Gettext' => 'v0.19.0',
+    'File::DataClass' => 'v0.25.0',
+    'File::Gettext' => 'v0.20.0',
     'File::HomeDir' => '0.93',
     'Getopt::Long::Descriptive' => '0.093',
     'IO::Interactive' => 'v0.0.6',
-    'IPC::SRLock' => 'v0.12.0',
+    'IPC::SRLock' => 'v0.16.0',
     'JSON' => '2.50',
     'Log::Handler' => '0.63',
     'Moo' => '1.003',
@@ -57,9 +57,9 @@ Module::Build->subclass( code => do { local $/; <DATA> } )->new(
     'Term::ReadKey' => '2.30',
     'Text::Autoformat' => '1.669002',
     'Time::Zone' => '2.24',
-    'Try::Tiny' => '0.09',
+    'Try::Tiny' => '0.18',
     'Type::Tiny' => '0.012',
-    'Unexpected' => 'v0.6.0',
+    'Unexpected' => 'v0.12.0',
     'YAML::Syck' => '1.17',
     'namespace::clean' => '0.23',
     'namespace::sweep' => '0.006',
