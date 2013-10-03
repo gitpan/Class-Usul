@@ -1,9 +1,9 @@
-# @(#)$Ident: UntaintedGetopts.pm 2013-08-04 16:22 pjf ;
+# @(#)$Ident: UntaintedGetopts.pm 2013-10-02 18:31 pjf ;
 
 package Class::Usul::TraitFor::UntaintedGetopts;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.26.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.28.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( untaint_cmdline );
@@ -52,7 +52,7 @@ around 'parse_options' => sub {
                  keys %options_data ) {
       my %data = %{ $options_data{ $name } }; my $doc = $data{doc};
 
-      not defined $doc and $doc = "No doc for ${name}";
+      not defined $doc and $doc = "No help for ${name}";
       push @options, [ $option_name->( $name, %data ), $doc ];
       defined $data{autosplit} and $has_to_split{ $name } = Data::Record->new( {
          split => $data{autosplit}, unless => $RE{quoted} } );
@@ -146,8 +146,9 @@ sub __sort_options {
 }
 
 sub __tri2bool {
-   $_[ 0 ] == -1 and return FALSE; return TRUE;
+   return $_[ 0 ] == -1 ? FALSE : TRUE;
 }
+
 1;
 
 __END__
@@ -160,7 +161,7 @@ Class::Usul::TraitFor::UntaintedGetopts - Untaints @ARGV before Getopts processe
 
 =head1 Version
 
-This documents version v0.26.$Rev: 1 $
+This documents version v0.28.$Rev: 1 $
 
 =head1 Synopsis
 

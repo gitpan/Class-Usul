@@ -27,6 +27,7 @@ lib/Class/Usul/Response/Meta.pm
 lib/Class/Usul/Response/Table.pm
 lib/Class/Usul/Time.pm
 lib/Class/Usul/TraitFor/LoadingClasses.pm
+lib/Class/Usul/TraitFor/Prompting.pm
 lib/Class/Usul/TraitFor/UntaintedGetopts.pm
 lib/Class/Usul/Types.pm
 t/01always_pass.t
@@ -40,10 +41,11 @@ t/10exception.t
 t/11functions.t
 t/12l10n.t
 t/14time.t
+t/16file.t
 t/18programs.t
-t/20file.t
 t/21ipc.t
 t/22crypt.t
+t/25prompt.t
 t/critic.rc
 t/locale/de/LC_MESSAGES/default.po
 t/test.xml

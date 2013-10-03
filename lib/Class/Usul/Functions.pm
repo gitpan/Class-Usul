@@ -1,12 +1,12 @@
-# @(#)$Ident: Functions.pm 2013-08-08 21:43 pjf ;
+# @(#)$Ident: Functions.pm 2013-10-03 12:27 pjf ;
 
 package Class::Usul::Functions;
 
 use 5.010001;
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.26.%d', q$Rev: 1 $ =~ /\d+/gmx );
-use parent 'Exporter::TypeTiny';
+use version; our $VERSION = qv( sprintf '0.28.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use parent                  qw( Exporter::Tiny );
 
 use Class::Null;
 use Class::Usul::Constants;
@@ -18,12 +18,14 @@ use Digest::MD5             qw( md5 );
 use English                 qw( -no_match_vars );
 use File::Basename          qw( basename dirname );
 use File::HomeDir           qw( );
-use File::Spec::Functions   qw( catdir catfile tmpdir );
+use File::Spec::Functions   qw( catdir catfile curdir tmpdir );
 use List::Util              qw( first );
 use Path::Class::Dir;
 use Scalar::Util            qw( blessed openhandle );
 use Sys::Hostname;
 use User::pwent;
+
+EXCEPTION_CLASS->has_exception( 'Tainted' );
 
 our @EXPORT      = qw( is_member );
 our @EXPORT_OK   = qw( abs_path app_prefix arg_list assert
@@ -31,7 +33,7 @@ our @EXPORT_OK   = qw( abs_path app_prefix arg_list assert
                        base64_encode_ns bsonid bsonid_time bson64id
                        bson64id_time build class2appdir classdir
                        classfile create_token data_dumper distname
-                       downgrade elapsed emit env_prefix escape_TT
+                       downgrade elapsed emit emit_to env_prefix escape_TT
                        exception find_apphome find_source fold fqdn
                        fullname get_cfgfiles get_user hex2str
                        home2appldir is_arrayref is_coderef is_hashref
@@ -45,6 +47,16 @@ our %EXPORT_REFS =   ( assert => sub { ASSERT } );
 our %EXPORT_TAGS =   ( all => [ @EXPORT, @EXPORT_OK ], );
 
 my $BSON_Id_Inc : shared = 0;
+
+# Construction
+sub _exporter_fail {
+    my ($class, $name, $value, $globals) = @_;
+
+    exists $EXPORT_REFS{ $name }
+       and return ( $name => $EXPORT_REFS{ $name }->() );
+
+    throw( "Could not find sub '${name}' to export in package '${class}'" );
+}
 
 # Public functions
 sub abs_path ($) {
@@ -207,14 +219,20 @@ sub elapsed () {
 }
 
 sub emit (;@) {
-   my @args = @_; openhandle *STDOUT or return;
+   my @args = @_; $args[ 0 ] //= q(); chomp( @args );
 
-   $args[ 0 ] //= q(); chomp( @args );
+   openhandle *STDOUT or return;
 
    local ($OFS, $ORS) = is_win32() ? ("\r\n", "\r\n") : ("\n", "\n");
 
-   return (print {*STDOUT} @args
-           or throw( error => 'IO error [_1]', args =>[ $ERRNO ] ));
+   return emit_to( *STDOUT, @args );
+}
+
+sub emit_to ($;@) {
+   my ($handle, @args) = @_; local $OS_ERROR;
+
+   return (print {$handle} @args
+           or throw( error => 'IO error: [_1]', args =>[ $OS_ERROR ] ));
 }
 
 sub env_prefix ($) {
@@ -236,10 +254,10 @@ sub exception (;@) {
 }
 
 sub find_apphome ($;$$) {
-   my ($appclass, $home, $extns) = @_; my $path;
+   my ($appclass, $default, $extns) = @_; my $path;
 
-   # 0. Pass the directory in
-   not $appclass and $path = assert_directory $home and return $path;
+   # 0. Undef appclass and pass the directory in (short circuit the search)
+   not $appclass and $path = assert_directory $default and return $path;
 
    my $app_pref = app_prefix   $appclass;
    my $appdir   = class2appdir $appclass;
@@ -247,32 +265,34 @@ sub find_apphome ($;$$) {
    my $env_pref = env_prefix   $appclass;
    my $my_home  = File::HomeDir->my_home;
 
-   # 1a. Environment variable - for application directory
+   # 1a.   Environment variable - for application directory
    $path = $ENV{ "${env_pref}_HOME" };
    $path = assert_directory $path and return $path;
-   # 1b. Environment variable - for config file
+   # 1b.   Environment variable - for config file
    $path = _get_env_var_for_conf( $env_pref ) and return $path;
-   # 2a. Users home directory - contains application directory
+   # 2a.   Users home directory - contains application directory
    $path = catdir( $my_home, $appdir, qw( default lib ), $classdir );
    $path = assert_directory $path and return $path;
-   # 2b. Users home directory - dot directory containing application
+   # 2b.   Users home directory - dot directory containing application
    $path = catdir( $my_home, ".${appdir}", qw( default lib ), $classdir );
    $path = assert_directory $path and return $path;
-   # 2c. Users home directory - dot file containing shell env variable
+   # 2c.   Users home directory - dot file containing shell env variable
    $path = _get_dot_file_var( $my_home, $app_pref, $classdir ) and return $path;
-   # 2d. Users home directory - dot directory is apphome
+   # 2d.   Users home directory - dot directory is apphome
    $path = catdir( $my_home, ".${app_pref}" );
    $path = assert_directory $path and return $path;
-   # 3. Well known path containing shell env file
+   # 3.    Well known path containing shell env file
    $path = _get_known_file_var( $appdir, $classdir ) and return $path;
-   # 4. Default install prefix
+   # 4.    Default install prefix
    $path = catdir( @{ PREFIX() }, $appdir, qw( default lib ), $classdir );
    $path = assert_directory $path and return $path;
-   # 5. Config file found in @INC
-   $path = _find_conf_in_inc( $app_pref, $extns, $classdir ) and return $path;
-   # 6. Pass the default in
-   $path = assert_directory $home and return $path;
-   # 7. Default to /tmp
+   # 5a.   Config file found in @INC - underscore as separator
+   $path = _find_conf_in_inc( $classdir, $app_pref, $extns ) and return $path;
+   # 5b.   Config file found in @INC - dash as separator
+   $path = _find_conf_in_inc( $classdir, $appdir, $extns ) and return $path;
+   # 6.    Pass the default in
+   $path = assert_directory $default and return $path;
+   # 7.    Default to /tmp
    return untaint_path( tmpdir );
 }
 
@@ -309,29 +329,32 @@ sub fullname () {
 }
 
 sub get_cfgfiles ($;$$) {
-   my ($appclass, $dirs, $extns) = @_; my $files = [];
+   my ($appclass, $dirs, $extns) = @_;
 
-   my $app_pref = app_prefix $appclass; my $env_pref = env_prefix $appclass;
+   $appclass // throw( 'Application class undefined' );
+   is_arrayref( $dirs ) or $dirs = [ defined $dirs ? $dirs : curdir ];
 
+   my $app_pref = app_prefix   $appclass;
+   my $appdir   = class2appdir $appclass;
+   my $env_pref = env_prefix   $appclass;
    my $suffix   = $ENV{ "${env_pref}_CONFIG_LOCAL_SUFFIX" } || '_local';
-
-   is_arrayref( $dirs ) or $dirs = [ defined $dirs ? $dirs : () ];
+   my @paths    = ();
 
    for my $dir (@{ $dirs }) {
-      for my $extn (@{ $extns || [] }) {
-         my $file;
-         $file = _catpath( $dir, "${app_pref}${extn}" );
-         -f $file and push @{ $files }, $file;
-         $file = _catpath( $dir, "${app_pref}${suffix}${extn}" );
-         -f $file and push @{ $files }, $file;
+      for my $extn (@{ $extns || [ q() ] }) {
+         for my $path (map { _catpath( $dir, $_ ) } "${app_pref}${extn}",
+                       "${appdir}${extn}", "${app_pref}${suffix}${extn}",
+                       "${appdir}${suffix}${extn}") {
+            -f $path and push @paths, $path;
+         }
       }
    }
 
-   return $files;
+   return \@paths;
 }
 
-sub get_user () {
-   return is_win32() ? Class::Null->new : getpwuid( $UID );
+sub get_user (;$) {
+   return is_win32() ? Class::Null->new : getpwuid( shift // $UID );
 }
 
 sub hex2str (;$) {
@@ -374,8 +397,8 @@ sub is_win32 () {
    return lc $OSNAME eq EVIL ? 1 : 0;
 }
 
-sub loginid () {
-   return untaint_cmdline( get_user()->name || 'unknown' );
+sub loginid (;$) {
+   return untaint_cmdline( get_user( $_[ 0 ] )->name || 'unknown' );
 }
 
 sub logname () {
@@ -551,17 +574,8 @@ sub _catpath {
    return untaint_path( catfile( @_ ) );
 }
 
-sub _exporter_fail {
-    my ($class, $name, $value, $globals) = @_;
-
-    exists $EXPORT_REFS{ $name }
-       and return ( $name => $EXPORT_REFS{ $name }->() );
-
-    throw( "Could not find sub '${name}' to export in package '${class}'" );
-}
-
 sub _find_conf_in_inc {
-   my ($file, $extns, $classdir) = @_;
+   my ($classdir, $file, $extns) = @_;
 
    for my $dir (map { catdir( abs_path( $_ ), $classdir ) } @INC) {
       for my $extn (@{ $extns || [] }) {
@@ -645,7 +659,7 @@ CatalystX::Usul::Functions - Globally accessible functions
 
 =head1 Version
 
-This documents version v0.26.$Rev: 1 $
+This documents version v0.28.$Rev: 1 $
 
 =head1 Synopsis
 
@@ -811,6 +825,12 @@ Returns the number of seconds elapsed since the process started
 Prints to I<STDOUT> the lines of text passed to it. Lines are C<chomp>ed
 and then have newlines appended. Throws on IO errors
 
+=head2 emit_to
+
+   emit_to $filehandle, @lines_of_text;
+
+Prints to the specified file handle
+
 =head2 env_prefix
 
    $prefix = env_prefix $class;
@@ -874,10 +894,11 @@ Returns an array ref of configurations file paths for the application
 
 =head2 get_user
 
-   $user_object = get_user;
+   $user_object = get_user $optional_uid;
 
 Returns the user object from a call to C<getpwuid> with get L<User::pwent>
-package loaded. On MSWin32 systems returns an instance of L<Class::Null>
+package loaded. On MSWin32 systems returns an instance of L<Class::Null>.
+Defaults to the current uid but will lookup the supplied uid if provided
 
 =head2 hex2str
 

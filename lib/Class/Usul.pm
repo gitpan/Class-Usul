@@ -1,10 +1,10 @@
-# @(#)$Ident: Usul.pm 2013-08-15 13:43 pjf ;
+# @(#)$Ident: Usul.pm 2013-10-01 16:01 pjf ;
 
 package Class::Usul;
 
 use 5.010001;
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.26.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.28.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( data_dumper merge_attributes throw );
@@ -17,34 +17,30 @@ use Moo;
 use Scalar::Util            qw( blessed );
 
 # Public attributes
-has '_config'        => is => 'ro',   isa => HashRef, default => sub { {} },
-   init_arg          => 'config';
+has '_config_attr' => is => 'ro',   isa => HashRef, default => sub { {} },
+   init_arg        => 'config';
 
-has 'config_class'   => is => 'ro',   isa => LoadableClass,
-   coerce            => LoadableClass->coercion,
-   default           => 'Class::Usul::Config';
+has 'config_class' => is => 'ro',   isa => LoadableClass,
+   coerce          => LoadableClass->coercion,
+   default         => 'Class::Usul::Config';
 
-has '_config_parser' => is => 'lazy', isa => ConfigType,
-   default           => sub { $_[ 0 ]->config_class->new( $_[ 0 ]->_config ) },
-   handles           => [ qw( prefix salt ) ], init_arg => undef,
-   reader            => 'config';
+has 'config'       => is => 'lazy', isa => ConfigType,
+   handles         => [ qw( prefix salt ) ], init_arg => undef;
 
-has 'debug',         => is => 'rw',   isa => Bool, default => FALSE,
-   trigger           => TRUE;
+has 'debug',       => is => 'rw',   isa => Bool, default => FALSE,
+   trigger         => TRUE;
 
-has 'encoding'       => is => 'lazy', isa => EncodingType,
-   default           => sub { $_[ 0 ]->config->encoding };
+has 'encoding'     => is => 'lazy', isa => EncodingType,
+   default         => sub { $_[ 0 ]->config->encoding };
 
-has '_l10n'          => is => 'lazy', isa => L10NType,
-   default           => sub { Class::Usul::L10N->new( builder => $_[ 0 ] ) },
-   handles           => [ qw(localize) ], init_arg => 'l10n', reader => 'l10n';
+has 'l10n'         => is => 'lazy', isa => L10NType,
+   builder         => sub { Class::Usul::L10N->new( builder => $_[ 0 ] ) },
+   handles         => [ 'localize' ];
 
-has '_lock'          => is => 'lazy', isa => LockType,
-   init_arg          => 'lock', reader => 'lock';
+has 'lock'         => is => 'lazy', isa => LockType;
 
-has '_log'           => is => 'lazy', isa => LogType,
-   default           => sub { Class::Usul::Log->new( builder => $_[ 0 ] ) },
-   init_arg          => 'log',  reader => 'log';
+has 'log'          => is => 'lazy', isa => LogType,
+   builder         => sub { Class::Usul::Log->new( builder => $_[ 0 ] ) };
 
 # Public methods
 sub new_from_class { # Instantiate from a class name with a config method
@@ -58,14 +54,18 @@ sub dumper { # Damm handy for development
 }
 
 # Private methods
-sub _build__lock { # There is only one lock object. Instantiate on first use
+sub _build_config {
+   return $_[ 0 ]->config_class->new( $_[ 0 ]->_config_attr );
+}
+
+sub _build_lock { # There is only one lock object. Instantiate on first use
    my $self = shift; state $cache; $cache and return $cache;
 
    my $config = $self->config; my $attr = { %{ $config->lock_attributes } };
 
-   merge_attributes $attr, $self,   {}, [ qw(debug log) ];
+   merge_attributes $attr, $self,   {}, [ qw( debug log ) ];
    merge_attributes $attr, $config, { exception_class => EXCEPTION_CLASS },
-      [ qw(exception_class tempdir) ];
+      [ qw( exception_class tempdir ) ];
 
    return $cache = IPC::SRLock->new( $attr );
 }
@@ -83,7 +83,7 @@ sub __build_attr_from_class { # Coerce a hash ref from a string
    my $class = shift;
 
    defined $class or throw 'Application class not defined';
-   $class->can( q(config) )
+   $class->can( 'config' )
       or throw error => 'Class [_1] is missing the config method',
                args  => [ $class ];
 
@@ -93,7 +93,7 @@ sub __build_attr_from_class { # Coerce a hash ref from a string
    my $name   = delete $config->{name}; $config->{appclass} ||= $name;
 
    $attr->{config} ||= $config;
-   $attr->{debug } ||= $class->can( q(debug) ) ? $class->debug : FALSE;
+   $attr->{debug } ||= $class->can( 'debug' ) ? $class->debug : FALSE;
    return $attr;
 }
 
@@ -109,7 +109,7 @@ Class::Usul - A base class providing config, locking, logging, and l10n
 
 =head1 Version
 
-Describes Class::Usul version v0.26.$Rev: 1 $
+Describes Class::Usul version v0.28.$Rev: 1 $
 
 =head1 Synopsis
 

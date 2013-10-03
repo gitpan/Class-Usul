@@ -1,8 +1,8 @@
-# @(#)$Ident: 21ipc.t 2013-08-18 11:05 pjf ;
+# @(#)$Ident: 21ipc.t 2013-10-03 12:33 pjf ;
 
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.26.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.28.%d', q$Rev: 1 $ =~ /\d+/gmx );
 use File::Spec::Functions   qw( catdir catfile tmpdir updir );
 use FindBin                 qw( $Bin );
 use lib                 catdir( $Bin, updir, 'lib' );
@@ -43,7 +43,7 @@ my $prog   = Class::Usul::Programs->new( appclass => q(Class::Usul),
                                                        tempdir => q(t), },
                                          log      => Logger->new,
                                          method   => q(dump_self),
-                                         nodebug  => 1,
+                                         noask    => 1,
                                          quiet    => 1, );
 
 sub popen_test {
@@ -80,6 +80,16 @@ SKIP: {
    is popen_test( q(out), $cmd, { in => [ 'some text' ] } ), 'some text',
       'popen captures stdin and stdout';
 }
+
+my @pids = $prog->ipc->child_list( $PID );
+
+is $pids[ 0 ], $PID, 'child list';
+
+is $prog->ipc->process_exists( pid => $PID ), 1, 'process exists';
+
+my $table = $prog->ipc->process_table;
+
+ok $table->count > 0, 'process table';
 
 sub run_cmd_test {
    my $want = shift; my $r = eval { $prog->run_cmd( @_ ) };
