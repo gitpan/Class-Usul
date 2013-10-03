@@ -17,6 +17,7 @@ Module::Build->subclass( code => do { local $/; <DATA> } )->new(
   'module_name' => $name,
   'notes'       => { min_perl_version => $perl_ver },
   'build_requires' => {
+    'Capture::Tiny' => '0.22',
     'Module::Build' => '0.4004',
     'Test::Deep' => '0.108',
     'Test::Requires' => '0.06',
