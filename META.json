@@ -72,7 +72,7 @@
             "Time::Zone" : "2.24",
             "Try::Tiny" : "0.18",
             "Type::Tiny" : "0.012",
-            "Unexpected" : "v0.13.0",
+            "Unexpected" : "v0.15.0",
             "YAML::Syck" : "1.17",
             "namespace::clean" : "0.23",
             "namespace::sweep" : "0.006",
@@ -83,91 +83,91 @@
    "provides" : {
       "Class::Usul" : {
          "file" : "lib/Class/Usul.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Config" : {
          "file" : "lib/Class/Usul/Config.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Config::Programs" : {
          "file" : "lib/Class/Usul/Config/Programs.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Constants" : {
          "file" : "lib/Class/Usul/Constants.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Crypt" : {
          "file" : "lib/Class/Usul/Crypt.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Crypt::Util" : {
          "file" : "lib/Class/Usul/Crypt/Util.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Exception" : {
          "file" : "lib/Class/Usul/Exception.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::File" : {
          "file" : "lib/Class/Usul/File.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Functions" : {
          "file" : "lib/Class/Usul/Functions.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::IPC" : {
          "file" : "lib/Class/Usul/IPC.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::L10N" : {
          "file" : "lib/Class/Usul/L10N.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Lock" : {
          "file" : "lib/Class/Usul/Lock.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Log" : {
          "file" : "lib/Class/Usul/Log.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Programs" : {
          "file" : "lib/Class/Usul/Programs.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Response::IPC" : {
          "file" : "lib/Class/Usul/Response/IPC.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Response::Meta" : {
          "file" : "lib/Class/Usul/Response/Meta.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Response::Table" : {
          "file" : "lib/Class/Usul/Response/Table.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Time" : {
          "file" : "lib/Class/Usul/Time.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::TraitFor::LoadingClasses" : {
          "file" : "lib/Class/Usul/TraitFor/LoadingClasses.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::TraitFor::Prompting" : {
          "file" : "lib/Class/Usul/TraitFor/Prompting.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::TraitFor::UntaintedGetopts" : {
          "file" : "lib/Class/Usul/TraitFor/UntaintedGetopts.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       },
       "Class::Usul::Types" : {
          "file" : "lib/Class/Usul/Types.pm",
-         "version" : "v0.31.1"
+         "version" : "v0.32.1"
       }
    },
    "release_status" : "stable",
@@ -181,6 +181,6 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.31.1"
+   "version" : "0.32.1"
 }
 

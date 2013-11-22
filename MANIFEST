@@ -6,7 +6,6 @@ META.json
 META.yml
 README
 SIGNATURE
-examples/Build.PL
 examples/usul_cli
 lib/Class/Usul.pm
 lib/Class/Usul/Config.pm
@@ -46,6 +45,7 @@ t/18programs.t
 t/21ipc.t
 t/22crypt.t
 t/25prompt.t
+t/30loading_classes.t
 t/critic.rc
 t/locale/de/LC_MESSAGES/default.po
 t/test.xml
