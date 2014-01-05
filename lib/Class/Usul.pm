@@ -1,11 +1,12 @@
-# @(#)$Ident: Usul.pm 2013-10-16 23:05 pjf ;
+# @(#)$Ident: Usul.pm 2013-12-31 21:01 pjf ;
 
 package Class::Usul;
 
 use 5.010001;
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.33.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.34.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
+use Moo;
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( data_dumper merge_attributes throw );
 use Class::Usul::L10N;
@@ -13,8 +14,8 @@ use Class::Usul::Log;
 use Class::Usul::Types      qw( Bool ConfigType EncodingType HashRef
                                 L10NType LoadableClass LockType LogType );
 use IPC::SRLock;
-use Moo;
 use Scalar::Util            qw( blessed );
+use Unexpected::Functions   qw( Unspecified );
 
 # Public attributes
 has 'config'       => is => 'lazy', isa => ConfigType, builder => sub {
@@ -70,7 +71,7 @@ sub _build_lock { # There is only one lock object. Instantiate on first use
 sub _trigger_debug { # Propagate the debug state to child objects
    my ($self, $debug) = @_;
 
-   $self->l10n->debug( $debug ); $self->lock->debug( $debug );
+   $self->l10n->debug( $debug ); $debug and $self->lock->debug( $debug );
 
    return;
 }
@@ -79,7 +80,8 @@ sub _trigger_debug { # Propagate the debug state to child objects
 sub __build_attr_from_class { # Coerce a hash ref from a string
    my $class = shift;
 
-   defined $class or throw 'Application class not defined';
+   defined $class
+      or throw class => Unspecified, args => [ 'Application class' ];
    $class->can( 'config' )
       or throw error => 'Class [_1] is missing the config method',
                args  => [ $class ];
@@ -105,7 +107,7 @@ Class::Usul - A base class providing config, locking, logging, and l10n
 
 =head1 Version
 
-Describes Class::Usul version v0.33.$Rev: 1 $
+Describes Class::Usul version v0.34.$Rev: 1 $
 
 =head1 Synopsis
 
@@ -251,7 +253,7 @@ Larry Wall - For the Perl programming language
 
 =head1 License and Copyright
 
-Copyright (c) 2013 Peter Flanigan. All rights reserved
+Copyright (c) 2014 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

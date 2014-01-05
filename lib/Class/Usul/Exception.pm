@@ -1,9 +1,9 @@
-# @(#)Ident: Exception.pm 2013-11-20 15:58 pjf ;
+# @(#)Ident: Exception.pm 2013-12-31 18:35 pjf ;
 
 package Class::Usul::Exception;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.33.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.34.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Moo;
 use Unexpected::Types qw( Int Str );
@@ -15,7 +15,10 @@ with    q(Unexpected::TraitFor::ExceptionClasses);
 my $class = __PACKAGE__;
 
 $class->has_exception( $class );
-$class->has_exception( 'Tainted' => [ $class ] );
+
+$class->has_exception( 'Tainted' => {
+   parents => [ $class ], error => 'String [_1] contains possible taint' } );
+
 $class->ignore_class ( 'Class::Usul::IPC', 'Sub::Quote' );
 
 has '+class' => default => $class;
@@ -41,7 +44,7 @@ Class::Usul::Exception - Exception handling
 
 =head1 Version
 
-This documents version v0.33.$Rev: 1 $ of L<Class::Usul::Exception>
+This documents version v0.34.$Rev: 1 $ of L<Class::Usul::Exception>
 
 =head1 Synopsis
 
@@ -131,6 +134,11 @@ thrown
 
 =head1 Subroutines/Methods
 
+=head2 BUILDARGS
+
+Doesn't modify the C<BUILDARGS> method. This is here to workaround a
+bug in L<Moo> and / or L<Test::Pod::Coverage>
+
 =head2 as_string
 
    $error_text = $self->as_string;
@@ -199,7 +207,7 @@ Peter Flanigan C<< <pjfl@cpan.org> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2013 Peter Flanigan. All rights reserved
+Copyright (c) 2014 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

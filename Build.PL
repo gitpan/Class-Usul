@@ -1,4 +1,4 @@
-# @(#)$Ident: Build.PL 2013-08-26 21:23 pjf ;
+# @(#)$Ident: Build.PL 2014-01-05 02:22 pjf ;
 
 use strict;
 use warnings;
@@ -9,17 +9,10 @@ sub whimper { print {*STDOUT} $_[ 0 ]."\n"; exit 0 }
 
 my $perl_ver = 5.010001;
 my $name     = 'Class-Usul'; $name =~ s{ - }{::}gmx;
-
-$] >= $perl_ver or $ENV{PERL5_CPANPLUS_IS_VERSION}
-   or whimper "Minimum required Perl version is ${perl_ver}";
-
-Module::Build->subclass( code => do { local $/; <DATA> } )->new(
-  'module_name' => $name,
-  'notes'       => { min_perl_version => $perl_ver },
+my $prereqs  = {
   'build_requires' => {
     'Capture::Tiny' => '0.22',
     'Module::Build' => '0.4004',
-    'Moo' => '1.003',
     'Test::Deep' => '0.108',
     'Test::Requires' => '0.06',
     'version' => '0.88'
@@ -33,7 +26,6 @@ Module::Build->subclass( code => do { local $/; <DATA> } )->new(
   },
   'requires' => {
     'Class::Inspector' => '1.24',
-    'Class::Load' => '0.18',
     'Class::Null' => '2.101420',
     'Crypt::CBC' => '2.30',
     'Crypt::Twofish2' => '1.02',
@@ -41,16 +33,16 @@ Module::Build->subclass( code => do { local $/; <DATA> } )->new(
     'Data::Record' => '0.02',
     'Date::Format' => '2.24',
     'DateTime::Format::Epoch' => '0.13',
-    'Digest::SHA1' => '2.11',
     'Exporter::Tiny' => '0.026',
-    'File::DataClass' => 'v0.26.0',
-    'File::Gettext' => 'v0.20.0',
+    'File::DataClass' => 'v0.30.0',
+    'File::Gettext' => 'v0.22.0',
     'File::HomeDir' => '0.93',
     'Getopt::Long::Descriptive' => '0.093',
     'IO::Interactive' => 'v0.0.6',
-    'IPC::SRLock' => 'v0.16.0',
+    'IPC::SRLock' => 'v0.21.0',
     'JSON' => '2.50',
     'Log::Handler' => '0.63',
+    'Module::Runtime' => '0.013',
     'Moo' => '1.003',
     'MooX::ClassStash' => '0.005',
     'Path::Class' => '0.23',
@@ -62,19 +54,29 @@ Module::Build->subclass( code => do { local $/; <DATA> } )->new(
     'Time::Zone' => '2.24',
     'Try::Tiny' => '0.18',
     'Type::Tiny' => '0.012',
-    'Unexpected' => 'v0.15.0',
+    'Unexpected' => 'v0.20.0',
     'YAML::Syck' => '1.17',
     'namespace::clean' => '0.23',
     'namespace::sweep' => '0.006',
     'perl' => '5.010001'
   },
+};
+
+if ($] < $perl_ver) {
+   $ENV{AUTOMATED_TESTING}
+      or $ENV{PERL_CPAN_REPORTER_CONFIG}
+      or $ENV{PERL5_CPANPLUS_IS_VERSION}
+      or whimper "Minimum required Perl version is ${perl_ver}";
+   $prereqs->{build_requires} = { %{ $prereqs->{configure_requires} } };
+   $prereqs->{build_requires}->{ 'Test::Requires' } = 0.06;
+   delete $prereqs->{requires};
+}
+
+Module::Build->new(
+  'module_name' => $name,
+  'notes'       => { min_perl_version => $perl_ver },
+  %{ $prereqs },
 
 )->create_build_script;
 
 exit 0;
-
-__DATA__
-
-sub _normalize_prereqs { # Dynamic config
-   my $self = shift; my $p = $self->SUPER::_normalize_prereqs; return $p;
-}

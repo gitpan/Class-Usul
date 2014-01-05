@@ -33,7 +33,6 @@ lib/Class/Usul/Types.pm
 t/01always_pass.t
 t/02pod.t
 t/03podcoverage.t
-t/04critic.t
 t/05kwalitee.t
 t/06yaml.t
 t/07podspelling.t
@@ -48,6 +47,7 @@ t/21ipc.t
 t/22crypt.t
 t/25prompt.t
 t/30loading_classes.t
+t/40types.t
 t/critic.rc
 t/locale/de/LC_MESSAGES/default.po
-t/test.xml
+t/test.json

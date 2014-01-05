@@ -1,10 +1,11 @@
-# @(#)$Ident: File.pm 2013-09-30 17:26 pjf ;
+# @(#)$Ident: File.pm 2014-01-05 02:28 pjf ;
 
 package Class::Usul::File;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.33.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.34.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
+use Moo;
 use Class::Usul::Constants;
 use Class::Usul::Functions   qw( arg_list create_token is_arrayref throw );
 use Class::Usul::Types       qw( BaseType );
@@ -13,8 +14,8 @@ use File::DataClass::Constants ( );
 use File::DataClass::IO        ( );
 use File::DataClass::Schema;
 use File::Spec::Functions    qw( catdir catfile rootdir );
-use Moo;
 use Scalar::Util             qw( blessed );
+use Unexpected::Functions    qw( AlreadyExists NotFound Unspecified );
 
 File::DataClass::Constants->Exception_Class( EXCEPTION_CLASS );
 
@@ -53,7 +54,7 @@ sub data_load {
        and $attr->{storage_attributes}->{force_array} = $args->{arrays};
 
   (is_arrayref $args->{paths} and defined $args->{paths}->[ 0 ])
-      or throw 'No data file paths specified';
+      or throw class => Unspecified, args => [ 'Path name' ];
 
    return $self->dataclass_schema( $attr )->load( @{ $args->{paths} } );
 }
@@ -74,7 +75,9 @@ sub delete_tmp_files {
 }
 
 sub extensions {
-   return File::DataClass::Schema->extensions;
+   my $extensions = File::DataClass::Schema->extensions;
+
+   return wantarray ? keys %{ $extensions } : $extensions;
 }
 
 sub io {
@@ -88,15 +91,15 @@ sub status_for {
 sub symlink {
    my ($self, $base, $from, $to) = @_;
 
-   $from or throw 'Symlink path from undefined';
+   $from or throw class => Unspecified, args => [ 'Symlink path from' ];
    $from = $self->absolute( $base, $from );
-   $from->exists or
-      throw error => 'Path [_1] does not exist', args => [ $from->pathname ];
-   $to or throw 'Symlink path to undefined';
-   $to   = $self->io( $to ); -l $to->pathname and $to->unlink;
-   $to->exists and
-      throw error => 'Path [_1] already exists', args => [ $to->pathname ];
-   CORE::symlink $from->pathname, $to->pathname or throw $OS_ERROR;
+   $from->exists or throw class => NotFound, args => [ $from->pathname ];
+   $to or throw class => Unspecified, args => [ 'Symlink path to' ];
+   $to = $self->absolute( $base, $to ); $to->is_link and $to->unlink;
+   $to->exists and throw class => AlreadyExists, args => [ $to->pathname ];
+   CORE::symlink $from->pathname, $to->pathname
+      or throw error => 'Symlink from [_1] to [_2] failed: [_3]',
+               args  => [ $from->pathname, $to->pathname, $OS_ERROR ];
    return "Symlinked ${from} to ${to}";
 }
 
@@ -136,7 +139,7 @@ Class::Usul::File - File and directory IO base class
 
 =head1 Version
 
-This documents version v0.33.$Rev: 1 $
+This documents version v0.34.$Rev: 1 $
 
 =head1 Synopsis
 
@@ -192,10 +195,12 @@ which defaults to C<< $self->tempdir >>
 
 =head2 extensions
 
-   $hash_ref = $self->extensions;
+   $hash_ref  = $self->extensions;
+   $array_ref = [ $self->extensions ];
 
 Class method that returns the extensions supported by
-L<File::DataClass::Storage>
+L<File::DataClass::Storage>. Returns the hash reference in a scalar context
+and the list of keys in a list context
 
 =head2 io
 
@@ -281,7 +286,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2013 Peter Flanigan. All rights reserved
+Copyright (c) 2014 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

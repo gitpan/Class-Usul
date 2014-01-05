@@ -1,16 +1,16 @@
-# @(#)$Ident: Programs.pm 2013-11-22 18:51 pjf ;
+# @(#)$Ident: Programs.pm 2013-11-26 13:56 pjf ;
 
 package Class::Usul::Programs;
 
 use attributes ();
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.33.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.34.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Moo;
 use Class::Inspector;
 use Class::Usul::Constants;
 use Class::Usul::File;
-use Class::Usul::Functions  qw( abs_path elapsed emit emit_to exception
+use Class::Usul::Functions  qw( abs_path elapsed emit emit_err emit_to exception
                                 find_apphome find_source get_cfgfiles
                                 is_arrayref is_hashref is_member
                                 logname pad throw untaint_identifier );
@@ -214,7 +214,7 @@ sub error {
 
    $self->log->error( $_ ) for (split m{ \n }mx, "${text}");
 
-   emit_to \*STDERR, $self->add_leader( $text, $args )."\n";
+   emit_to *STDERR, $self->add_leader( $text, $args )."\n";
    $self->debug and __output_stacktrace( $err, $self->verbose );
    return;
 }
@@ -228,7 +228,7 @@ sub fatal {
 
    $self->log->alert( $_ ) for (split m{ \n }mx, $text.$posn);
 
-   emit_to \*STDERR, $self->add_leader( $text, $args ).$posn."\n";
+   emit_to *STDERR, $self->add_leader( $text, $args ).$posn."\n";
    __output_stacktrace( $err, $self->verbose );
    exit FAILED;
 }
@@ -311,12 +311,17 @@ sub loc {
 }
 
 sub output {
-   my ($self, $text, $args) = @_; $args ||= {}; $args->{cl} and emit;
+   my ($self, $text, $args) = @_; $args ||= {};
 
    $text = $self->loc( $text || '[no message]', $args->{args} || [] );
 
-   emit $self->add_leader( $text, $args ); $args->{nl} and emit;
+   my $code = sub {
+      $args->{to} && $args->{to} eq 'err' ? emit_err( @_ ) : emit( @_ );
+   };
 
+   $code->() if $args->{cl};
+   $code->( $self->add_leader( $text, $args ) );
+   $code->() if $args->{nl};
    return;
 }
 
@@ -355,11 +360,12 @@ sub run {
    if (defined $rv and $rv == OK) {
       $self->quiet or $self->output( 'Finished in '.elapsed.' seconds' );
    }
-   elsif (defined $rv and $rv > OK) { $self->output( "Terminated code ${rv}" ) }
+   elsif (defined $rv and $rv > OK) {
+      $self->output( "Terminated code ${rv}", { to => 'err' } ) }
    else {
       not defined $rv and $rv = UNDEFINED_RV
          and $self->error( "Method ${method} error uncaught/rv undefined" );
-      $self->output( 'Terminated with undefined rv' );
+      $self->output( 'Terminated with undefined rv', { to => 'err' } );
    }
 
    $self->file->delete_tmp_files;
@@ -472,13 +478,10 @@ sub _output_usage {
 
    $verbose > 1 and return $self->_man_page_from( $self->config );
 
-   if ($verbose > 0) {
-      pod2usage( { -exitval => 'NOEXIT',
-                   -input   => NUL.$self->config->pathname,
-                   -message => SPC,
-                   -verbose => $verbose } );
-      return FAILED;
-   }
+   $verbose > 0 and pod2usage( { -exitval => OK,
+                                 -input   => NUL.$self->config->pathname,
+                                 -message => SPC,
+                                 -verbose => $verbose } ); # Never returns
 
    emit_to \*STDERR, $self->options_usage;
    return FAILED;
@@ -544,7 +547,7 @@ Class::Usul::Programs - Provide support for command line programs
 
 =head1 Version
 
-This document describes version v0.33.$Rev: 1 $ of L<Class::Usul::Programs>
+This document describes version v0.34.$Rev: 1 $ of L<Class::Usul::Programs>
 
 =head1 Synopsis
 
@@ -844,7 +847,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2013 Peter Flanigan. All rights reserved
+Copyright (c) 2014 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

@@ -1,11 +1,12 @@
-# @(#)$Ident: L10N.pm 2013-11-07 14:07 pjf ;
+# @(#)$Ident: L10N.pm 2013-12-07 22:56 pjf ;
 
 package Class::Usul::L10N;
 
 use 5.010001;
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.33.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.34.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
+use Moo;
 use Class::Null;
 use Class::Usul::Constants;
 use Class::Usul::Functions  qw( assert is_arrayref merge_attributes );
@@ -15,7 +16,6 @@ use File::DataClass::Types  qw( Directory Lock Path );
 use File::Gettext::Constants;
 use File::Gettext;
 use File::Spec;
-use Moo;
 use Try::Tiny;
 
 # Public attributes
@@ -54,7 +54,7 @@ around 'BUILDARGS' => sub {
    my $builder = delete $attr->{builder} or return $attr;
    my $config  = $builder->can( 'config' ) ? $builder->config : {};
 
-   merge_attributes $attr, $builder, {}, [ qw( debug lock log ) ];
+   merge_attributes $attr, $builder, {}, [ qw( debug log ) ];
    merge_attributes $attr, $config,  {},
       [ qw( l10n_attributes localedir tempdir ) ];
 
@@ -189,7 +189,7 @@ Class::Usul::L10N - Localize text strings
 
 =head1 Version
 
-This documents version v0.33.$Rev: 1 $
+This documents version v0.34.$Rev: 1 $
 
 =head1 Synopsis
 
@@ -346,7 +346,7 @@ Larry Wall - For the Perl programming language
 
 =head1 License and Copyright
 
-Copyright (c) 2013 Peter Flanigan. All rights reserved
+Copyright (c) 2014 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>

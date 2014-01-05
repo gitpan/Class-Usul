@@ -1,18 +1,17 @@
-# @(#)$Ident: Functions.pm 2013-11-22 10:52 pjf ;
+# @(#)$Ident: Functions.pm 2013-12-31 18:44 pjf ;
 
 package Class::Usul::Functions;
 
 use 5.010001;
 use strict;
 use warnings;
-use version; our $VERSION = qv( sprintf '0.33.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.34.%d', q$Rev: 1 $ =~ /\d+/gmx );
 use parent                  qw( Exporter::Tiny );
 
-use Class::Load             qw( is_class_loaded load_class );
 use Class::Null;
 use Class::Usul::Constants;
 use Cwd                     qw( );
-use Data::Printer   alias => q(Dumper), colored => 1, indent => 3,
+use Data::Printer   alias => q(_data_dumper), colored => 1, indent => 3,
     filters => { 'File::DataClass::IO' => sub { $_[ 0 ]->pathname }, };
 use Digest                  qw( );
 use Digest::MD5             qw( md5 );
@@ -21,10 +20,11 @@ use File::Basename          qw( basename dirname );
 use File::HomeDir           qw( );
 use File::Spec::Functions   qw( catdir catfile curdir tmpdir );
 use List::Util              qw( first );
+use Module::Runtime         qw( is_module_name require_module );
 use Path::Class::Dir;
 use Scalar::Util            qw( blessed openhandle );
 use Sys::Hostname;
-use Unexpected::Functions   qw( Tainted );
+use Unexpected::Functions   qw( is_class_loaded Tainted Unspecified );
 use User::pwent;
 
 our @EXPORT      = qw( is_member );
@@ -33,15 +33,16 @@ our @EXPORT_OK   = qw( abs_path app_prefix arg_list assert
                        base64_encode_ns bsonid bsonid_time bson64id
                        bson64id_time build class2appdir classdir
                        classfile create_token data_dumper distname
-                       downgrade elapsed emit emit_to
+                       downgrade elapsed emit emit_err emit_to
                        ensure_class_loaded env_prefix escape_TT
                        exception find_apphome find_source fold fqdn
                        fullname get_cfgfiles get_user hex2str
-                       home2appldir is_arrayref is_coderef is_hashref
-                       is_win32 loginid logname merge_attributes
-                       my_prefix pad prefix2class product split_on__
-                       split_on_dash squeeze strip_leader sub_name sum
-                       thread_id throw trim unescape_TT
+                       home2appldir is_arrayref is_coderef
+                       is_hashref is_win32 loginid
+                       logname merge_attributes my_prefix pad
+                       prefix2class product split_on__ split_on_dash
+                       squeeze strip_leader sub_name sum thread_id
+                       throw throw_on_error trim unescape_TT
                        untaint_cmdline untaint_identifier untaint_path
                        untaint_string zip );
 our %EXPORT_REFS =   ( assert => sub { ASSERT } );
@@ -56,7 +57,8 @@ sub _exporter_fail {
     exists $EXPORT_REFS{ $name }
        and return ( $name => $EXPORT_REFS{ $name }->() );
 
-    throw( "Could not find sub '${name}' to export in package '${class}'" );
+    throw( error => 'Subroutine [_1] not found in package [_2]',
+           args  => [ $name, $class ] );
 }
 
 # Public functions
@@ -195,7 +197,7 @@ sub create_token (;$) {
          $candidate = $_; $digest = eval { Digest->new( $candidate ) } and last;
       }
 
-      $digest or throw( 'No digest algorithm' ); $cache = $candidate;
+      $digest or throw( 'Digest algorithm not found' ); $cache = $candidate;
    }
 
    $digest->add( $seed || join q(), time, rand 10_000, $PID, {} );
@@ -204,7 +206,7 @@ sub create_token (;$) {
 }
 
 sub data_dumper (;@) {
-   Dumper( @_ ); return 1;
+   _data_dumper( @_ ); return 1;
 }
 
 sub distname ($) {
@@ -222,11 +224,17 @@ sub elapsed () {
 sub emit (;@) {
    my @args = @_; $args[ 0 ] //= q(); chomp( @args );
 
-   openhandle *STDOUT or return;
+   local ($OFS, $ORS) = is_win32() ? ("\r\n", "\r\n") : ("\n", "\n");
+
+   return openhandle *STDOUT ? emit_to( *STDOUT, @args ) : undef;
+}
+
+sub emit_err (;@) {
+   my @args = @_; $args[ 0 ] //= q(); chomp( @args );
 
    local ($OFS, $ORS) = is_win32() ? ("\r\n", "\r\n") : ("\n", "\n");
 
-   return emit_to( *STDOUT, @args );
+   return openhandle *STDERR ? emit_to( *STDERR, @args ) : undef;
 }
 
 sub emit_to ($;@) {
@@ -239,13 +247,14 @@ sub emit_to ($;@) {
 sub ensure_class_loaded ($;$) {
    my ($class, $opts) = @_; $opts ||= {};
 
-   my $package_defined = sub { is_class_loaded( $class ) };
+   $class or throw( class => Unspecified, args => [ 'Class name' ] );
+   is_module_name( $class )
+      or throw( error => 'String [_1] invalid classname', args => [ $class ] );
+   not $opts->{ignore_loaded} and is_class_loaded( $class ) and return 1;
 
-   not $opts->{ignore_loaded} and $package_defined->() and return 1;
+   eval { require_module( $class ) }; throw_on_error();
 
-   eval { load_class( $class ) }; EXCEPTION_CLASS->throw_on_error;
-
-   $package_defined->()
+   is_class_loaded( $class )
       or throw( error => 'Class [_1] loaded but package undefined',
                 args  => [ $class ] );
 
@@ -283,8 +292,7 @@ sub find_apphome ($;$$) {
    my $my_home  = File::HomeDir->my_home;
 
    # 1a.   Environment variable - for application directory
-   $path = $ENV{ "${env_pref}_HOME" };
-   $path = assert_directory $path and return $path;
+   $path = assert_directory $ENV{ "${env_pref}_HOME" } and return $path;
    # 1b.   Environment variable - for config file
    $path = _get_env_var_for_conf( $env_pref ) and return $path;
    # 2a.   Users home directory - contains application directory
@@ -310,7 +318,7 @@ sub find_apphome ($;$$) {
    # 6.    Pass the default in
    $path = assert_directory $default and return $path;
    # 7.    Default to /tmp
-   return untaint_path( tmpdir );
+   return  untaint_path( tmpdir );
 }
 
 sub find_source ($) {
@@ -348,7 +356,7 @@ sub fullname () {
 sub get_cfgfiles ($;$$) {
    my ($appclass, $dirs, $extns) = @_;
 
-   $appclass // throw( 'Application class undefined' );
+   $appclass // throw( class => Unspecified, args => [ 'Application class' ] );
    is_arrayref( $dirs ) or $dirs = [ $dirs // curdir ];
 
    my $app_pref = app_prefix   $appclass;
@@ -495,6 +503,10 @@ sub throw (;@) {
    EXCEPTION_CLASS->throw( @_ );
 }
 
+sub throw_on_error (;@) {
+   EXCEPTION_CLASS->throw_on_error( @_ );
+}
+
 sub trim (;$$) {
    my $c = $_[ 1 ] || " \t"; (my $y = $_[ 0 ] || q()) =~ s{ \A [$c]+ }{}mx;
 
@@ -530,18 +542,14 @@ sub untaint_string ($;$) {
 
    my ($untainted) = $string =~ $regex;
 
-   unless (defined $untainted and $untainted eq $string) {
-      my $err = "String [_1] contains possible taint";
-
-      throw( error => $err,    args  => [ $string ],
-             class => Tainted, level => 3 );
-   }
+   (defined $untainted and $untainted eq $string)
+      or throw( class => Tainted, args => [ $string ], level => 3 );
 
    return $untainted;
 }
 
 sub zip (@) {
-    my $p = @_ / 2; return @_[ map { $_, $_ + $p } 0 .. $p - 1 ];
+   my $p = @_ / 2; return @_[ map { $_, $_ + $p } 0 .. $p - 1 ];
 }
 
 # Private functions
@@ -659,7 +667,7 @@ sub _read_variable {
 
    return first  { length }
           map    { trim( (split q(=), $_)[ 1 ] ) }
-          grep   { m{ \A $variable [=] }mx }
+          grep   { m{ \A \s* $variable \s* [=] }mx }
           map    { chomp }
           split m{ [\n] }mx, $content;
 }
@@ -676,7 +684,7 @@ CatalystX::Usul::Functions - Globally accessible functions
 
 =head1 Version
 
-This documents version v0.33.$Rev: 1 $
+This documents version v0.34.$Rev: 1 $
 
 =head1 Synopsis
 
@@ -841,6 +849,12 @@ Returns the number of seconds elapsed since the process started
 
 Prints to I<STDOUT> the lines of text passed to it. Lines are C<chomp>ed
 and then have newlines appended. Throws on IO errors
+
+=head2 emit_err
+
+   emit_err @lines_of_text;
+
+Like L</emit> but output to C<STDERR>
 
 =head2 emit_to
 
@@ -1071,6 +1085,14 @@ Expose L<Class::Usul::Exception/throw>. L<Class::Usul::Constants> has a
 class attribute I<Exception_Class> which can be set change the class
 of the thrown exception
 
+=head2 throw_on_error
+
+   throw_on_error @args;
+
+Passes it's optional arguments to L</exception> and if an exception object is
+returned it throws it. Returns undefined otherwise. If no arguments are
+passed L</exception> will use the value of the global C<$EVAL_ERROR>
+
 =head2 trim
 
    $trimmed_string = trim $string_with_leading_and_trailing_whitespace;
@@ -1161,7 +1183,7 @@ Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
 
 =head1 License and Copyright
 
-Copyright (c) 2013 Peter Flanigan. All rights reserved
+Copyright (c) 2014 Peter Flanigan. All rights reserved
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself. See L<perlartistic>
