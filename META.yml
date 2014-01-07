@@ -27,73 +27,79 @@ no_index:
 provides:
   Class::Usul:
     file: lib/Class/Usul.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Config:
     file: lib/Class/Usul/Config.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Config::Programs:
     file: lib/Class/Usul/Config/Programs.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Constants:
     file: lib/Class/Usul/Constants.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Crypt:
     file: lib/Class/Usul/Crypt.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Crypt::Util:
     file: lib/Class/Usul/Crypt/Util.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Exception:
     file: lib/Class/Usul/Exception.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::File:
     file: lib/Class/Usul/File.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Functions:
     file: lib/Class/Usul/Functions.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::IPC:
     file: lib/Class/Usul/IPC.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::L10N:
     file: lib/Class/Usul/L10N.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Lock:
     file: lib/Class/Usul/Lock.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Log:
     file: lib/Class/Usul/Log.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Options:
     file: lib/Class/Usul/Options.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Programs:
     file: lib/Class/Usul/Programs.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Response::IPC:
     file: lib/Class/Usul/Response/IPC.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Response::Meta:
     file: lib/Class/Usul/Response/Meta.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Response::Table:
     file: lib/Class/Usul/Response/Table.pm
-    version: v0.34.1
+    version: v0.35.1
+  Class::Usul::Schema:
+    file: lib/Class/Usul/Schema.pm
+    version: v0.35.1
   Class::Usul::Time:
     file: lib/Class/Usul/Time.pm
-    version: v0.34.1
+    version: v0.35.1
+  Class::Usul::TraitFor::ConnectInfo:
+    file: lib/Class/Usul/TraitFor/ConnectInfo.pm
+    version: v0.35.1
   Class::Usul::TraitFor::LoadingClasses:
     file: lib/Class/Usul/TraitFor/LoadingClasses.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::TraitFor::Prompting:
     file: lib/Class/Usul/TraitFor/Prompting.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::TraitFor::UntaintedGetopts:
     file: lib/Class/Usul/TraitFor/UntaintedGetopts.pm
-    version: v0.34.1
+    version: v0.35.1
   Class::Usul::Types:
     file: lib/Class/Usul/Types.pm
-    version: v0.34.1
+    version: v0.35.1
 recommends:
   Proc::ProcessTable: 0.42
 requires:
@@ -135,4 +141,4 @@ resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Usul
   homepage: https://metacpan.org/author/PJFL
   license: http://dev.perl.org/licenses/
-version: 0.34.1
+version: 0.35.1
