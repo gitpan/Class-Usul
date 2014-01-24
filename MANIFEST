@@ -23,12 +23,11 @@ lib/Class/Usul/Log.pm
 lib/Class/Usul/Options.pm
 lib/Class/Usul/Programs.pm
 lib/Class/Usul/Response/IPC.pm
-lib/Class/Usul/Response/Meta.pm
 lib/Class/Usul/Response/Table.pm
 lib/Class/Usul/Schema.pm
 lib/Class/Usul/Time.pm
 lib/Class/Usul/TraitFor/ConnectInfo.pm
-lib/Class/Usul/TraitFor/LoadingClasses.pm
+lib/Class/Usul/TraitFor/MetaData.pm
 lib/Class/Usul/TraitFor/Prompting.pm
 lib/Class/Usul/TraitFor/UntaintedGetopts.pm
 lib/Class/Usul/Types.pm
@@ -51,6 +50,6 @@ t/21ipc.t
 t/22crypt.t
 t/25prompt.t
 t/30schema.t
-t/critic.rc
 t/locale/de/LC_MESSAGES/default.po
 t/test.json
+t/test.sh

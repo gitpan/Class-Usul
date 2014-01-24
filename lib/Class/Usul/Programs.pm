@@ -1,24 +1,24 @@
-# @(#)$Ident: Programs.pm 2013-11-26 13:56 pjf ;
+# @(#)$Ident: Programs.pm 2014-01-12 19:57 pjf ;
 
 package Class::Usul::Programs;
 
 use attributes ();
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.35.%d', q$Rev: 1 $ =~ /\d+/gmx );
+use version; our $VERSION = qv( sprintf '0.37.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Moo;
 use Class::Inspector;
 use Class::Usul::Constants;
 use Class::Usul::File;
-use Class::Usul::Functions  qw( abs_path elapsed emit emit_err emit_to exception
-                                find_apphome find_source get_cfgfiles
-                                is_arrayref is_hashref is_member
+use Class::Usul::Functions  qw( abs_path elapsed emit emit_err emit_to
+                                exception find_apphome find_source
+                                get_cfgfiles is_arrayref is_hashref is_member
                                 logname pad throw untaint_identifier );
 use Class::Usul::IPC;
 use Class::Usul::Options;
-use Class::Usul::Types      qw( ArrayRef Bool EncodingType FileType HashRef Int
-                                IPCType LoadableClass PositiveInt PromptType
-                                SimpleStr );
+use Class::Usul::Types      qw( ArrayRef Bool EncodingType FileType HashRef
+                                Int IPCType LoadableClass PositiveInt
+                                PromptType SimpleStr );
 use Config;
 use English                 qw( -no_match_vars );
 use File::Basename          qw( dirname );
@@ -33,8 +33,6 @@ use Try::Tiny;
 
 extends q(Class::Usul);
 with    q(Class::Usul::TraitFor::Prompting);
-
-my $EXTNS = [ keys %{ Class::Usul::File->extensions } ];
 
 # Override attributes in base class
 has '+config_class'   => default => sub { 'Class::Usul::Config::Programs' };
@@ -106,7 +104,7 @@ has 'params'      => is => 'ro',   isa => HashRef, default => sub { {} };
 # Private attributes
 has '_file'       => is => 'lazy', isa => FileType,
    builder        => sub { Class::Usul::File->new( builder => $_[ 0 ] ) },
-   handles        => [ qw( io ) ], init_arg => undef, reader => 'file';
+   init_arg       => undef, reader => 'file';
 
 has '_ipc'        => is => 'lazy', isa => IPCType,
    builder        => sub { Class::Usul::IPC->new( builder => $_[ 0 ] ) },
@@ -129,8 +127,8 @@ around 'BUILDARGS' => sub {
    my $cfg = $attr->{config} //= {}; $attr->{noask} //= delete $attr->{nodebug};
 
    $cfg->{appclass} //= delete $attr->{appclass} || blessed $self || $self;
-   $cfg->{home    } //= find_apphome $cfg->{appclass}, $attr->{home}, $EXTNS;
-   $cfg->{cfgfiles} //= get_cfgfiles $cfg->{appclass},  $cfg->{home}, $EXTNS;
+   $cfg->{home    } //= find_apphome $cfg->{appclass}, $attr->{home};
+   $cfg->{cfgfiles} //= get_cfgfiles $cfg->{appclass},  $cfg->{home};
 
    return $attr;
 };
@@ -231,16 +229,6 @@ sub fatal {
    emit_to *STDERR, $self->add_leader( $text, $args ).$posn."\n";
    __output_stacktrace( $err, $self->verbose );
    exit FAILED;
-}
-
-sub get_meta {
-   my ($self, $dir) = @_; my $cfg = $self->config;
-
-   my @dirs = ($cfg->appldir, $cfg->ctrldir);
-
-   $dir and unshift @dirs, $self->io( $dir );
-
-   return $self->meta_class->new( directories => \@dirs );
 }
 
 sub help : method {
@@ -547,7 +535,7 @@ Class::Usul::Programs - Provide support for command line programs
 
 =head1 Version
 
-This document describes version v0.35.$Rev: 1 $ of L<Class::Usul::Programs>
+This document describes version v0.37.$Rev: 1 $ of L<Class::Usul::Programs>
 
 =head1 Synopsis
 
@@ -720,15 +708,6 @@ variable <uppercase application name>_HOME
 Search through sub directories of @INC looking for the file
 F<yourApplication.json>. Uses the location of this file to return the
 path to the installation directory
-
-=head2 get_meta
-
-   $res_obj = $self->get_meta( $dir );
-
-Extracts; I<name>, I<version>, I<author> and I<abstract> from the
-F<META.json> or F<META.yml> file.  Looks in the optional C<$dir> directory
-for the file in addition to C<< $self->appldir >> and C<< $self->ctrldir >>.
-Returns a response object with read-only accessors defined
 
 =head2 help - Display help text about a method
 
