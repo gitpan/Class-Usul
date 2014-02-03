@@ -1,9 +1,6 @@
-# @(#)$Ident: IPC.pm 2014-01-13 12:54 pjf ;
-
 package Class::Usul::IPC;
 
 use namespace::sweep;
-use version; our $VERSION = qv( sprintf '0.37.%d', q$Rev: 1 $ =~ /\d+/gmx );
 
 use Moo;
 use Class::Null;
@@ -30,6 +27,8 @@ use Unexpected::Functions     qw( Unspecified );
 our ($CHILD_ENUM, $CHILD_PID);
 
 # Public attributes
+has 'cache_ttys'     => is => 'ro',   isa => Bool, default => TRUE;
+
 has 'response_class' => is => 'lazy', isa => LoadableClass,
    default           => 'Class::Usul::Response::IPC',
    coerce            => LoadableClass->coercion;
@@ -296,7 +295,7 @@ sub _list_pids_by_file_system {
 sub _new_proc_process_table {
    my $self = shift; require Proc::ProcessTable;
 
-   return Proc::ProcessTable->new( cache_ttys => $self->config->cache_ttys );
+   return Proc::ProcessTable->new( cache_ttys => $self->cache_ttys );
 }
 
 sub _new_process_table {
@@ -653,10 +652,6 @@ __END__
 
 Class::Usul::IPC - List/Create/Delete processes
 
-=head1 Version
-
-This documents version v0.37.$Rev: 1 $
-
 =head1 Synopsis
 
    use Class::Usul::IPC;
@@ -669,6 +664,18 @@ This documents version v0.37.$Rev: 1 $
 
 Displays the process table and allows signals to be sent to selected
 processes
+
+=head1 Configuration and Environment
+
+Defines these attributes;
+
+=over 3
+
+=item C<cache_ttys>
+
+Boolean that defaults to true. Passed to L<Proc::ProcessTable>
+
+=back
 
 =head1 Subroutines/Methods
 
@@ -811,10 +818,6 @@ This interrupt handler traps the pipe signal
 =head2 __handler
 
 This interrupt handler traps the child signal
-
-=head1 Configuration and Environment
-
-None
 
 =head1 Diagnostics
 
