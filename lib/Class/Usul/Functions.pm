@@ -9,7 +9,8 @@ use Class::Null;
 use Class::Usul::Constants;
 use Cwd                        qw( );
 use Data::Printer      alias => q(_data_dumper), colored => 1, indent => 3,
-    filters => { 'File::DataClass::IO' => sub { $_[ 0 ]->pathname }, };
+    filters => { 'File::DataClass::IO' => sub { $_[ 0 ]->pathname },
+                 'JSON::XS::Boolean'   => sub { q().$_[ 0 ]       }, };
 use Digest                     qw( );
 use Digest::MD5                qw( md5 );
 use English                    qw( -no_match_vars );
@@ -346,6 +347,8 @@ sub fqdn (;$) {
 
 sub fullname () {
    my $y = (split m{ \s* , \s * }msx, (get_user()->gecos || q()))[ 0 ];
+
+   $y =~ s{ [\&] }{}gmx; # Because af25e158-d0c7-11e3-bdcb-31d9eda79835
 
    return untaint_cmdline( $y || q());
 }
@@ -912,7 +915,19 @@ class L<CatalystX::Usul::Exception>. Returns a new error object
 
    $directory_path = find_apphome $appclass, $homedir, $extns
 
-Returns the path to the applications home directory
+Returns the path to the applications home directory. Searches the following:
+
+   # 0.  Undef appclass and pass the directory in (short circuit the search)
+   # 1a. Environment variable - for application directory
+   # 1b. Environment variable - for config file
+   # 2a. Users home directory - dot file containing shell env variable
+   # 2b. Users home directory - dot directory is apphome
+   # 3.  Well known path containing shell env file
+   # 4.  Default install prefix
+   # 5a. Config file found in @INC - underscore as separator
+   # 5b. Config file found in @INC - dash as separator
+   # 6.  Pass the default in
+   # 7.  Default to /tmp
 
 =head2 find_source
 

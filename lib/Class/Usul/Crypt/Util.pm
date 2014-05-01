@@ -15,7 +15,7 @@ our @EXPORT_OK = qw( decrypt_from_config encrypt_for_config
                      get_cipher is_encrypted );
 
 # Public functions
-sub decrypt_from_config {
+sub decrypt_from_config ($$) {
    my ($config, $encrypted) = @_;
    my ($cipher, $password)  = __extract_crypt_params( $encrypted );
    my $args                 = __get_crypt_args( $config, $cipher );
@@ -23,7 +23,7 @@ sub decrypt_from_config {
    return $password ? decrypt $args, $password : $encrypted;
 }
 
-sub encrypt_for_config {
+sub encrypt_for_config ($$;$) {
    my ($config, $password, $encrypted) = @_;
 
    my ($cipher) = __extract_crypt_params( $encrypted );
@@ -32,11 +32,11 @@ sub encrypt_for_config {
    return $password ? "{${cipher}}".(encrypt $args, $password) : $password;
 }
 
-sub get_cipher {
+sub get_cipher ($) {
    my ($cipher) = __extract_crypt_params( $_[ 0 ] ); return $cipher;
 }
 
-sub is_encrypted {
+sub is_encrypted ($) {
    return $_[ 0 ] =~ m{ \A [{] .+ [}] .* \z }mx ? TRUE : FALSE;
 }
 
