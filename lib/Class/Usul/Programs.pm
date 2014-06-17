@@ -276,7 +276,7 @@ sub list_methods : method {
    for my $key (sort keys %{ $abstract }) {
       my ($method, @rest) = split SPC, $abstract->{ $key };
 
-      emit( (pad $method, $max).SPC.(join SPC, @rest) );
+      emit( (pad $key, $max).SPC.(join SPC, @rest) );
    }
 
    return OK;
@@ -288,7 +288,6 @@ sub loc {
    my $args = (is_hashref $car) ? { %{ $car } }
             : { params => (is_arrayref $car) ? $car : [ @args ] };
 
-   $args->{domain_names     } //= [ DEFAULT_L10N_DOMAIN, $self->config->name ];
    $args->{locale           } //= $self->locale;
    $args->{quote_bind_values} //= TRUE;
 
@@ -733,12 +732,11 @@ be called via the L<run method|/run>
 
 =head2 loc
 
-   $localized_text = $self->loc( $key, @options );
+   $localized_text = $self->loc( $message, @options );
 
-Localizes the message. Calls L<Class::Usul::L10N/localize>. Adds the
-constant C<DEFAULT_L10N_DOMAINS> to the list of domain files that are
-searched. Adds C<< $self->locale >> and C< $self->config->name >>
-(search domain) to the arguments passed to C<localize>
+Localizes the message. Calls L<Class::Usul::L10N/localize>. The
+domains to search are in the C<l10n_domains> configuration attribute. Adds
+C<< $self->locale >> to the arguments passed to C<localize>
 
 =head2 output
 
