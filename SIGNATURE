@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.66.
+signed via the Module::Signature module, version 0.73.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -14,24 +14,24 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 7970462acb0c34442505f0160c9478753d8ddcf8 Build.PL
-SHA1 be6a22fabbaa95e0b0f7d97f2f4ab604d3802312 Changes
+SHA1 0e696d572cf0b7cc1242cec685e0832a84f4d710 Build.PL
+SHA1 8ebaa715e798902d8a050a9b4d5f60d5ddf876e8 Changes
 SHA1 b8415dc6fd6293b168bcc15a552f4383175e2f2f LICENSE
-SHA1 54007432860a13c6b2eab6d28dac202e79b45a28 MANIFEST
-SHA1 da1e076f7bfcd105b0f230d9379c0b50b5b5dc92 META.json
-SHA1 c7cf212b2c649a70ba1c55f6d60b5625b5fcbf6b META.yml
-SHA1 e20072cd92905db2a8f100b5e53c9517dcb8ed9c README
+SHA1 4a6e11a8cf42c9411258fc237ee65425ea797050 MANIFEST
+SHA1 8cdd086ea181977f69205e200981a11713184110 META.json
+SHA1 63a4f7119b4a73cf38f81ce10d4081ecc73d2225 META.yml
+SHA1 5e8029e3733ff5fc45cc9111fec2e44c391a4bef README
 SHA1 1c6971b9c3a1b630d4685510f29e384d7c593b06 examples/usul_cli
-SHA1 53964effa49a9beaedc4534ed454945a36066fe7 lib/Class/Usul.pm
-SHA1 387e075b47d3b80c70a2ba6fb5766365461ad5e1 lib/Class/Usul/Config.pm
+SHA1 f2a13b695347384c087fe17154264cec850e6b27 lib/Class/Usul.pm
+SHA1 d1d5ec0f842ceba6b7b5fb2a4c3f642c5f54381d lib/Class/Usul/Config.pm
 SHA1 09b2170adb91ab97005437705fc87dc55ccb5239 lib/Class/Usul/Config/Programs.pm
-SHA1 1e4255dcd4dd0a3a1f275c3052935b23353047a2 lib/Class/Usul/Constants.pm
+SHA1 496402dfaa040e311395a757a8bed26f6dcbf685 lib/Class/Usul/Constants.pm
 SHA1 36e28a6e81edbe03393d3edd089ad3daaff555a2 lib/Class/Usul/Crypt.pm
 SHA1 90ef354943a9c9ea46b9363027733359be9f7050 lib/Class/Usul/Crypt/Util.pm
-SHA1 5cf25ea7c3770d1c487e1d94c7178712b8c1d375 lib/Class/Usul/Exception.pm
+SHA1 bc462326ad700d5291b0dab8027a2dbef5daa804 lib/Class/Usul/Exception.pm
 SHA1 e24c09c772599414aa7c869583a930636413b597 lib/Class/Usul/File.pm
-SHA1 1feb12989efce77c4476d3e5d64ec5c9cd49fd05 lib/Class/Usul/Functions.pm
-SHA1 9c66474f0d4f31f20a37487f2b0a0d35d5fbd5c1 lib/Class/Usul/IPC.pm
+SHA1 203e8e73fd634829b116dabad74db9c93b9bad79 lib/Class/Usul/Functions.pm
+SHA1 558a8213cc6a6cb14a05dcec102c45bda18acbdd lib/Class/Usul/IPC.pm
 SHA1 c824dca1f31a47d07d5ef4c68cde291b1c1322de lib/Class/Usul/L10N.pm
 SHA1 273b1a7a9b3851dac224f72dff611779ac56c201 lib/Class/Usul/Lock.pm
 SHA1 48890fb971847b7843f6b8c4d85e208661d03c6a lib/Class/Usul/Log.pm
@@ -39,43 +39,45 @@ SHA1 50d0cf364696d6c350c49e37b576fb61cc31210d lib/Class/Usul/Options.pm
 SHA1 11c2bb9d0fb23a55681fad3b6f6188c6205768c5 lib/Class/Usul/Programs.pm
 SHA1 1e430872b2bd1940093e0397e98b9b06f331cbd2 lib/Class/Usul/Response/IPC.pm
 SHA1 ee02d215cfcd2b495932ddc47a37a9afd20cb915 lib/Class/Usul/Response/Table.pm
-SHA1 368ec2e8e277ae98c8dc5b6578690a364bdaec4c lib/Class/Usul/Schema.pm
-SHA1 96b85e439b816339f4897c9e5ea6e875cdb7bf52 lib/Class/Usul/Time.pm
+SHA1 93101d39c9223c4277af40a389b52f2a25ae6621 lib/Class/Usul/Schema.pm
+SHA1 64c873804c1d1235332f35f5e9fbcf87e68ca4f7 lib/Class/Usul/Time.pm
 SHA1 cc02c578464ab8a481322d72de1f73c672a516d1 lib/Class/Usul/TraitFor/ConnectInfo.pm
-SHA1 7bd6e11e5ed51aaedd8276f61206d5866c59b85f lib/Class/Usul/TraitFor/MetaData.pm
+SHA1 402be4679a35caf96eaa44c79ee98a8a7cd193ea lib/Class/Usul/TraitFor/MetaData.pm
 SHA1 581e02c4f6b2224283145c3e003b460554118067 lib/Class/Usul/TraitFor/Prompting.pm
 SHA1 9c99795fa2f21b949cb06e009de914a170995203 lib/Class/Usul/TraitFor/UntaintedGetopts.pm
-SHA1 6d631bab5d08c2f5ae6e970df803ae80a61b6e56 lib/Class/Usul/Types.pm
+SHA1 761330dfe6496881cd8b56fb9cb3767303d2dbd8 lib/Class/Usul/Types.pm
 SHA1 a412ad8e1dfe0cc3a6b1f93b68d41bd89a1972e9 t/01always_pass.t
 SHA1 427b1a5820b3d6bc52044b99c999e458eba7d6dc t/02pod.t
 SHA1 905a84ed4a01bba172b682620964560f04ff93d2 t/03podcoverage.t
 SHA1 c1c29d14c961c30f0ea1ff84dd3b6acb7f4d3e81 t/05kwalitee.t
 SHA1 8b1ef2c2000dda84911be6a6bf76d4de88a4d4dc t/06yaml.t
-SHA1 5ca20ddb21abc9e2f2ce7e063da9c85a341e83c4 t/07podspelling.t
+SHA1 c174519f902dc6f031232ccbf35de15d8b07b9f4 t/07podspelling.t
 SHA1 19e47926d51e93a5a2b0a50dff232dcd85976677 t/10exception.t
-SHA1 887360ea31d68b7f4503035033807c220000bc8a t/11functions.t
-SHA1 ecf431511f9bb97caa19af294af90009bd6ad70d t/12types.t
+SHA1 1de52aa98fd3a6b0770637b56ef311bac0847444 t/11functions.t
+SHA1 0f453af2eabef56a1f2f15581a80c2f5c9b5415a t/12types.t
 SHA1 b7abd2d59f83cff3425556c2af3d2ee6f3fd74ef t/13traits.t
 SHA1 3c30c834fa89810d333051db19fbcd24cd776565 t/14time.t
 SHA1 079ffee877821e2f8e72aa423cc25b7b399fc28f t/15l10n.t
 SHA1 287a78438ad8c0ca3eaf119e38888ed63d53f69b t/16file.t
 SHA1 99b208b7339f23c4571d83808b1c5698aa4b1d4e t/17options.t
-SHA1 5f40762d114e04770f6173e847ec0333b94483be t/18programs.t
+SHA1 31dbdc65f38afba3f59d15df7692f9355720cf76 t/18programs.t
 SHA1 c17d3c45e3183290dc1576c19851ffe5bbfd8ce7 t/21ipc.t
 SHA1 7fa89be43e8369ab26025bc7377a1e4c95ee6e1a t/22crypt.t
 SHA1 abccc3424fe25679463cb01d9644b7aedb29ef5c t/25prompt.t
 SHA1 99a5ad771cea525d4e0a3b7992dfa302f102d4cf t/30schema.t
+SHA1 e433ee8838d7e3bb4f2317dfd4e2c07ee8819607 t/35meta.t
+SHA1 71c0e6f65255ae9772872f7b0b3b7b732b623d68 t/META.json
 SHA1 18654acb43a4d5e8bf37f19df626d00fc954276e t/locale/de/LC_MESSAGES/default.po
 SHA1 e9070a49cd28c343a74b8ff0d20800b5e640e5cb t/test.json
 SHA1 f3fa9441b5e9f62574c7fd1d1fcde932496c6c4f t/test.sh
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 
-iQEcBAEBAgAGBQJTvZpdAAoJEK492j4Im1BpHVUH/ArtfdB7iWkQrY8cUk8w93yn
-4dAsWEeGAJi2cCaiFIm1x7pHFaqm7X3iBIjDY02/Bo8W4oDfqex1kJck0WQvxASW
-HGjQ2Wa21WKEPkaiZm0iwyn+CoOWFQEXLwxr4A8i1+oU3RzR+G7ugX684U/TIuy/
-78Jy7uywcDxhM5yPflCS5KvUdb8OL3rUIFJFDEOckhXXCCQHwqW3SV6r6bLDwr5O
-qKSm6UAyEnl4b11W0Irnoww8/3bosOxGxxhdVAw9jsc7HFAb1EgAvF70AQK8ICHx
-OKGsnr2v0KLKWycxkmi4uuHpBxhz3ZCS7QkUaLH/3GxhJ/3nzHKBQg+5KFs5+LQ=
-=EYlP
+iQEcBAEBAgAGBQJT/E9lAAoJEK492j4Im1BpVn0IALIxQZHdXU1Av1p4TPErRBKu
+9Yt/R4+WpXt36FwYCSPvuPVuJFALVqGqXYDDdHlq6bo+WaW3L6bSWyV6KDQAPqU0
+2LLwerFg0+uO3GSbd+POcqJX2dx45uienOV8fbemuuk2cfYKQ2A3i6JVElgiGJF2
+LOD+a+jlcNee9JdVbUmSP+MlbVpKPL8atgbscL5yS2IonVbzjRhqEkSrhTffoV2A
+ND+ciVtaUDUYcnRTlpLI1xgy9Rui8e9tax08pw9iJSB7lfxrO8bLbaTXgNlcwkG5
+BuBuBdx/oz7X2qKubcCzcMQ1mpIflMufgj20+P3AO4sZC7zm3ndwCg5kIxj8Xw0=
+=RVWf
 -----END PGP SIGNATURE-----

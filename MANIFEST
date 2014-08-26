@@ -50,6 +50,8 @@ t/21ipc.t
 t/22crypt.t
 t/25prompt.t
 t/30schema.t
+t/35meta.t
+t/META.json
 t/locale/de/LC_MESSAGES/default.po
 t/test.json
 t/test.sh
