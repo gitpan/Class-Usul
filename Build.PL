@@ -53,10 +53,10 @@ my $prereqs  = {
     'Text::Autoformat' => '1.669002',
     'Time::Zone' => '2.24',
     'Try::Tiny' => '0.22',
-    'Type::Tiny' => '1.000003',
+    'Type::Tiny' => '1.000002',
     'Unexpected' => 'v0.30.0',
+    'namespace::autoclean' => '0.19',
     'namespace::clean' => '0.25',
-    'namespace::sweep' => '0.006',
     'perl' => '5.010001'
   },
 };
