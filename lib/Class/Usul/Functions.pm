@@ -18,6 +18,7 @@ use Data::Printer      alias => q(_data_dumper), colored => 1, indent => 3,
 use Digest                     qw( );
 use Digest::MD5                qw( md5 );
 use English                    qw( -no_match_vars );
+use Fcntl                      qw( F_SETFL O_NONBLOCK );
 use File::Basename             qw( basename dirname );
 use File::DataClass::Functions qw( supported_extensions );
 use File::DataClass::IO        qw( );
@@ -43,7 +44,8 @@ our @EXPORT_OK   = qw( abs_path app_prefix arg_list assert
                        fullname get_cfgfiles get_user hex2str
                        home2appldir io is_arrayref is_coderef
                        is_hashref is_win32 loginid
-                       logname merge_attributes my_prefix pad
+                       logname merge_attributes my_prefix
+                       nonblocking_write_pipe_pair pad
                        prefix2class product split_on__ split_on_dash
                        squeeze strip_leader sub_name sum symlink thread_id
                        throw throw_on_error trim unescape_TT
@@ -61,8 +63,8 @@ sub _exporter_fail {
     exists $EXPORT_REFS{ $name }
        and return ( $name => $EXPORT_REFS{ $name }->() );
 
-    throw( error => 'Subroutine [_1] not found in package [_2]',
-           args  => [ $name, $class ] );
+    throw( 'Subroutine [_1] not found in package [_2]',
+           args => [ $name, $class ] );
 }
 
 # Public functions
@@ -255,16 +257,15 @@ sub emit_to ($;@) {
    my ($handle, @args) = @_; local $OS_ERROR;
 
    return (print {$handle} @args
-           or throw( error => 'IO error: [_1]', args =>[ $OS_ERROR ] ));
+           or throw( 'IO error: [_1]', args =>[ $OS_ERROR ] ));
 }
 
 sub ensure_class_loaded ($;$) {
    my ($class, $opts) = @_; $opts //= {};
 
-   $class or throw( class => Unspecified,
-                     args => [ 'class name' ], level => 2 );
+   $class or throw( Unspecified, args => [ 'class name' ], level => 2 );
 
-   is_module_name( $class ) or throw( error => 'String [_1] invalid classname',
+   is_module_name( $class ) or throw( 'String [_1] invalid classname',
                                       args => [ $class ], level => 2 );
 
    not $opts->{ignore_loaded} and is_class_loaded( $class ) and return 1;
@@ -272,8 +273,8 @@ sub ensure_class_loaded ($;$) {
    eval { require_module( $class ) }; throw_on_error( { level => 3 } );
 
    is_class_loaded( $class )
-      or throw( error => 'Class [_1] loaded but package undefined',
-                args  => [ $class ], level => 2 );
+      or throw( 'Class [_1] loaded but package undefined',
+                args => [ $class ], level => 2 );
 
    return 1;
 }
@@ -376,7 +377,7 @@ sub fullname () {
 sub get_cfgfiles ($;$$) {
    my ($appclass, $dirs, $extns) = @_;
 
-   $appclass // throw( class => Unspecified, args => [ 'application class' ],
+   $appclass // throw( Unspecified, args => [ 'application class' ],
                        level => 2 );
    is_arrayref( $dirs ) or $dirs = [ $dirs // curdir ];
 
@@ -472,6 +473,16 @@ sub my_prefix (;$) {
    return split_on__( basename( $_[ 0 ] || q(), PERL_EXTNS ) );
 }
 
+sub nonblocking_write_pipe_pair () {
+   my ($r, $w); pipe $r, $w or throw( 'No pipe' );
+
+   fcntl $w, F_SETFL, O_NONBLOCK; $w->autoflush( 1 );
+
+   binmode $r; binmode $w;
+
+   return [ $r, $w ];
+}
+
 sub pad ($$;$$) {
    my ($x, $length, $str, $direction) = @_;
 
@@ -524,14 +535,14 @@ sub symlink (;$$$) {
    my ($from, $to, $base) = @_;
 
    defined $base and not CORE::length $base and $base = File::Spec->rootdir;
-   $from or throw( class => Unspecified, args => [ 'path from' ] );
+   $from or throw( Unspecified, args => [ 'path from' ] );
    $from = io( $from )->absolute( $base );
-   $from->exists or throw( class => PathNotFound, args => [ "${from}" ] );
-   $to   or throw( class => Unspecified, args => [ 'path to' ] );
+   $from->exists or throw( PathNotFound, args => [ "${from}" ] );
+   $to   or throw( Unspecified, args => [ 'path to' ] );
    $to   = io( $to   )->absolute( $base ); $to->is_link and $to->unlink;
-   $to->exists  and throw( class => PathAlreadyExists, args => [ "${to}" ] );
+   $to->exists  and throw( PathAlreadyExists, args => [ "${to}" ] );
    CORE::symlink "${from}", "${to}"
-      or throw( error => 'Symlink from [_1] to [_2] failed: [_3]',
+      or throw( 'Symlink from [_1] to [_2] failed: [_3]',
                 args  => [ "${from}", "${to}", $OS_ERROR ] );
    return "Symlinked ${from} to ${to}";
 }
@@ -584,7 +595,7 @@ sub untaint_string ($;$) {
    my ($untainted) = $string =~ $regex;
 
    (defined $untainted and $untainted eq $string)
-      or throw( class => Tainted, args => [ $string ], level => 3 );
+      or throw( Tainted, args => [ $string ], level => 3 );
 
    return $untainted;
 }
@@ -1070,6 +1081,13 @@ C<$dest> hash values take precedence over the C<$src> hash values which
 take precedence over the C<$defaults> hash values. The C<$src> hash
 may be an object in which case its accessor methods are called
 
+=head2 nonblocking_write_pipe_pair
+
+   $array_ref = non_blocking_write_pipe;
+
+Returns a pair of file handles, read then write. The write file handle is
+non blocking, binmode is set on both
+
 =head2 my_prefix
 
    $prefix = my_prefix $PROGRAM_NAME;
@@ -1259,7 +1277,7 @@ Patches are welcome
 
 =head1 Author
 
-Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
+Peter Flanigan, C<< <pjfl@cpan.org> >>
 
 =head1 License and Copyright
 

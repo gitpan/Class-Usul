@@ -18,6 +18,7 @@ lib/Class/Usul/Exception.pm
 lib/Class/Usul/File.pm
 lib/Class/Usul/Functions.pm
 lib/Class/Usul/IPC.pm
+lib/Class/Usul/IPC/Cmd.pm
 lib/Class/Usul/L10N.pm
 lib/Class/Usul/Lock.pm
 lib/Class/Usul/Log.pm

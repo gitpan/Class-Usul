@@ -39,7 +39,7 @@ sub str2date_time ($;$) {
         local_epoch       => undef, );
    my $time      = str2time( $dstr, $zone );
 
-   defined $time or throw class => DateTimeCoercion, args => [ $dstr ];
+   defined $time or throw DateTimeCoercion, args => [ $dstr ];
 
    return $formatter->parse_datetime( $time );
 }
@@ -335,7 +335,7 @@ Patches are welcome
 
 =head1 Author
 
-Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
+Peter Flanigan, C<< <pjfl@cpan.org> >>
 
 =head1 License and Copyright
 

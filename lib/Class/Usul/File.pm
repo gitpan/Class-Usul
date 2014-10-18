@@ -37,7 +37,7 @@ sub data_load {
        and $attr->{storage_attributes}->{force_array} = $args->{arrays};
 
   (is_arrayref $args->{paths} and defined $args->{paths}->[ 0 ])
-      or throw class => Unspecified, args => [ 'paths' ];
+      or throw Unspecified, args => [ 'paths' ];
 
    return $self->dataclass_schema( $attr )->load( @{ $args->{paths} } );
 }
@@ -187,7 +187,7 @@ Patches are welcome
 
 =head1 Author
 
-Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
+Peter Flanigan, C<< <pjfl@cpan.org> >>
 
 =head1 License and Copyright
 

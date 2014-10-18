@@ -11,18 +11,17 @@ use File::Spec::Functions    qw( tmpdir );
 
 my $Assert          = sub {};
 my $Config_Extn     = '.json';
-my $Config_Key      = 'Plugin::Usul';
 my $Exception_Class = 'Class::Usul::Exception';
 
 File::DataClass::Constants->Exception_Class( __PACKAGE__->Exception_Class );
 
-our @EXPORT = qw( ARRAY ASSERT BRK CODE COMMA CONFIG_EXTN DEFAULT_CONFHOME
-                  DEFAULT_ENVDIR DEFAULT_ENCODING DEFAULT_L10N_DOMAIN
-                  DIGEST_ALGORITHMS ENCODINGS EVIL EXCEPTION_CLASS
-                  FAILED FALSE HASH LANG LBRACE LOCALIZE
-                  LOG_LEVELS MODE NO NUL OK PERL_EXTNS PHASE PREFIX QUIT SEP
-                  SPC TRUE UNDEFINED_RV UNTAINT_CMDLINE
-                  UNTAINT_IDENTIFIER UNTAINT_PATH USUL_CONFIG_KEY
+our @EXPORT = qw( ARRAY AS_PARA ASSERT BRK CODE COMMA CONFIG_EXTN
+                  DEFAULT_CONFHOME DEFAULT_ENVDIR DEFAULT_ENCODING
+                  DEFAULT_L10N_DOMAIN DIGEST_ALGORITHMS ENCODINGS EVIL
+                  EXCEPTION_CLASS FAILED FALSE HASH LANG LBRACE
+                  LOCALIZE LOG_LEVELS MODE NO NUL OK PERL_EXTNS PHASE
+                  PREFIX QUIT SEP SPC TRUE UNDEFINED_RV
+                  UNTAINT_CMDLINE UNTAINT_IDENTIFIER UNTAINT_PATH
                   UUID_PATH WIDTH YES );
 
 sub ARRAY    () { q(ARRAY)   }
@@ -48,6 +47,7 @@ sub TRUE     () { 1          }
 sub WIDTH    () { 80         }
 sub YES      () { q(y)       }
 
+sub AS_PARA             () { { cl => 1, fill => 1, nl => 1 } }
 sub ASSERT              () { __PACKAGE__->Assert }
 sub CONFIG_EXTN         () { __PACKAGE__->Config_Extn }
 sub DEFAULT_CONFHOME    () { tmpdir }
@@ -64,7 +64,6 @@ sub UNDEFINED_RV        () { -1 }
 sub UNTAINT_CMDLINE     () { qr{ \A ([^\$&;<>|]+)      \z }mx }
 sub UNTAINT_IDENTIFIER  () { qr{ \A ([a-zA-Z0-9_]+)    \z }mx }
 sub UNTAINT_PATH        () { qr{ \A ([^\$%&\*;<>\`|]+) \z }mx }
-sub USUL_CONFIG_KEY     () { __PACKAGE__->Config_Key }
 sub UUID_PATH           () { [ q(), qw( proc sys kernel random uuid ) ] }
 
 sub Assert {
@@ -83,15 +82,6 @@ sub Config_Extn {
       ( "Config extension ${extn} is not a simple string" );
 
    return $Config_Extn = $extn;
-}
-
-sub Config_Key {
-   my ($self, $key) = @_; defined $key or return $Config_Key;
-
-   (length $key < 255 and $key !~ m{ \n }mx) or EXCEPTION_CLASS->throw
-      ( "Config key ${key} is not a simple string" );
-
-   return $Config_Key = $key;
 }
 
 sub Exception_Class {
@@ -147,16 +137,22 @@ Defines the following class attributes;
 
 String C<ARRAY>
 
+=head2 AS_PARA
+
+Returns a hash reference containing the keys and values that causes the auto
+formatting L<output|Class::Usul::Programs/output> subroutine to clear left,
+fill paragraphs, and append an extra newline
+
 =head2 ASSERT
 
-Return a coderef which is imported by L<Class::Usul::Functions> into
+Return a code reference which is imported by L<Class::Usul::Functions> into
 the callers namespace as the C<assert> function. By default this will
 be the empty subroutine, C<sub {}>. Change this by setting the C<Assert>
 class attribute
 
 =head2 BRK
 
-Separate leader from message,  (: )
+Separate leader from message with the characters colon space
 
 =head2 CODE
 
@@ -174,7 +170,8 @@ setting the C<Config_Extn> class attribute
 =head2 DEFAULT_CONFHOME
 
 Default directory for the config file. The function C<find_apphome>
-defaults to returning this value if it cannot find a more suitable one
+defaults to returning this value if it cannot find a more suitable one.
+Returns the L<temporary directory|File::Spec::Functions/tmpdir>
 
 =head2 DEFAULT_ENCODING
 
@@ -182,12 +179,13 @@ String C<UTF-8>
 
 =head2 DEFAULT_ENVDIR
 
-An arrayref which if passed to L<catfile|File::Spec/catdir> is the directory
-which will contain the applications installation information
+An array reference which if passed to L<catdir|File::Spec/catdir> is the
+directory which will contain the applications installation information.
+Directory defaults to F</etc/default>
 
 =head2 DEFAULT_L10N_DOMAIN
 
-String C<default>. The name of the default message catalog
+String C<default>. The name of the default message catalogue
 
 =head2 DIGEST_ALGORITHMS
 
@@ -230,7 +228,7 @@ The left brace character, C<{>
 
 =head2 LOCALIZE
 
-The character sequence that introduces a localization substitution
+The character sequence that introduces a localisation substitution
 parameter, C<[_>
 
 =head2 LOG_LEVELS
@@ -239,7 +237,7 @@ List of methods the log object is expected to support
 
 =head2 MODE
 
-Default file creation mask
+Default file creation mask, 027
 
 =head2 NO
 
@@ -247,7 +245,7 @@ The letter C<n>
 
 =head2 NUL
 
-Empty string
+Empty (zero length) string
 
 =head2 OK
 
@@ -259,11 +257,12 @@ List of possible file suffixes used on Perl scripts
 
 =head2 PHASE
 
-The default phase number used to select installation specific config
+The default phase number used to select installation specific config, 2
 
 =head2 PREFIX
 
-Array ref representing the default parent path for a normal install
+Array reference representing the default parent path for a normal install.
+Defaults to F</opt>
 
 =head2 QUIT
 
@@ -305,7 +304,7 @@ the C<Config_Key> class attribute
 
 =head2 UUID_PATH
 
-An arrayref which if passed to L<catfile|File::Spec/catdir> is the path
+An array reference which if passed to L<catdir|File::Spec/catdir> is the path
 which will return a unique identifier if opened and read
 
 =head2 WIDTH
@@ -342,7 +341,7 @@ Patches are welcome
 
 =head1 Author
 
-Peter Flanigan, C<< <Support at RoxSoft.co.uk> >>
+Peter Flanigan, C<< <pjfl@cpan.org> >>
 
 =head1 License and Copyright
 

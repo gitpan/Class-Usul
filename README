@@ -4,7 +4,7 @@ Name
 
 Version
 
-    Describes Class::Usul version v0.47.$Rev: 1 $
+    Describes Class::Usul version v0.48.$Rev: 0 $
 
 Synopsis
 
@@ -19,7 +19,7 @@ Description
     These modules provide a set of base classes for Perl packages and
     applications that provide configuration file loading
     Class::Usul::Config, locking to single thread processes IPC::SRLock,
-    logging Class::Usul::Log and localization Class::Usul::L10N
+    logging Class::Usul::Log and localisation Class::Usul::L10N
 
     The class Class::Usul::Programs is a base class for command line
     interfaces
@@ -61,15 +61,6 @@ Configuration and Environment
     Defines the application context log. Defaults to a Log::Handler object
 
 Subroutines/Methods
-
- new_from_class
-
-       $usul_object = $self->new_from_class( $application_class ):
-
-    Returns a new instance of self starting only with an application class
-    name. The application class in expected to provide config and debug
-    class methods. The hash ref $application_class->config will be passed
-    as the config attribute to the constructor for this class
 
  dumper
 
