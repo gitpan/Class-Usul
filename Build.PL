@@ -12,6 +12,7 @@ my $name     = 'Class-Usul'; $name =~ s{ - }{::}gmx;
 my $prereqs  = {
   'build_requires' => {
     'Capture::Tiny' => '0.22',
+    'Hash::MoreUtils' => '0.05',
     'Module::Build' => '0.4004',
     'Test::Deep' => '0.108',
     'Test::Requires' => '0.06',

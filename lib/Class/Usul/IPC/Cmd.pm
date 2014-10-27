@@ -46,15 +46,12 @@ has 'err'              => is => 'ro',   isa => Path | SimpleStr, default => NUL;
 
 has 'expected_rv'      => is => 'ro',   isa => PositiveInt, default => 0;
 
-has 'ignore_zombies'   => is => 'lazy', isa => Bool,
-   builder             => sub { $_[ 0 ]->async ? TRUE : FALSE };
+has 'ignore_zombies'   => is => 'lazy', isa => Bool, builder => sub {
+   ($_[ 0 ]->async || $_[ 0 ]->detach) ? TRUE : FALSE };
 
 has 'in'               => is => 'ro',   isa => Path | SimpleStr,
    coerce              => sub { __arrayref2str( $_[ 0 ] ) },
    default             => NUL;
-
-has 'is_daemon'        => is => 'rwp',  isa => Bool, default => FALSE,
-   init_arg            => undef;
 
 has 'log'              => is => 'lazy', isa => LogType,
    builder             => sub { Class::Null->new };
@@ -92,7 +89,7 @@ has 'use_ipc_run'      => is => 'ro',   isa => Bool, default => FALSE;
 has 'use_system'       => is => 'ro',   isa => Bool, default => FALSE;
 
 has 'working_dir'      => is => 'lazy', isa => Directory | Undef,
-   default             => undef;
+   default             => sub { $_[ 0 ]->detach ? io rootdir : undef };
 
 # Construction
 around 'BUILDARGS' => sub {
@@ -137,23 +134,25 @@ sub run_cmd {
 
 # Private methods
 sub _run_cmd {
-   my $self = shift; my $cmd = $self->cmd; my $has_pipes = __has_pipes( $cmd );
+   my $self = shift; my $cmd = $self->cmd;
+
+   my $has_shell_meta = __has_shell_meta( $cmd );
 
    if (is_arrayref $cmd) {
       $cmd->[ 0 ] or throw Unspecified, args => [ 'command' ];
 
       unless (is_win32) {
-         ($has_pipes or $self->use_ipc_run)
+         ($has_shell_meta or $self->use_ipc_run)
             and can_load( modules => { 'IPC::Run' => '0.84' } )
             and return $self->_run_cmd_using_ipc_run;
 
-         not $has_pipes and return $self->_run_cmd_using_fork_and_exec;
+         not $has_shell_meta and return $self->_run_cmd_using_fork_and_exec;
       }
 
       $cmd = join SPC, map { m{ [ ] }mx ? __quote( $_ ) : $_ } @{ $cmd };
    }
 
-   not is_win32 and ($has_pipes or $self->async or $self->use_system)
+   not is_win32 and ($has_shell_meta or $self->async or $self->use_system)
       and return $self->_run_cmd_using_system( $cmd );
 
    return $self->_run_cmd_using_open3( $cmd );
@@ -161,72 +160,63 @@ sub _run_cmd {
 
 # Fork and exec implementation
 sub _run_cmd_using_fork_and_exec {
-   my $self = shift; my $cmd = $self->cmd->[ 0 ]; my $prog = basename( $cmd );
-
-   my ($in_h, $out_h, $err_h) = __three_nonblocking_write_pipe_pairs();
-
-   {  local ($CHILD_ENUM, $CHILD_PID) = (0, 0);
-      local $SIG{PIPE} = \&__pipe_handler;
-
-      if ($self->detach) {
-         my $pidfile = $self->pidfile;
-
-         unless ($self->_daemonise) { # Parent
-            my $pid = $self->_wait_for_and_read( $pidfile ); $pidfile->close;
-
-            return $self->_new_async_response( $prog, $pid );
-         }
-
-         $pidfile->println( $PID ); # Child
-      }
-      elsif (my $pid = $self->_fork_process) { # Parent
-         $in_h = $in_h->[ 1 ]; $out_h = $out_h->[ 0 ]; $err_h = $err_h->[ 0 ];
-
-         $self->async and return $self->_new_async_response( $prog, $pid );
-
-         $self->log->debug( "Running ${prog}($pid)" );
-
-         return $self->_wait_for_child( $pid, $in_h, $out_h, $err_h );
-      }
-   }
-   # Child
-   $self->_redirect_child_io( $in_h->[ 0 ], $out_h->[ 1 ], $err_h->[ 1 ] );
-   $self->working_dir and chdir $self->working_dir;
-   is_coderef $cmd and _exit $self->_execute_coderef( $cmd );
-
-   exec @{ $self->cmd } or throw 'Program [_1] failed to start: [_2]',
-                                  args => [ $prog, $OS_ERROR ];
-}
-
-sub _wait_for_child {
-   my ($self, $pid, $in_h, $out_h, $err_h) = @_;
+   my $self = shift; my $pidfile = $self->pidfile;
 
    my $cmd = $self->cmd->[ 0 ]; my $prog = basename( $cmd );
 
+   my ($in_h, $out_h, $err_h, $stat_h) = __four_nonblocking_write_pipe_pairs();
+
+   {  local ($CHILD_ENUM, $CHILD_PID) = (0, 0);
+      local $SIG{PIPE} = \&__pipe_handler;
+      $self->ignore_zombies and local $SIG{CHLD} = 'IGNORE';
+
+      if (my $pid = fork) { # Parent
+         $in_h  = $in_h->[ 1 ];  $out_h  = $out_h->[ 0 ];
+         $err_h = $err_h->[ 0 ]; $stat_h = $stat_h->[ 0 ];
+
+         $self->detach and $pid = $self->_wait_for_and_read( $pidfile )
+            and $pidfile->close;
+
+         return ($self->async || $self->detach)
+              ?  $self->_new_async_response( $pid )
+              :  $self->_wait_for_child( $pid, $in_h, $out_h, $err_h, $stat_h );
+      }
+   }
+
+   try { # Child
+      $self->_redirect_child_io( $in_h->[ 0 ], $out_h->[ 1 ], $err_h->[ 1 ] );
+      $self->detach and $self->_detach_process and $pidfile->println( $PID );
+      $self->working_dir and chdir $self->working_dir;
+      is_coderef $cmd and _exit $self->_execute_coderef( $cmd );
+
+      exec @{ $self->cmd } or throw 'Program [_1] failed to exec: [_2]',
+                                    args => [ $prog, $OS_ERROR ];
+   }
+   catch { __send_exec_failure( $stat_h->[ 1 ], "${_}" ) };
+
+   close $stat_h->[ 1 ];
+   return OK;
+}
+
+sub _wait_for_child {
+   my ($self, $pid, $in_h, $out_h, $err_h, $stat_h) = @_;
+
    my ($fltout, $stderr, $stdout) = (NUL, NUL, NUL);
 
-   my $out = $self->out; my $outhand = sub {
-      my $buf = shift; defined $buf or return;
+   my $outhand = __out_handler( $self->out, \$fltout, \$stdout );
 
-      $out ne 'null'   and $fltout .= $buf;
-      $out ne 'null'   and $stdout .= $buf;
-      $out eq 'stdout' and emit_to \*STDOUT, $buf;
-      return;
-   };
+   my $errhand = __err_handler( $self->err, \$fltout, \$stderr );
 
-   my $err = $self->err; my $errhand = sub {
-      my $buf = shift; defined $buf or return;
+   my $cmd = $self->cmd->[ 0 ]; my $prog = basename( $cmd );
 
-      $err eq 'out'    and $fltout .= $buf;
-      $err ne 'null'   and $stderr .= $buf;
-      $err eq 'stderr' and emit_to \*STDERR, $buf;
-      return;
-   };
+   $self->log->debug( "Running ${prog}($pid)" );
 
    try {
       my $tmout = $self->timeout; $tmout and local $SIG{ALRM} = sub {
          throw TimeOut, args => [ $prog, $tmout ];
       } and alarm $tmout;
+
+      my $error = __recv_exec_failure( $stat_h ); $error and throw $error;
 
       $self->_send_in( $in_h ); close $in_h;
       __drain( $out_h, $outhand, $err_h, $errhand );
@@ -243,16 +233,11 @@ sub _wait_for_child {
          stderr => $stderr,        stdout => $stdout );
 }
 
-sub _daemonise { # Returns false to the parent true to the child
-   $_[ 0 ]->_fork_process; return $_[ 0 ]->_detach_process;
-}
-
 sub _detach_process { # And this method came from MooseX::Daemonize
-   my $self = shift; $self->is_daemon or return FALSE; # Return if parent ...
+   my $self = shift;
 
-   # Now we are the child ...
    setsid or throw 'Cannot detach from controlling process';
-   $SIG{HUP} = 'IGNORE'; fork and _exit OK; chdir rootdir;
+   $SIG{HUP} = 'IGNORE'; fork and _exit OK;
 #  Clearing file creation mask allows direct control of the access mode of
 #  created files and directories in open, mkdir, and mkpath functions
    umask 0;
@@ -276,28 +261,22 @@ sub _execute_coderef {
    $SIG{INT} = sub { $self->_shutdown };
 
    try {
-      $rv = $code->( $self, @args ) // UNDEFINED_RV; $rv = $rv << 8;
+      $rv = $code->( $self, @args ); defined $rv and $rv = $rv << 8;
       $self->_remove_pid;
    }
    catch {
       blessed $_ and $_->can( 'rv' ) and $rv = $_->rv; emit_to \*STDERR, $_;
    };
 
-   return $rv // UNDEFINED_RV;
-}
-
-sub _fork_process { # Returns pid to the parent undef to the child
-   my $self = shift; $self->ignore_zombies and $SIG{CHLD} = 'IGNORE';
-
-   my $pid; $pid = fork and return $pid; $self->_set_is_daemon( TRUE );
-
-   return;
+   return $rv // OK;
 }
 
 sub _new_async_response {
-   my ($self, $prog, $pid) = @_;
+   my ($self, $pid) = @_;
 
-   $self->log->debug( my $out = "Started ${prog}(${pid}) in the background" );
+   my $cmd = $self->cmd->[ 0 ]; my $prog = basename( $cmd );
+
+   $self->log->debug( my $out = "Running ${prog}(${pid}) in the background" );
 
    return $self->response_class->new( out => $out, pid => $pid );
 }
@@ -475,28 +454,17 @@ sub _ipc_run_harness {
 sub _run_cmd_using_open3 { # Robbed in part from IPC::Cmd
    my ($self, $cmd) = @_; my ($fltout, $stderr, $stdout) = (NUL, NUL, NUL);
 
-   my $err = $self->err; my $errhand = sub {
-      my $buf = shift; defined $buf or return;
+   my $errhand = __err_handler( $self->err, \$fltout, \$stderr );
 
-      $err eq 'out'    and $fltout .= $buf;
-      $err ne 'null'   and $stderr .= $buf;
-      $err eq 'stderr' and emit_to \*STDERR, $buf;
-      return;
-   };
-   my $out = $self->out; my $outhand = sub {
-      my $buf = shift; defined $buf or return;
+   my $outhand = __out_handler( $self->out, \$fltout, \$stdout );
 
-      $out ne 'null'   and $fltout .= $buf;
-      $out ne 'null'   and $stdout .= $buf;
-      $out eq 'stdout' and emit_to \*STDOUT, $buf;
-      return;
-   };
    my $pipe = sub {
       socketpair( $_[ 0 ], $_[ 1 ], AF_UNIX, SOCK_STREAM, PF_UNSPEC ) or return;
       shutdown  ( $_[ 0 ], 1 );  # No more writing for reader
       shutdown  ( $_[ 1 ], 0 );  # No more reading for writer
       return TRUE;
    };
+
    my $open3 = sub {
       local (*TO_CHLD_R,     *TO_CHLD_W);
       local (*FR_CHLD_R,     *FR_CHLD_W);
@@ -668,16 +636,51 @@ sub __drain {
    return;
 }
 
+sub __err_handler {
+   my ($err, $flt_ref, $std_ref) = @_;
+
+   return sub {
+      my $buf = shift; defined $buf or return;
+
+      $err eq 'out'    and ${ $flt_ref } .= $buf;
+      $err ne 'null'   and ${ $std_ref } .= $buf;
+      $err eq 'stderr' and emit_to \*STDERR, $buf;
+      return;
+   }
+}
+
 sub __filter_out {
    return join "\n", map    { strip_leader $_ }
                      grep   { not m{ (?: Started | Finished ) }msx }
                      split m{ [\n] }msx, $_[ 0 ];
 }
 
-sub __has_pipes {
-   return (  is_arrayref $_[ 0 ]) ? is_member '|', $_[ 0 ]
-        : ($_[ 0 ] =~ m{ [|] }mx) ? TRUE
-                                  : FALSE;
+sub __four_nonblocking_write_pipe_pairs {
+   return nonblocking_write_pipe_pair,
+          nonblocking_write_pipe_pair,
+          nonblocking_write_pipe_pair,
+          nonblocking_write_pipe_pair;
+}
+
+sub __has_shell_meta {
+   return (     is_arrayref $_[ 0 ]) ? is_member '|',  $_[ 0 ]
+        : (     is_arrayref $_[ 0 ]) ? is_member '&&', $_[ 0 ]
+        : ($_[ 0 ] =~ m{ [|]    }mx) ? TRUE
+        : ($_[ 0 ] =~ m{ [&][&] }mx) ? TRUE
+                                     : FALSE;
+}
+
+sub __out_handler {
+   my ($out, $flt_ref, $std_ref) = @_;
+
+   return sub {
+      my $buf = shift; defined $buf or return;
+
+      $out ne 'null'   and ${ $flt_ref } .= $buf;
+      $out ne 'null'   and ${ $std_ref } .= $buf;
+      $out eq 'stdout' and emit_to \*STDOUT, $buf;
+      return;
+   }
 }
 
 sub __partition_command {
@@ -708,12 +711,25 @@ sub __quote {
    my $v = shift; return is_win32 ? '"'.$v.'"' : "'${v}'";
 }
 
+sub __recv_exec_failure {
+   my $fh = shift; my $to_read = 2 * length pack 'I', 0;
+
+   read $fh, my $buf = NUL, $to_read or return FALSE;
+
+   (my $errno, $to_read) = unpack 'II', $buf; $ERRNO = $errno;
+
+   read $fh, my $error = NUL, $to_read; $error and utf8::decode $error;
+
+   return $error || "${ERRNO}";
+}
+
 sub __redirect_stderr {
    my $v  = shift; my $err = \*STDERR; close $err;
 
    my $op = openhandle $v ? '>&' : '>'; my $sink = $op eq '>' ? $v : fileno $v;
 
-   open $err, $op, $sink or throw "Could not redirect STDERR: ${OS_ERROR}";
+   open $err, $op, $sink
+      or throw "Could not redirect STDERR to ${sink}: ${OS_ERROR}";
    return;
 }
 
@@ -722,7 +738,8 @@ sub __redirect_stdin {
 
    my $op = openhandle $v ? '<&' : '<'; my $src = $op eq '<' ? $v : fileno $v;
 
-   open $in,  $op, $src  or throw "Could not redirect STDIN: ${OS_ERROR}";
+   open $in,  $op, $src
+      or throw "Could not redirect STDIN from ${src}: ${OS_ERROR}";
    return;
 }
 
@@ -731,14 +748,16 @@ sub __redirect_stdout {
 
    my $op = openhandle $v ? '>&' : '>'; my $sink = $op eq '>' ? $v : fileno $v;
 
-   open $out, $op, $sink or throw "Could not redirect STDOUT: ${OS_ERROR}";
+   open $out, $op, $sink
+      or throw "Could not redirect STDOUT to ${sink}: ${OS_ERROR}";
    return;
 }
 
-sub __three_nonblocking_write_pipe_pairs {
-   return nonblocking_write_pipe_pair,
-          nonblocking_write_pipe_pair,
-          nonblocking_write_pipe_pair;
+sub __send_exec_failure {
+   my ($fh, $error) = @_; utf8::encode $error;
+
+   emit_to $fh, pack 'IIa*', 0+$ERRNO, length $error, $error; close $fh;
+   _exit 255;
 }
 
 1;
@@ -837,11 +856,6 @@ Determines where the standard input of the command will be redirected from.
 Object references should stringify to the name of the file containing input.
 A scalar is the input unless it is 'stdin' or 'null' which cause redirection
 from standard input and the null device
-
-=item C<is_daemon>
-
-Boolean without an initial argument. It will be true in daemonised child
-process and false in it's parent
 
 =item C<keep_fhs>
 

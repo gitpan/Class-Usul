@@ -143,6 +143,7 @@ SKIP: {
 
    is run_cmd_test( q(), $cmd, { timeout => 1, use_system => 1 } )->class,
       'TimeOut', 'system - timeout';
+   wait;
 }
 
 SKIP: {
@@ -179,6 +180,7 @@ SKIP: {
 
    is run_cmd_test( q(), $cmd, { timeout => 1, use_ipc_run => 1 } )->class,
       'TimeOut', 'IPC::Run - timeout';
+   wait;
 }
 
 SKIP: {
@@ -220,11 +222,10 @@ SKIP: {
    $cmd = [ sub { print 'Hello World' } ];
    $r   = run_cmd_test( q(), $cmd, { async => 1, out => $path } );
 
-   like   $r->out, qr{ background }msx, 'fork and exec - async coderef';
-   unlike $r->rv, qr{ \(-1\) }msx, 'fork and exec - async coderef captures pid';
-
-   sleep 1 while ($prog->ipc->process_exists( pid => $r->pid ));
-
+   like    $r->out, qr{ background }msx, 'fork and exec - async coderef';
+   unlike  $r->rv,  qr{ \(-1\) }msx,
+      'fork and exec - async coderef captures pid';
+   waitpid $r->pid, 0;
    is $path->slurp, 'Hello World', 'fork and exec - async coderef writes file';
 
    $path->exists and $path->unlink;
@@ -232,6 +233,25 @@ SKIP: {
 
    is run_cmd_test( q(), $cmd, { timeout => 1 } )->class,
       'TimeOut', 'fork and exec - timeout';
+
+   if (-x '/bin/sleep') {
+      $cmd = [ '/bin/sleep', '2' ];
+      $r   = run_cmd_test( q(), $cmd, { expected_rv => 255 } );
+      is $r->rv, 0, 'fork and exec - external command expected rv';
+   }
+
+   $r = run_cmd_test( q(), [ $perl, '-v' ], { detach => 1, out => $path } );
+
+   like $r->out, qr{ background }imsx, 'fork and exec - detaches';
+   waitpid $r->pid, 0;
+   like $path->slurp, qr{ larry \s+ wall }imsx,
+      'fork and exec - detaches and writes file';
+   $path->exists and $path->unlink;
+
+   $r = run_cmd_test( q(), [ '/bin/not_found' ], { expected_rv => 255 } );
+   like "${r}", qr{ \Qno such file\E }imx, 'fork and exec - traps exec failure';
+
+   
 }
 
 # This fails on some platforms. The stderr is not redirected as expected
