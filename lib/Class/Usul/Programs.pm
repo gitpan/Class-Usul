@@ -36,9 +36,9 @@ with    q(Class::Usul::TraitFor::Prompting);
 has '+config_class'   => default => sub { 'Class::Usul::Config::Programs' };
 
 # Public attributes
-option 'debug'        => is => 'rw',   isa => Bool, default => FALSE,
+option 'debug'        => is => 'rwp',  isa => Bool, default => FALSE,
    documentation      => 'Turn debugging on. Prompts if interactive',
-   short              => 'D', trigger => TRUE;
+   short              => 'D';
 
 option 'encoding'     => is => 'lazy', isa => EncodingType, format => 's',
    documentation      => 'Decode/encode input/output using this encoding',
@@ -139,7 +139,7 @@ sub BUILD {
    $self->help_manual  and $self->_exit_usage( 2 );
    $self->version      and $self->_exit_version;
 
-   $self->debug( $self->_get_debug_option );
+   $self->_set_debug( $self->_get_debug_option );
    return;
 }
 
@@ -559,7 +559,7 @@ Supports this list of command line options:
 
 The method in the subclass to dispatch to
 
-=item C<D>
+=item C<D debug>
 
 Turn debugging on
 
@@ -770,7 +770,7 @@ program leader and prints the result to I<STDOUT>
 
 =head1 Diagnostics
 
-Turning debug on produces some more output
+Turning debug on produces log output at the debug level
 
 =head1 Dependencies
 
